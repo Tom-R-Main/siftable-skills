@@ -68,7 +68,8 @@ class FilesystemLifecycleTests(unittest.TestCase):
             target = root / "node_modules"
             target.mkdir()
             candidate = self.candidate(root, target)
-            target.rmdir()
+            original = root / "original-node_modules"
+            target.rename(original)
             target.mkdir()
             with self.assertRaisesRegex(RuntimeError, "identity changed"):
                 FS.verify_identity(candidate)
