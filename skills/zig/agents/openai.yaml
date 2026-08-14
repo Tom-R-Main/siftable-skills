@@ -1,0 +1,4 @@
+interface:
+  display_name: "Zig"
+  short_description: "Build, review, and debug Zig code"
+  default_prompt: "Use $zig to review this Zig change for version fit, ownership, and validation gates."
