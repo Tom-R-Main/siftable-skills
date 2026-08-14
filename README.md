@@ -2,7 +2,7 @@
 
 **Skills forged from real agent workloads.**
 
-Siftable Skills is a collection of reusable operating procedures for coding and knowledge agents. Each skill captures a workflow that has been exercised in real work: reclaiming disk space without racing active processes, making forecasts that can be scored later, editing prose without changing its claims, using compilers as engineering tools, and retrieving evidence from a private local corpus.
+Siftable Skills is a collection of reusable operating procedures for coding and knowledge agents. Each skill captures a workflow that has been exercised in real work: reclaiming disk space without racing active processes, making forecasts that can be scored later, editing prose without changing its claims, using compilers as engineering tools, retrieving evidence from a private local corpus, and measuring vector retrieval inside PostgreSQL.
 
 These are more than prompt fragments. A skill can include instructions, references, deterministic helpers, tests, and an agent-facing manifest. Every directory under `skills/` is a complete package that can be installed on its own.
 
@@ -16,6 +16,7 @@ These are more than prompt fragments. A skill can include instructions, referenc
 | [`typescript`](skills/typescript/) | Applies compiler-first practices for implementation, debugging, review, and modernization | TypeScript needs stronger types, safer narrowing, clearer module boundaries, or better validation |
 | [`search-local-corpus`](skills/search-local-corpus/) | Queries a user-configured local retrieval backend through a small JSON contract | An agent needs cited passages from a private or specialized corpus without assuming a particular vector database |
 | [`zig`](skills/zig/) | Applies version-aware Zig practices for ownership, errors, build APIs, FFI boundaries, and measured optimization | Writing, reviewing, debugging, migrating, or benchmarking Zig across rapidly changing pre-1.0 APIs |
+| [`pgvector-postgres`](skills/pgvector-postgres/) | Designs and diagnoses exact and approximate vector retrieval inside PostgreSQL | Schema, HNSW/IVFFlat, filtered ANN, recall, plans, or embedding migrations need evidence-grounded decisions |
 
 ## Install a skill
 
@@ -31,6 +32,7 @@ Replace `filesystem-lifecycle` with any name from the table above. For example:
 npx skills add Tom-R-Main/siftable-skills --skill human-writing
 npx skills add Tom-R-Main/siftable-skills --skill search-local-corpus
 npx skills add Tom-R-Main/siftable-skills --skill zig
+npx skills add Tom-R-Main/siftable-skills --skill pgvector-postgres
 ```
 
 To install manually, copy one complete directory from `skills/<name>/` into the skill directory used by your agent. Skills do not depend on repository-root files at runtime.
@@ -53,6 +55,8 @@ Use $typescript to diagnose these type errors and validate the narrowest correct
 Use $search-local-corpus to find evidence about this decision and cite each passage by source and locator.
 
 Use $zig to review this allocator boundary and run the narrowest meaningful validation gates.
+
+Use $pgvector-postgres to compare this filtered HNSW query with an exact baseline and explain the observed plan.
 ```
 
 Some agent harnesses discover skills automatically from their descriptions. The explicit form is useful when you want to ensure a particular procedure governs the task.
@@ -96,7 +100,7 @@ Siftable is the larger runtime and context layer: ontology access, evidence, dat
 
 - **v0.1.0:** the initial five-skill collection
 - **v0.2.0:** the portable Zig engineering skill
-- **v0.3.0:** a sanitized pgvector/Postgres skill grounded in redistributable primary sources
+- **v0.3.0:** a fresh public pgvector/Postgres methodology grounded in official primary sources
 - **Later:** `siftable-headless` and narrower skills for stable Siftable product surfaces
 
 ## Authorship and license

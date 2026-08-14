@@ -1,0 +1,6 @@
+{
+  "queries": [
+    {"query_id": "q1", "ids": ["a", "c", "x", "d"]},
+    {"query_id": "q2", "ids": ["e", "x", "g"]}
+  ]
+}

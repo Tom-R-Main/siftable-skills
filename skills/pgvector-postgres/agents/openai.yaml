@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pgvector Postgres"
+  short_description: "Design and debug PostgreSQL vector retrieval"
+  default_prompt: "Use $pgvector-postgres to review this PostgreSQL vector search design, measure exact versus approximate behavior, and recommend the smallest evidence-backed change."

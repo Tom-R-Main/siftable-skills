@@ -1,0 +1,29 @@
+[
+  {
+    "Plan": {
+      "Node Type": "Limit",
+      "Plan Rows": 5,
+      "Actual Rows": 3,
+      "Actual Loops": 1,
+      "Plans": [
+        {
+          "Node Type": "Index Scan",
+          "Relation Name": "items",
+          "Alias": "items",
+          "Index Name": "items_embedding_hnsw_idx",
+          "Scan Direction": "Forward",
+          "Plan Rows": 10,
+          "Actual Rows": 3,
+          "Actual Loops": 1,
+          "Filter": "(tenant_id = 7)",
+          "Rows Removed by Filter": 2,
+          "Order By": "(embedding <=> '[1,0,0]'::vector)",
+          "Shared Hit Blocks": 8,
+          "Shared Read Blocks": 1
+        }
+      ]
+    },
+    "Planning Time": 0.3,
+    "Execution Time": 1.2
+  }
+]
