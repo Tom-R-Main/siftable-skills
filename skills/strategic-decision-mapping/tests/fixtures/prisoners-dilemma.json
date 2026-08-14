@@ -1,0 +1,10 @@
+{
+  "row_player": "Row",
+  "column_player": "Column",
+  "row_strategies": ["Cooperate", "Defect"],
+  "column_strategies": ["Cooperate", "Defect"],
+  "payoffs": [
+    [[3, 3], [0, 5]],
+    [[5, 0], [1, 1]]
+  ]
+}

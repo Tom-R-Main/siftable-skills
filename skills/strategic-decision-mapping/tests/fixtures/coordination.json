@@ -1,0 +1,10 @@
+{
+  "row_player": "Builder",
+  "column_player": "Partner",
+  "row_strategies": ["Standard A", "Standard B"],
+  "column_strategies": ["Standard A", "Standard B"],
+  "payoffs": [
+    [[4, 3], [0, 0]],
+    [[0, 0], [3, 4]]
+  ]
+}

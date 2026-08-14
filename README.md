@@ -2,7 +2,7 @@
 
 **Skills forged from real agent workloads.**
 
-Siftable Skills is a collection of reusable operating procedures for coding and knowledge agents. Each skill captures a workflow that has been exercised in real work: reclaiming disk space without racing active processes, making forecasts that can be scored later, editing prose without changing its claims, using compilers as engineering tools, retrieving evidence from a private local corpus, and measuring vector retrieval inside PostgreSQL.
+Siftable Skills is a collection of reusable operating procedures for coding and knowledge agents. Each skill captures a workflow that has been exercised in real work: reclaiming disk space without racing active processes, making forecasts that can be scored later, editing prose without changing its claims, using compilers as engineering tools, retrieving evidence from a private local corpus, measuring vector retrieval inside PostgreSQL, and mapping strategic decisions around incentives and countermoves.
 
 These are more than prompt fragments. A skill can include instructions, references, deterministic helpers, tests, and an agent-facing manifest. Every directory under `skills/` is a complete package that can be installed on its own.
 
@@ -17,6 +17,7 @@ These are more than prompt fragments. A skill can include instructions, referenc
 | [`search-local-corpus`](skills/search-local-corpus/) | Queries a user-configured local retrieval backend through a small JSON contract | An agent needs cited passages from a private or specialized corpus without assuming a particular vector database |
 | [`zig`](skills/zig/) | Applies version-aware Zig practices for ownership, errors, build APIs, FFI boundaries, and measured optimization | Writing, reviewing, debugging, migrating, or benchmarking Zig across rapidly changing pre-1.0 APIs |
 | [`pgvector-postgres`](skills/pgvector-postgres/) | Designs and diagnoses exact and approximate vector retrieval inside PostgreSQL | Schema, HNSW/IVFFlat, filtered ANN, recall, plans, or embedding migrations need evidence-grounded decisions |
+| [`strategic-decision-mapping`](skills/strategic-decision-mapping/) | Maps actors, incentives, moves, countermoves, commitments, and timing into an executable next turn | Negotiations, partnerships, company bets, conflicts, or strategic forks depend on other actors' responses |
 
 ## Install a skill
 
@@ -33,6 +34,7 @@ npx skills add Tom-R-Main/siftable-skills --skill human-writing
 npx skills add Tom-R-Main/siftable-skills --skill search-local-corpus
 npx skills add Tom-R-Main/siftable-skills --skill zig
 npx skills add Tom-R-Main/siftable-skills --skill pgvector-postgres
+npx skills add Tom-R-Main/siftable-skills --skill strategic-decision-mapping
 ```
 
 To install manually, copy one complete directory from `skills/<name>/` into the skill directory used by your agent. Skills do not depend on repository-root files at runtime.
@@ -57,6 +59,8 @@ Use $search-local-corpus to find evidence about this decision and cite each pass
 Use $zig to review this allocator boundary and run the narrowest meaningful validation gates.
 
 Use $pgvector-postgres to compare this filtered HNSW query with an exact baseline and explain the observed plan.
+
+Use $strategic-decision-mapping to map this partnership decision, test likely countermoves, and recommend the next move.
 ```
 
 Some agent harnesses discover skills automatically from their descriptions. The explicit form is useful when you want to ensure a particular procedure governs the task.
@@ -101,6 +105,7 @@ Siftable is the larger runtime and context layer: ontology access, evidence, dat
 - **v0.1.0:** the initial five-skill collection
 - **v0.2.0:** the portable Zig engineering skill
 - **v0.3.0:** a fresh public pgvector/Postgres methodology grounded in official primary sources
+- **v0.4.0:** the public strategic decision and game-mapping framework
 - **Later:** `siftable-headless` and narrower skills for stable Siftable product surfaces
 
 ## Authorship and license

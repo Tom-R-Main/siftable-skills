@@ -1,0 +1,4 @@
+interface:
+  display_name: "Strategic Decision Mapping"
+  short_description: "Map actors, incentives, moves, and countermoves"
+  default_prompt: "Use $strategic-decision-mapping to map this decision, test likely countermoves, and recommend the next move."
