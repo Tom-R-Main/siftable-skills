@@ -1,0 +1,8 @@
+interface:
+  display_name: "Predict Future"
+  short_description: "Evidence-grounded forecasts, trajectories, and odds"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  default_prompt: "Use $predict-future to produce an evidence-grounded, scoreable forecast with explicit probabilities, assumptions, and update triggers."
+policy:
+  allow_implicit_invocation: true

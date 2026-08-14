@@ -1,0 +1,4 @@
+interface:
+  display_name: "Filesystem Lifecycle"
+  short_description: "Audit and safely reclaim local disk space"
+  default_prompt: "Use $filesystem-lifecycle to audit this machine and prepare a guarded filesystem cleanup manifest."

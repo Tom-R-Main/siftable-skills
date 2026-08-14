@@ -1,0 +1,4 @@
+interface:
+  display_name: "Search Local Corpus"
+  short_description: "Search a configured local evidence corpus"
+  default_prompt: "Use $search-local-corpus to retrieve evidence from my configured local corpus and cite every result by source and locator."

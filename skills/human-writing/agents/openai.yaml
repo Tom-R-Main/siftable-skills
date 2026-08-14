@@ -1,0 +1,6 @@
+interface:
+  display_name: "Human Writing"
+  short_description: "Draft and edit prose with a specific human voice"
+  default_prompt: "Use $human-writing to revise this prose while preserving its claims, source boundaries, and intended voice."
+policy:
+  allow_implicit_invocation: true

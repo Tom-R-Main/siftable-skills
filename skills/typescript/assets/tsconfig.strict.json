@@ -1,0 +1,39 @@
+{
+  // Strict baseline for a modern TS project (app or library, bundler toolchain).
+  // Copy into a project and adjust `lib`/`paths`/`outDir` per target. For Node ESM
+  // without a bundler, set "module"/"moduleResolution" to "nodenext".
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
+    // --- strictness (the point of this file) ---
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "forceConsistentCasingInFileNames": true,
+
+    // --- interop / module hygiene ---
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+
+    // --- emit: let the bundler emit JS; tsc just type-checks ---
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    // --- path alias (mirror in your bundler + test runner) ---
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "build"]
+}

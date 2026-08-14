@@ -1,0 +1,4 @@
+interface:
+  display_name: "TypeScript"
+  short_description: "Write, debug, and validate TypeScript"
+  default_prompt: "Use $typescript to typecheck, debug, and refine this TypeScript change."
