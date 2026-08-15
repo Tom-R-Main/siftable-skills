@@ -97,6 +97,30 @@ Freeze:
 
 Stop after the selected set. Never add a candidate because concurrent writes erased the net gain.
 
+## Target-limited planning
+
+A target-limited audit may omit logical size and defer storage measurement after measured, non-overlapping `safe_now` candidates cover the requested physical target plus headroom. A resource-kind-restricted fast lane may also stop classification and omit deliberately unassessed candidates after recording their count. Record:
+
+- target and headroom;
+- included and preferred resource kinds;
+- required and measured allocated-byte budgets;
+- exact measured candidate IDs;
+- discovered, assessed, and deliberately deferred candidate counts;
+- whether the budget was met;
+- candidates deferred by overlap or budget completion.
+
+This is an intentionally partial inventory, not weaker deletion evidence. Apply still requires complete allocated storage, identity, boundary, recoverability, authorization, and fresh liveness evidence for every selected candidate.
+
+## Selection plan
+
+An integrity-protected selection freezes exact candidate IDs and order, its source manifest path and digest, target, headroom, selected allocated-byte budget, and budget status. It may automate a recorded goal authorization. It never replaces explicit candidate approval under manifest authorization.
+
+Reject a selection when it is stale, edited, empty, references another manifest, contains an unknown ID, or overlaps selected resources.
+
+## Apply report
+
+Persist the final report. Distinguish the free-space change observed during each deletion interval from cumulative net physical recovery since apply began; neither proves exclusive causality when concurrent writers exist. Treat zero target shortfall as successful completion even when a candidate was safely skipped. Treat report-persistence failure as an incomplete operation record.
+
 ## Workspace leases
 
 Record workspace/repository IDs, canonical path, task/session ID, process group, creation time, heartbeat, intended lifetime, Git ref, and cleanup policy at creation. An expired lease creates an orphan candidate; dirtiness, unique history, live handles, and locks retain veto power.

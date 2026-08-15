@@ -32,6 +32,7 @@ Do not require a redundant user confirmation when a current explicit goal alread
 ## Safe executor properties
 
 - Accept exact IDs only; provide no wildcard or implicit-all switch.
+- Accept an integrity-protected exact-ID selection only under its matching recorded goal authorization; never use it to replace explicit manifest approval.
 - Verify manifest integrity and freshness.
 - Freeze selected order, allocated-byte total, target, and risk ceiling before mutation.
 - Reject changed identity, boundaries, liveness, owner state, or incomplete evidence.

@@ -40,6 +40,10 @@ Do not infer branch deletion, history deletion, container or volume deletion, us
 
 Never skip freeze-and-revalidate. Concurrent agents can create worktrees, acquire handles, or consume newly freed space during the run.
 
+Keep apply-time revalidation candidate-local. Do not rerun broad discovery or storage sizing inside the selected-candidate loop. Complete identity, boundary, and owner-state checks first; then take the fresh liveness snapshot immediately before the owner action. Emit per-candidate progress and phase timings for any batch.
+
+Scope Codex task roots through the resource owner's workspace. A task rooted in one Git worktree protects that worktree's generated artifacts, but it does not automatically claim nested or sibling worktrees merely because their paths share an ancestor. Exact task roots, descendant task roots, CWDs, and open handles remain vetoes.
+
 ## Produce the audit manifest
 
 Start with bounded roots. Do not recursively scan `/`, credential stores, user-document bodies, cloud-provider mounts, or backup volumes. Add another mount as its own explicit `--root`; discovery does not cross filesystems beneath a root.
@@ -64,6 +68,23 @@ python3 "$SKILL_DIR/scripts/fs_lifecycle.py" audit \
   --authorization-scope 'generated artifacts and redundant linked worktrees; target 30 GiB' \
   --output /tmp/filesystem-lifecycle-manifest.json
 ```
+
+For a target-driven pass, restrict the audit to the safest authorized lane and stop expensive sizing once allocated evidence covers the target plus headroom:
+
+```bash
+python3 "$SKILL_DIR/scripts/fs_lifecycle.py" audit \
+  --root <projects-root> \
+  --repo <repository-root> \
+  --authorization-mode goal_authorized \
+  --authorization-scope 'generated artifacts only; target 30 GiB' \
+  --target-gib 30 \
+  --headroom-percent 25 \
+  --kind generated_artifact \
+  --prefer-kind generated_artifact \
+  --output /tmp/filesystem-lifecycle-manifest.json
+```
+
+Target-limited audit classifies before measuring and records allocated bytes only. In the generated-artifact-only fast lane, it stops assessment after the budget is satisfied and records how many discovered paths were deliberately deferred; the manifest is intentionally partial. Omit `--target-gib` for a complete inventory with logical and allocated sizes. `--kind` restricts audited resource classes; repeat it to include more than one.
 
 Add each relevant repository with `--repo`. Add explicitly named search roots with `--root`; keep depth bounded with `--max-depth`. Read only metadata and the minimum Codex session metadata needed to identify open task roots. Do not read document contents, environment files, keys, or credentials.
 
@@ -98,9 +119,19 @@ Use the approved scope and prefer the lowest-risk candidates:
 
 Protect active main dependencies even when they are regenerable. Remove a generated subtree from a retained dirty worktree only when that subtree independently passes every check.
 
-## Apply a frozen candidate set
+## Select and apply a frozen candidate set
 
-Pass each authorized candidate ID explicitly. The command has no wildcard or “delete everything” mode.
+Under a recorded goal authorization, generate a read-only selection file instead of manually post-processing the manifest:
+
+```bash
+python3 "$SKILL_DIR/scripts/fs_lifecycle.py" select \
+  --manifest /tmp/filesystem-lifecycle-manifest.json \
+  --output /tmp/filesystem-lifecycle-selection.json
+```
+
+Selection uses the audit target, headroom, kind restriction, and preference unless overridden. It includes only measured `safe_now` candidates, removes path/worktree overlap, freezes exact IDs and order, and fails nonzero when the safe budget is insufficient.
+
+For manifest authorization, pass each user-approved candidate ID explicitly. The command has no wildcard or “delete everything” mode.
 
 ```bash
 python3 "$SKILL_DIR/scripts/fs_lifecycle.py" apply \
@@ -112,9 +143,22 @@ python3 "$SKILL_DIR/scripts/fs_lifecycle.py" apply \
   --ack 'DELETE EXACT SAFE-NOW PATHS'
 ```
 
-For a recorded goal authorization, use `--authorization-source goal_authorization`. Add `--target-gib 30` to stop after the net free-space target. Optionally lower the frozen selected-set budget with `--risk-ceiling-gib`; never increase it beyond the selected candidates.
+For a recorded goal authorization, apply the integrity-protected selection directly:
+
+```bash
+python3 "$SKILL_DIR/scripts/fs_lifecycle.py" apply \
+  --manifest /tmp/filesystem-lifecycle-manifest.json \
+  --selection /tmp/filesystem-lifecycle-selection.json \
+  --authorization-source goal_authorization \
+  --execute \
+  --ack 'DELETE EXACT SAFE-NOW PATHS'
+```
+
+The selection target is authoritative; an explicit `--target-gib` must match it. Optionally lower the frozen selected-set budget with `--risk-ceiling-gib`; never increase it beyond the selected candidates. A generated selection cannot stand in for explicit manifest approval.
 
 The executor stops when the target is met, the risk ceiling is reached, or the approved set is exhausted. Concurrent writes may cause a shortfall; report it instead of escalating to new candidates or risk classes.
+
+Apply writes a timestamped JSON report beside the manifest by default; override with `--report-output`. It reports interval and cumulative physical free-space deltas separately. Skipped candidates remain warnings, and exit status is success when the physical target was met with zero shortfall.
 
 Do not hand-edit a candidate into `safe_now`. Regenerate the manifest.
 

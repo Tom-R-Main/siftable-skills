@@ -33,6 +33,10 @@ Require all of the following:
 6. Recoverable HEAD and deterministic representation evidence.
 7. Unchanged path, identity, HEAD, status, liveness, and representation immediately before removal.
 
+Apply-time revalidation must inspect only the selected worktree plus the repository's lightweight registration metadata. Do not rescan or resize sibling worktrees. Run identity, boundary, registration, HEAD, status, and representation checks first; take the liveness snapshot last, immediately before removal.
+
+Treat a Codex task root as a reference when that root is the selected worktree or lies beneath it. A task rooted at an ancestor checkout does not by itself reference a nested linked worktree; require the nested worktree's own task root, CWD, or open handle.
+
 ## Mutation
 
 ```bash
