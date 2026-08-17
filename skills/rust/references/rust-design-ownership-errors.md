@@ -4,6 +4,10 @@ Use this reference when designing or reviewing ordinary safe Rust: API
 boundaries, borrow-checker fixes, closures, state modeling, error types,
 traits and `dyn`, naming, std I/O contracts, and crate structure.
 
+Anchor: reviewed 2026-08-17 against Rust 1.95.0; the borrow and dyn-compatibility
+behavior below was compiler-checked on that toolchain. Rust releases every six
+weeks — confirm version-gated claims against the toolchain your project pins.
+
 ## Ownership decision table
 
 | Callee needs to | Prefer | Why |
@@ -11,7 +15,7 @@ traits and `dyn`, naming, std I/O contracts, and crate structure.
 | Read text/bytes/items | `&str`, `&[u8]`, `&[T]` | Accepts owned and borrowed callers |
 | Mutate caller-owned data | `&mut T`, `&mut [T]` | Makes exclusive mutation explicit |
 | Store or transfer a value | `T`, `String`, `Vec<T>` | Ownership outlives the call |
-| Accept several path-like inputs | `impl AsRef<Path>` at a leaf boundary | Convenience without infecting domain APIs |
+| Accept several path-like inputs | `impl AsRef<Path>` at a leaf boundary | Convenience without generic bounds in domain APIs |
 | Return newly created data | owned `T` | No hidden lifetime coupling |
 | Return a view into input | `&T` with input-tied lifetime | Makes provenance explicit |
 | Sometimes allocate | `Cow<'a, T>` after profiling/API need | Avoids allocation while preserving ownership option |
@@ -38,7 +42,7 @@ Two facts about the checker shape most fixes:
   evaluated. Explicit borrows are not: `let r = &mut v; r.push(v.len())` is
   an error. When a nested call fails, compute the argument first.
 
-When two operations fight over a borrow, ask:
+When two operations conflict over a borrow, ask:
 
 1. Which operation owns the value?
 2. Which references must coexist, and for how long?

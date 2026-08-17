@@ -6,14 +6,20 @@ description: Build, review, debug, migrate, test, or optimize Rust code. Use for
 # Rust
 
 Use this skill for Rust implementation, review, migration, and performance work.
-Rust evolves on a six-week release train; prefer the repository's pinned
+Rust ships a stable release every six weeks; prefer the repository's pinned
 toolchain, nearby working code, compiler diagnostics, and official documentation
 over remembered APIs or blanket style rules. Neither this skill nor the model is
 a source of truth: when a claim matters, read the pinned crate source, the
 versioned std docs, or the Reference, and say what you found.
 
 Paths below are relative to this skill directory, wherever your agent installed
-it.
+it. Each reference opens with an anchor line naming the toolchain and date its
+version-gated claims were reviewed against; anything newer is unverified.
+
+Not covered here: `no_std` and embedded targets, proc-macro authoring
+(`syn`/`quote`/`trybuild`), dependency auditing beyond honoring the
+repository's existing policy, and WebAssembly or cross-compilation beyond
+passing `--target`.
 
 ## First moves
 
@@ -127,7 +133,7 @@ types and at call sites.
 - Keep `unsafe` blocks small and wrap them in safe abstractions whose invariants
   are documented and tested. Every unsafe operation needs a local proof; an
   `unsafe fn` contract does not replace it.
-- Prefer ordinary code over clever lifetime gymnastics, macros, typestate, or
+- Prefer ordinary code over intricate lifetime parameters, macros, typestate, or
   interior mutability when a simpler ownership boundary expresses the same
   invariant. Use advanced patterns when they remove invalid states or essential
   duplication, not for novelty.
@@ -137,7 +143,7 @@ types and at call sites.
 
 ## Validation gates
 
-Run the repository's own lane when one exists; the Cargo baseline is the
+Run the repository's own commands when they exist; the Cargo baseline is a
 fallback, not the default:
 
 ```sh
@@ -147,7 +153,7 @@ cargo xtask ci                            # xtask pattern
 just check && just test                   # justfile pattern
 
 # Cargo-native repos:
-/path/to/rust/scripts/rust-gates.sh
+scripts/rust-gates.sh
 ```
 
 The helper refuses (exit 3) when it detects a build driver, and fails (exit 4)

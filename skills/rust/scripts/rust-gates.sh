@@ -90,7 +90,13 @@ fi
 # --- build-driver detection -------------------------------------------------
 drivers=()
 [[ -f x.py || -f x ]] && drivers+=("x.py bootstrap (use ./x fmt / ./x test)")
-if [[ -d xtask ]] || grep -qsE '^[[:space:]]*"?xtask"?[[:space:]]*[,]]|^[[:space:]]*members[[:space:]]*=.*xtask' Cargo.toml 2>/dev/null; then
+# An xtask crate is not always a root-level directory. It can live under
+# tools/ or crates/ and appear only as a workspace member or a cargo alias.
+xtask_dir="$(find . -maxdepth 3 -type d -name xtask -not -path './target/*' 2>/dev/null | LC_ALL=C sort | head -n 1 || true)"
+if [[ -n "$xtask_dir" ]]; then
+  drivers+=("xtask crate at ${xtask_dir#./} (use cargo xtask <task>)")
+elif grep -qsE '^[[:space:]]*"([^"]*/)?xtask"[[:space:]]*,?[[:space:]]*$|^[[:space:]]*members[[:space:]]*=.*xtask' Cargo.toml \
+  || grep -qsE '^[[:space:]]*xtask[[:space:]]*=' .cargo/config.toml .cargo/config; then
   drivers+=("xtask crate (use cargo xtask <task>)")
 fi
 for jf in justfile Justfile .justfile; do

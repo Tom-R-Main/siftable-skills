@@ -5,6 +5,11 @@ channels, timeouts, cancellation, `select!`, streams, locks, blocking work,
 cleanup, graceful shutdown, and async tests. Inspect the runtime and versions
 already pinned by the project before using crate-specific APIs.
 
+Anchor: reviewed 2026-08-17 against Rust 1.95.0. Runtime behavior described here
+is Tokio's and was not re-verified against a pinned crate version — confirm
+`select!`, cancellation-safety, and blocking-pool claims against the Tokio
+version your project pins.
+
 ## Start with what the compiler builds
 
 `async fn` and `async {}` compile to a state machine (a coroutine) that
@@ -25,7 +30,7 @@ explain most async bugs:
    requires `Pin`.
 4. **`.await` accepts any `IntoFuture`**, not only `Future`; builders can
    return an `IntoFuture` so `client.get(url).await` works.
-5. **A future that panicked is poisoned.** Polling it again panics
+5. **A future that panicked cannot be resumed.** Polling it again panics
    ("resumed after panicking"); catching the panic does not make it resumable.
 
 Choose async for many concurrent I/O-bound operations. Choose ordinary
@@ -131,7 +136,7 @@ Before racing or aborting, answer for each operation:
 - `if` guards are evaluated once when the macro starts, not on every poll.
 - To keep a future alive across loop iterations (a timeout that spans the
   loop), create it outside and select on `&mut fut` — which requires `pin!`.
-- The select-in-a-loop over a stream is the canonical data-loss shape: if the
+- The select-in-a-loop over a stream is the canonical data-loss bug: if the
   other branch wins mid-item, whether the item is lost or duplicated depends on
   the stream implementation. Prefer methods documented as cancellation safe
   (`mpsc::Receiver::recv`, `StreamExt::next`) and keep any partial-read buffer
@@ -225,8 +230,8 @@ only destructors. Design cleanup accordingly:
 
 - Prefer designs that need no async cleanup: idempotent operations,
   abort-and-restart, resources released synchronously in `Drop`.
-- When an async goodbye is required (flush, unsubscribe, final message),
-  separate cleanup from destruction: an explicit `async fn close(self)` plus a
+- When cleanup itself must await (flush, unsubscribe, final message), separate
+  it from destruction: an explicit `async fn close(self)` plus a
   `Drop` that logs or `debug_assert!`s if `close` was skipped.
 - Centralize cleanup in a supervisor task that owns the resources and outlives
   the workers, so a cancelled worker cannot skip it.

@@ -3,6 +3,11 @@
 Use this reference for edition upgrades (especially 2015/2018/2021 → 2024),
 toolchain pins, MSRV policy, resolver behavior, and rustfmt style editions.
 
+Anchor: reviewed 2026-08-17 against Rust 1.95.0. Every compiler-observable item
+in the Rust 2024 checklist below was verified on that toolchain by compiling the
+same snippet under editions 2021 and 2024. Rust releases every six weeks —
+confirm version-gated claims against the toolchain your project pins.
+
 ## Toolchain and MSRV facts that change what tools do
 
 - **`rust-toolchain(.toml)` is per-directory.** rustup uses the nearest one

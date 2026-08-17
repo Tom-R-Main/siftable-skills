@@ -4,6 +4,11 @@ Use this reference for unsafe blocks/traits, raw pointers, manual initialization
 `static mut`, C ABI boundaries, host-language native modules, synchronization
 primitives, and performance work.
 
+Anchor: reviewed 2026-08-17 against Rust 1.95.0; the edition-2024 unsafe items,
+`&raw mut`, and the `SyncUnsafeCell` stability note below were compiler-checked
+on that toolchain. Rust releases every six weeks — confirm version-gated claims
+against the toolchain your project pins.
+
 ## Unsafe is a proof boundary
 
 An `unsafe` block permits specific operations; it proves nothing. For each
@@ -11,7 +16,7 @@ operation, state the invariant that keeps it out of the Reference's list of
 undefined behavior (`reference/behavior-considered-undefined.html`):
 
 - **No data race.** Concurrent unsynchronized access where at least one side
-  writes is UB, listed first in the Reference for a reason.
+  writes is UB; the Reference lists it first.
 - **Every access is in bounds, aligned, and to live memory.** No dangling or
   misaligned place is loaded from or stored to; place projections (`.field`,
   `[i]`) stay within the allocation.
@@ -68,10 +73,12 @@ safe APIs.
 Taking `&` or `&mut` to a `static mut` is `deny`-by-default in edition 2024
 (`static_mut_refs`) because it creates aliased mutable references trivially.
 Prefer, in order: an atomic; `Mutex`/`RwLock` in a `static`; `OnceLock`/
-`LazyLock` for init-once data; `SyncUnsafeCell` with a documented external
-synchronization invariant when a lock is genuinely unaffordable. If `static mut`
-must remain, access it only through raw pointers (`&raw mut STATE`), never
-references.
+`LazyLock` for init-once data; then, when a lock is genuinely unaffordable, an
+`UnsafeCell` wrapper with a documented external synchronization invariant and an
+`unsafe impl Sync`. (`std::cell::SyncUnsafeCell` is that wrapper, but it is still
+unstable as of 1.95.0 — `sync_unsafe_cell`, tracking issue #95439 — so stable
+code writes its own.) If `static mut` must remain, access it only through raw
+pointers (`&raw mut STATE`), never references.
 
 ## Initialization, layout, and ownership
 
@@ -115,7 +122,7 @@ Keep the ABI narrow and explicit:
 - Note edition-2024 newly-`unsafe` std functions at the process boundary:
   `std::env::set_var`/`remove_var` and `CommandExt::before_exec`.
 
-For Node/Bun/Python/Swift/other hosts, test the real host boundary—not only the
+For Node/Bun/Python/Swift/other hosts, test the real host boundary, not only the
 Rust function behind it. Exercise empty buffers, invalid UTF-8, large lengths,
 nulls where permitted, repeated create/destroy, callback teardown, and
 concurrent calls.

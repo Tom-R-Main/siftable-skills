@@ -95,6 +95,58 @@ class RustGatesTests(unittest.TestCase):
             self.assertEqual(forced.returncode, 0, forced.stderr)
             self.assertTrue(forced_log.exists())
 
+    def test_nested_xtask_directory_is_detected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "Cargo.toml").write_text("[workspace]\nmembers = [\"tools/xtask\"]\n", encoding="utf-8")
+            (root / "tools" / "xtask").mkdir(parents=True)
+            fake_bin = write_fake_cargo(root, FAKE_CARGO)
+            result, log = run_gates(root, fake_bin)
+            self.assertEqual(result.returncode, 3)
+            self.assertIn("tools/xtask", result.stderr)
+            self.assertFalse(log.exists())
+
+    def test_xtask_workspace_member_without_root_directory_is_detected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "Cargo.toml").write_text(
+                "[workspace]\nmembers = [\n  \"app\",\n  \"tools/xtask\",\n]\n",
+                encoding="utf-8",
+            )
+            fake_bin = write_fake_cargo(root, FAKE_CARGO)
+            result, log = run_gates(root, fake_bin)
+            self.assertEqual(result.returncode, 3)
+            self.assertIn("xtask crate", result.stderr)
+            self.assertFalse(log.exists())
+
+    def test_cargo_alias_xtask_is_detected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "Cargo.toml").write_text("[package]\nname = \"demo\"\n", encoding="utf-8")
+            (root / ".cargo").mkdir()
+            (root / ".cargo" / "config.toml").write_text(
+                "[alias]\nxtask = \"run --package xtask --\"\n",
+                encoding="utf-8",
+            )
+            fake_bin = write_fake_cargo(root, FAKE_CARGO)
+            result, log = run_gates(root, fake_bin)
+            self.assertEqual(result.returncode, 3)
+            self.assertIn("xtask crate", result.stderr)
+            self.assertFalse(log.exists())
+
+    def test_similar_crate_name_does_not_trip_detection(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "Cargo.toml").write_text(
+                "[workspace]\nmembers = [\n  \"myxtask\",\n]\n",
+                encoding="utf-8",
+            )
+            (root / "myxtask").mkdir()
+            fake_bin = write_fake_cargo(root, FAKE_CARGO)
+            result, log = run_gates(root, fake_bin)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue(log.exists())
+
     def test_missing_cargo_fails_cleanly(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

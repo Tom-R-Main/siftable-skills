@@ -3,6 +3,10 @@
 Use this reference when adding regressions, designing a test strategy, debugging
 flaky tests, validating async or unsafe code, or measuring coverage.
 
+Anchor: reviewed 2026-08-17 against Rust 1.95.0. Tool behavior here (nextest,
+llvm-cov, cargo-fuzz, snapshot runners) depends on versions this file does not
+pin — check each against what your project installs.
+
 ## Choose the test from the risk
 
 | Risk | Best starting test |
