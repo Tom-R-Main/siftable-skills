@@ -18,6 +18,7 @@ These are more than prompt fragments. A skill can include instructions, referenc
 | [`zig`](skills/zig/) | Applies version-aware Zig practices for ownership, errors, build APIs, FFI boundaries, and measured optimization | Writing, reviewing, debugging, migrating, or benchmarking Zig across rapidly changing pre-1.0 APIs |
 | [`pgvector-postgres`](skills/pgvector-postgres/) | Designs and diagnoses exact and approximate vector retrieval inside PostgreSQL | Schema, HNSW/IVFFlat, filtered ANN, recall, plans, or embedding migrations need evidence-grounded decisions |
 | [`strategic-decision-mapping`](skills/strategic-decision-mapping/) | Maps actors, incentives, moves, countermoves, commitments, and timing into an executable next turn | Negotiations, partnerships, company bets, conflicts, or strategic forks depend on other actors' responses |
+| [`rust`](skills/rust/) | Applies toolchain-aware Rust practices for ownership, error design, async concurrency, unsafe boundaries, and validation gates | Writing, reviewing, debugging, migrating, or benchmarking Rust where the pinned toolchain, build driver, and invariants decide the answer |
 
 ## Install a skill
 
@@ -35,6 +36,7 @@ npx skills add Tom-R-Main/siftable-skills --skill search-local-corpus
 npx skills add Tom-R-Main/siftable-skills --skill zig
 npx skills add Tom-R-Main/siftable-skills --skill pgvector-postgres
 npx skills add Tom-R-Main/siftable-skills --skill strategic-decision-mapping
+npx skills add Tom-R-Main/siftable-skills --skill rust
 ```
 
 To install manually, copy one complete directory from `skills/<name>/` into the skill directory used by your agent. Skills do not depend on repository-root files at runtime.
@@ -61,6 +63,8 @@ Use $zig to review this allocator boundary and run the narrowest meaningful vali
 Use $pgvector-postgres to compare this filtered HNSW query with an exact baseline and explain the observed plan.
 
 Use $strategic-decision-mapping to map this partnership decision, test likely countermoves, and recommend the next move.
+
+Use $rust to review this borrow error and run the narrowest gates this repository's toolchain supports.
 ```
 
 Some agent harnesses discover skills automatically from their descriptions. The explicit form is useful when you want to ensure a particular procedure governs the task.
@@ -106,6 +110,7 @@ Siftable is the larger runtime and context layer: ontology access, evidence, dat
 - **v0.2.0:** the portable Zig engineering skill
 - **v0.3.0:** a fresh public pgvector/Postgres methodology grounded in official primary sources
 - **v0.4.0:** the public strategic decision and game-mapping framework
+- **v0.5.0:** the portable Rust engineering skill
 - **Later:** `siftable-headless` and narrower skills for stable Siftable product surfaces
 
 ## Authorship and license

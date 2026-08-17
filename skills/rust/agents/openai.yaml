@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rust"
+  short_description: "Build, review, and debug Rust code"
+  default_prompt: "Use $rust to review this Rust change for ownership, error design, concurrency, and validation gates."
