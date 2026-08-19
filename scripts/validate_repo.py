@@ -13,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / "skills"
 REQUIRED_FRONTMATTER = {"name", "description"}
+OPTIONAL_FRONTMATTER = {"metadata"}
 PORTABILITY_PATTERNS = {
     "personal macOS home": re.compile(r"/Users/[A-Za-z0-9._-]+/"),
     "personal Linux home": re.compile(r"/home/[A-Za-z0-9._-]+/"),
@@ -85,7 +86,7 @@ def validate_skill(skill: Path) -> list[str]:
     description = frontmatter.get("description", "")
     if len(description) < 40 or "use" not in description.lower():
         errors.append(f"{skill_file.relative_to(ROOT)}: description must explain capability and when to use it")
-    extra = set(frontmatter) - REQUIRED_FRONTMATTER
+    extra = set(frontmatter) - REQUIRED_FRONTMATTER - OPTIONAL_FRONTMATTER
     if extra:
         errors.append(f"{skill_file.relative_to(ROOT)}: unsupported frontmatter fields {sorted(extra)}")
 

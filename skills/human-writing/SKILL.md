@@ -5,6 +5,12 @@ description: >-
   rather than generic model output. Preserve facts, meaning, voice, and genre;
   remove formulaic patterns without flattening legitimate style. Use for prose,
   messages, essays, reports, product writing, documentation, and source-based edits.
+metadata:
+  version: "1.0.0"
+  language: "English-first"
+  aliases:
+    - humanizer
+    - voice-editor
 ---
 
 # Human writing
@@ -157,6 +163,8 @@ A useful draft usually does the following:
 - varies paragraph length for a reason, not by randomization;
 - allows a qualified or unresolved ending when the subject remains unresolved;
 - uses first person, opinion, humor, or an aside only when the author and genre support it.
+- replaces weak verb-plus-adverb combinations with a stronger verb, a concrete mechanism, or a measured result;
+- compresses filler such as “in order to,” “due to the fact that,” and “it is important to note that” when it adds no meaning.
 
 Human writing can be orderly. Naturalness does not require fake mistakes, gratuitous fragments, invented anecdotes, arbitrary slang, or deliberate loss of polish.
 
@@ -184,11 +192,17 @@ Search at sentence, paragraph, and document level. Look for clusters, not isolat
 
 Watch for claims that something "stands as" a testament, marks a pivotal moment, reflects a broader shift, showcases excellence, unlocks potential, or belongs to a vibrant and evolving landscape. Replace ceremony with the concrete event, function, consequence, or evidence. Remove unsupported claims of importance.
 
+Also watch for prestige by association: lists of publications, companies, awards, or authorities that add status without adding evidence. Keep a named source when its relevance is clear; otherwise narrow the reference, explain what it contributes, or remove it. “Serves as,” “stands as,” “boasts,” and “features” can also be evasive ways to say “is” or “has.”
+
 ### Fake depth and trailing analysis
 
 Watch for participial tails such as "highlighting," "underscoring," "ensuring," "reflecting," or "fostering" when they append interpretation without explaining it. Split the sentence and state the actual causal or interpretive claim. Cut it when no claim exists.
 
 Also flag abstract nouns that conceal the action, strings of implications with no mechanism, and "from X to Y" ranges whose endpoints do not form a real scale.
+
+Be alert to metaphorical technical jargon such as “substrate,” “vector,” “bedrock,” “scaffolding,” “flywheel,” “north star,” or “endgame” when it hides the actual mechanism, decision, or stage. Replace the metaphor with the concrete term when the context does not require the metaphor. Do not remove an established technical term merely because it is abstract.
+
+Run a project-specificity check: if a sentence could appear unchanged in another project’s documentation, ask whether it can name the relevant actor, object, action, result, decision, or uncertainty. Make it specific when the source supports that detail; otherwise cut the generic claim.
 
 ### Vague attribution and hidden agency
 
@@ -232,6 +246,8 @@ Do not end with "the future looks bright," "exciting times lie ahead," or a summ
 Use formatting because the medium needs it, not because a template expects it. Avoid decorative bold, mechanical inline-header lists, unnecessary emojis, and automatic title case. Keep typography consistent with the author and destination.
 
 Dashes, adverbs, passive voice, formal vocabulary, questions, sentence-initial question words, fragments, three-item lists, and curly quotation marks are not authorship tests. Use them deliberately and at a frequency consistent with the voice and destination. Empty modifiers, evasive passive constructions, and repetitive punctuation are the problem.
+
+In technical or instructional prose, ask what each sentence tells the reader to know or do. Prefer a concrete fact, instruction, mechanism, result, decision, or stated uncertainty over language that merely signals confidence or atmosphere. This is a diagnostic, not a demand that every sentence become terse or literal.
 
 ## Do not overcorrect
 
