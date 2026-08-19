@@ -13,6 +13,7 @@ These are more than prompt fragments. A skill can include instructions, referenc
 | [`filesystem-lifecycle`](skills/filesystem-lifecycle/) | Audits worktrees, generated artifacts, and caches, then prepares a guarded cleanup manifest | Disk use is growing and deletion must be safe under concurrent agent activity |
 | [`predict-future`](skills/predict-future/) | Turns uncertain questions into evidence-grounded, scoreable forecasts with explicit resolution rules | You need probabilities, timelines, scenarios, or signs that would change a forecast |
 | [`human-writing`](skills/human-writing/) | Drafts and edits prose while preserving facts, voice, quotations, and source boundaries | Writing is accurate but generic, stiff, repetitive, or unlike its intended author |
+| [`semantic-density`](skills/semantic-density/) | Compresses internal and model-facing prose into precise, executable information | Prompts, planning notes, scratch notes, or temporary technical explanations need less ambiguity and filler |
 | [`typescript`](skills/typescript/) | Applies compiler-first practices for implementation, debugging, review, and modernization | TypeScript needs stronger types, safer narrowing, clearer module boundaries, or better validation |
 | [`search-local-corpus`](skills/search-local-corpus/) | Queries a user-configured local retrieval backend through a small JSON contract | An agent needs cited passages from a private or specialized corpus without assuming a particular vector database |
 | [`zig`](skills/zig/) | Applies version-aware Zig practices for ownership, errors, build APIs, FFI boundaries, and measured optimization | Writing, reviewing, debugging, migrating, or benchmarking Zig across rapidly changing pre-1.0 APIs |
@@ -32,6 +33,7 @@ Replace `filesystem-lifecycle` with any name from the table above. For example:
 
 ```bash
 npx skills add Tom-R-Main/siftable-skills --skill human-writing
+npx skills add Tom-R-Main/siftable-skills --skill semantic-density
 npx skills add Tom-R-Main/siftable-skills --skill search-local-corpus
 npx skills add Tom-R-Main/siftable-skills --skill zig
 npx skills add Tom-R-Main/siftable-skills --skill pgvector-postgres

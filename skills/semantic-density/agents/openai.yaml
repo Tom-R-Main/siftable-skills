@@ -1,0 +1,4 @@
+interface:
+  display_name: "Semantic Density"
+  short_description: "Make internal writing precise and dense"
+  default_prompt: "Use $semantic-density to make this internal or model-facing text more precise and executable."
