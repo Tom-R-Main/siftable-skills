@@ -24,10 +24,12 @@ TypeScript/host owns:
 
 ## C ABI boundary
 
+For Zig 0.17, `@cImport` is removed. Translate headers through the official `translate-c` package; see [zig-migration-017.md](zig-migration-017.md). `b.addTranslateC` still exists but is deprecated. Review casts involving extern layouts because `@bitCast` no longer accepts extern structs/unions.
+
 Export small, stable functions. Prefer pointer + length pairs and explicit output buffers or allocator-owned result handles.
 
 ```zig
-export fn zig_search_literal(
+export fn sift_search_literal(
     haystack_ptr: [*]const u8,
     haystack_len: usize,
     needle_ptr: [*]const u8,

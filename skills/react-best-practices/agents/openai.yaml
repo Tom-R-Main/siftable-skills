@@ -1,0 +1,4 @@
+interface:
+  display_name: "React Best Practices"
+  short_description: "Optimize typed React and Next.js code"
+  default_prompt: "Use $react-best-practices to review this React or Next.js TypeScript code for performance, data-flow, and rendering issues."

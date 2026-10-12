@@ -1,0 +1,4 @@
+interface:
+  display_name: "Supervise Workflow"
+  short_description: "Supervise Fable, Opus, Sol, and Kimi workflows"
+  default_prompt: "Use $supervise-workflow to choose a Fable or Opus supervisor profile for this isolated implementation or existing-diff review."

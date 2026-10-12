@@ -1,0 +1,4 @@
+interface:
+  display_name: "CSS"
+  short_description: "CSS and Tailwind styling guidance"
+  default_prompt: "Use $css to implement or review styling with browser CSS and Tailwind."

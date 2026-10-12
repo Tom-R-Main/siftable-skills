@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Supervise workflow task specification",
+  "type": "object",
+  "required": ["name", "repo_root", "pattern", "task"],
+  "properties": {
+    "name": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,62}$" },
+    "repo_root": { "type": "string", "minLength": 1 },
+    "base_ref": { "type": "string", "minLength": 1 },
+    "pattern": { "enum": ["single-worker", "review-existing", "fresh-context-review", "planned-fresh-context-review", "two-candidate-tournament", "candidate-tournament"] },
+    "backend": { "enum": ["codex", "kimi"] },
+    "planner_backend": { "const": "claude" },
+    "planner_model": { "type": "string", "minLength": 1 },
+    "planner_effort": { "enum": ["low", "medium", "high", "xhigh", "max"] },
+    "review_backend": { "enum": ["codex", "claude"] },
+    "review_model": { "type": "string", "minLength": 1 },
+    "review_effort": { "enum": ["low", "medium", "high", "xhigh", "max"] },
+    "max_concurrency": { "type": "integer", "minimum": 1, "maximum": 2 },
+    "timeout_ms": { "type": "integer", "minimum": 60000, "maximum": 3600000 },
+    "closure_reserve_ms": { "type": "integer", "minimum": 30000 },
+    "candidate_directions": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "task": {
+      "type": "object",
+      "required": ["title", "description", "acceptance_criteria", "include", "exclude", "verify_command"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "acceptance_criteria": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "include": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "exclude": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "preflight_command": { "type": "string", "minLength": 1 },
+        "checkpoint_verify_command": { "type": "string", "minLength": 1 },
+        "repo_overlay_file": { "type": "string", "minLength": 1 },
+        "generated_files": {
+          "type": "object",
+          "required": ["policy", "globs"],
+          "properties": {
+            "policy": { "enum": ["include", "forbid"] },
+            "globs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+          },
+          "additionalProperties": false
+        },
+        "copy_policy": {
+          "type": "object",
+          "required": ["locked_copy_file", "scan_globs"],
+          "properties": {
+            "locked_copy_file": { "type": "string", "minLength": 1 },
+            "allowed_visible_copy_file": { "type": "string", "minLength": 1 },
+            "scan_globs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+            "decorative_marker": { "type": "string", "minLength": 1 },
+            "allow_numeric_ornament": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "verify_command": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "design": {
+      "type": "object",
+      "properties": {
+        "evidence_file": { "type": "string", "minLength": 1 },
+        "reference_images": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "generated_reference_images": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "visual_verify_command": { "type": "string", "minLength": 1 },
+        "visual_verify_timeout_ms": { "type": "integer", "minimum": 10000, "maximum": 180000 },
+        "visual_artifact_globs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "viewports": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": false
+    },
+    "plan_artifact": {
+      "type": "object",
+      "required": ["report_file", "task_contract_sha256"],
+      "properties": {
+        "report_file": { "type": "string", "minLength": 1 },
+        "task_contract_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

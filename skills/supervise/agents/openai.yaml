@@ -1,0 +1,4 @@
+interface:
+  display_name: "Supervise"
+  short_description: "Supervise a bounded Codex worker"
+  default_prompt: "Use $supervise to run this bounded coding task through the trusted supervision workflow."

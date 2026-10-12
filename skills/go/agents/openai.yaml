@@ -1,0 +1,4 @@
+interface:
+  display_name: "Go"
+  short_description: "Build and verify repository-native Go code"
+  default_prompt: "Use $go to implement and validate this Go change against the repository's actual toolchain and build contract."

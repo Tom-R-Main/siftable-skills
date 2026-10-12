@@ -20,13 +20,17 @@ def run(argv: list[str], cwd: Path | None = None) -> None:
 
 
 def main() -> int:
+    run([sys.executable, "scripts/validate_repo.py", "--script-help"])
+    root_tests = sorted((ROOT / "scripts").glob("test_*.py"))
+    for test in root_tests:
+        run([sys.executable, str(test)])
     tests = sorted((ROOT / "skills").glob("*/tests/test_*.py"))
     for test in tests:
         run([sys.executable, str(test)])
     run([sys.executable, "scripts/fs_lifecycle.py", "self-test"], ROOT / "skills/filesystem-lifecycle")
     run(["bash", "-n", "scripts/ts-gates.sh", "scripts/drive.sh"], ROOT / "skills/typescript")
-    run([sys.executable, "scripts/test_clean_install.py"])
-    print(f"passed {len(tests)} test files and 3 smoke-test groups")
+    print(f"passed {len(root_tests) + len(tests)} test files, static resource validation, "
+          "existing script help contracts and 2 smoke-test groups")
     return 0
 
 

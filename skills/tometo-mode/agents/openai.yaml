@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tometo Mode"
+  short_description: "Coordinate substantial engineering work using local"
+  default_prompt: "Use $tometo-mode for this task, preserving its scope and existing authorization."

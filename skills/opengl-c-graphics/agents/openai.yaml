@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenGL C Graphics"
+  short_description: "Modern OpenGL graphics workflows in C"
+  default_prompt: "Use $opengl-c-graphics to debug this C OpenGL rendering issue."

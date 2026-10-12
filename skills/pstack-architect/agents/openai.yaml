@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pstack Architect"
+  short_description: "Design or review interfaces, data ownership, and module"
+  default_prompt: "Use $pstack-architect for this task, preserving its scope and existing authorization."

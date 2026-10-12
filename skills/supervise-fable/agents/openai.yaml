@@ -1,0 +1,4 @@
+interface:
+  display_name: "Supervise Fable"
+  short_description: "Fable plans or reviews isolated coding work"
+  default_prompt: "Use $supervise-fable to plan and/or independently review this bounded coding task with Fable 5."

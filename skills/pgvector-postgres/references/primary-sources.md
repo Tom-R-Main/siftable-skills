@@ -2,13 +2,19 @@
 
 This public skill is an original methodology grounded in redistributable primary sources. It does not include the installed skill's source map, local embeddings, book corpus, private repository material, or source-derived summaries.
 
-Version-specific facts were checked against pgvector `v0.8.6` and PostgreSQL 18 documentation on 2026-08-14. Recheck upstream sources when the deployed versions differ.
+Version-specific guidance was refreshed on 2026-10-12 against pgvector
+`v0.8.7`, its changelog and access-method handlers, and PostgreSQL 18
+documentation. PostgreSQL's current stable documentation is 18; development
+documentation is a separate contract. Preserve deployed version pins and
+recheck version-matched sources when they differ. This refresh does not qualify
+a production workload.
 
 ## Pgvector
 
-- [pgvector v0.8.6 README](https://github.com/pgvector/pgvector/blob/v0.8.6/README.md): types, distance operators, exact search, HNSW and IVFFlat behavior, query settings, filtering, iterative scans, partial indexes, partitioning, multitenancy, hybrid search, build guidance, recall monitoring, vacuum guidance, and troubleshooting.
-- [HNSW access-method handler](https://github.com/pgvector/pgvector/blob/v0.8.6/src/hnsw.c): confirms ordered-operator support and that HNSW does not support multicolumn or included-column indexes.
-- [IVFFlat access-method handler](https://github.com/pgvector/pgvector/blob/v0.8.6/src/ivfflat.c): confirms the same access-method capabilities for IVFFlat.
+- [pgvector v0.8.7 README](https://github.com/pgvector/pgvector/blob/v0.8.7/README.md): types, distance operators, exact search, HNSW and IVFFlat behavior, query settings, filtering, iterative scans, partial indexes, partitioning, multitenancy, hybrid search, build guidance, recall monitoring, vacuum guidance, and troubleshooting.
+- [HNSW access-method handler](https://github.com/pgvector/pgvector/blob/v0.8.7/src/hnsw.c): confirms ordered-operator support and that HNSW does not support multicolumn or included-column indexes.
+- [IVFFlat access-method handler](https://github.com/pgvector/pgvector/blob/v0.8.7/src/ivfflat.c): confirms the same access-method capabilities for IVFFlat.
+- [pgvector v0.8.7 changelog](https://github.com/pgvector/pgvector/blob/v0.8.7/CHANGELOG.md): the October 1 release fixes an IVFFlat index-build buffer overflow and an empty-input aggregate error. Evaluate a scoped upgrade when the deployed version is affected; a skill refresh does not upgrade the database.
 - [pgvector repository](https://github.com/pgvector/pgvector): authoritative extension source and release tags.
 
 ## PostgreSQL

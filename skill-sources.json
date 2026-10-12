@@ -1,0 +1,330 @@
+{
+  "format": 1,
+  "prepared_on": "2026-10-12",
+  "policy": "Refresh records are source provenance, not runtime readiness. Local source hashes identify inspected entrypoints; public helpers may intentionally be stronger than their local counterparts. Do not overwrite this library from a ZIP or local tree without reviewing adapters and preserving tests.",
+  "skills": [
+    {
+      "name": "autoplan",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 1,
+      "local_entrypoint_sha256": "30c979be1bfb924e2d9dd16d0ffe51d4b3779de38a38d6ac582cca0d4426b0f7"
+    },
+    {
+      "name": "c-systems-programming",
+      "prepared_on": "2026-10-12",
+      "refresh": "Original public systems-C workflow grounded in official POSIX/Linux references. Replaces a restricted-license local tutorial; no tutorial text, examples, or installer metadata retained.",
+      "package_files": 2,
+      "source_kind": "original-public-workflow"
+    },
+    {
+      "name": "cloud-environment-runtime",
+      "prepared_on": "2026-10-12",
+      "refresh": "Original portable runtime routing guide; no managed-environment plugin code or credentials redistributed.",
+      "package_files": 1
+    },
+    {
+      "name": "css",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 5,
+      "local_entrypoint_sha256": "b58cd86c02d4cb58bd4c3d1d2fcc729dea8d5e06e760fa852df164c18476ad14"
+    },
+    {
+      "name": "filesystem-lifecycle",
+      "prepared_on": "2026-10-12",
+      "refresh": "Refreshed current safety/owner guidance; preserved production safety behavior. Bound the deterministic apply fixture to its project owner and tested parent/exact-root liveness vetoes.",
+      "package_files": 13,
+      "local_entrypoint_sha256": "dd7bb9bd27a46ac765e88bf0c01f2cff58fa9d12956cd1c522b9e532592cc967",
+      "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
+    },
+    {
+      "name": "footwork-tools",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 5,
+      "local_entrypoint_sha256": "99665316e2bd3af098d80c30df0686c34695a979ed78db1cc21b761cdd9f65eb"
+    },
+    {
+      "name": "generating-design-references",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 2,
+      "local_entrypoint_sha256": "d65290508c89c0ff086d98c3a7bfcf3e7da546372bd7dcc01edaa61d052e828b"
+    },
+    {
+      "name": "gh-fix-ci",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 5,
+      "local_entrypoint_sha256": "7b326b4a2f0f5f85122144628ec02077e48841e0e0e82efce88b3415bcfb7c26"
+    },
+    {
+      "name": "go",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 13,
+      "local_entrypoint_sha256": "164dc939b9719b48c8f5a3ac6a0c71b963cd48239c16a03798d59eb869994ce1"
+    },
+    {
+      "name": "grok-guide",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 6,
+      "local_entrypoint_sha256": "2ab391b0d04ab6d4e3ec3cee62bf7bc57ce1b2c6eb4dd351eed30efffc3316c0"
+    },
+    {
+      "name": "human-writing",
+      "prepared_on": "2026-10-12",
+      "refresh": "Current local and public resources agree; preserved tested Unicode helper and bundled license.",
+      "package_files": 11,
+      "local_entrypoint_sha256": "f49b0038dbfc43b15dfc354098683fcb76089b547b82b41dd348a67c996c17f6",
+      "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
+    },
+    {
+      "name": "investigate",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 1,
+      "local_entrypoint_sha256": "da932106648614cbe451cc5ecc9d083837f7725029adce87db15e64180294849"
+    },
+    {
+      "name": "mermaid",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 1,
+      "local_entrypoint_sha256": "c5ecdce2247e9ae11077dd4aba693dc9adb5744caeb75fb65cfecceab75c1e6f"
+    },
+    {
+      "name": "opengl-c-graphics",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 9,
+      "local_entrypoint_sha256": "1ca687f667c4f37f6c09afc45c930994d4ea6b0f8fba50a4ad07c15e2da3feff"
+    },
+    {
+      "name": "paper-design",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 6,
+      "local_entrypoint_sha256": "8ecc01049aedba2628f615d5b5f10be7a1c1e39c4b29e39fa5e0e89670ec5860"
+    },
+    {
+      "name": "pgvector-postgres",
+      "prepared_on": "2026-10-12",
+      "refresh": "Preserved portable methodology and exact-recall/plan helpers; refreshed official sources to pgvector v0.8.7.",
+      "package_files": 14,
+      "local_entrypoint_sha256": "4ce96f878ac6b30127d501d9b5bdb41f203bfbdfaba809615090317ce894e99c",
+      "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
+    },
+    {
+      "name": "plan",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 2,
+      "local_entrypoint_sha256": "dbe7726fc09d7fd19a2881330c13df68e85213ea73306c65424af82b4e56a3b6"
+    },
+    {
+      "name": "plan-eng-review",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 1,
+      "local_entrypoint_sha256": "2033116d2c34deb5ec164a6457c2826cf613a454a0a837520cf2d8868362aafc"
+    },
+    {
+      "name": "playwright",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 8,
+      "local_entrypoint_sha256": "0ffaabcc8e0990627c4725f18bf1c7955534a796c1c199e872909de2013ce6a8"
+    },
+    {
+      "name": "predict-future",
+      "prepared_on": "2026-10-12",
+      "refresh": "Current behavior resources agree; preserved public helpers and tests.",
+      "package_files": 10,
+      "local_entrypoint_sha256": "7ad9bb81288b1b620e210ebb38d18be42f3e7ec29e192cb28b5769ce1a45a636",
+      "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
+    },
+    {
+      "name": "pstack-architect",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 5,
+      "local_entrypoint_sha256": "89c1000de91354b18ad73ac567e5377040ca11d23b5f000bbec1f285c9f99567"
+    },
+    {
+      "name": "pstack-create-verification-skill",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 5,
+      "local_entrypoint_sha256": "820ee86fc84b30428ba1af1f6d4ee7c17b3027c2c2133a0f1f10f9fefb4aea08"
+    },
+    {
+      "name": "pstack-interrogate",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 6,
+      "local_entrypoint_sha256": "4f5183372e45d805ce0baa733bd865294b86cdf74b03f681bd5a996088f0f3b3"
+    },
+    {
+      "name": "pstack-investigate",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 5,
+      "local_entrypoint_sha256": "ed39b7e7a74d1f3a4d355e495a6e3b1afb96c5f334bdc2ce42bea5dd7cc1aa86"
+    },
+    {
+      "name": "pstack-maintain-verification-skill",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 5,
+      "local_entrypoint_sha256": "13f5616ac500053431ae74223981981f84ee2f58b7fe18b6a16c54cbff7aed73"
+    },
+    {
+      "name": "pstack-verify",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 5,
+      "local_entrypoint_sha256": "423208f695786d389fa4cd0065c1ab5933f476b9af1a2172805e4afdc6e99d42"
+    },
+    {
+      "name": "react-best-practices",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 7,
+      "local_entrypoint_sha256": "6e1369a5a1e6cd5ae40d7a4cb196fc148b4f1ec3e43c58ebd30540c72e5f8f46"
+    },
+    {
+      "name": "review",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 1,
+      "local_entrypoint_sha256": "2b7f450d730d5cb280d0f7716cd95b324b8aa63a5c6504f4501ba2bd31f9b965"
+    },
+    {
+      "name": "rust",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 12,
+      "local_entrypoint_sha256": "61df39f5b3495853aa40614901581d6935e167c92a311120f89d0e3c79036631",
+      "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
+    },
+    {
+      "name": "search-local-corpus",
+      "prepared_on": "2026-10-12",
+      "refresh": "Preserved public backend-neutral tested protocol; specialized corpus route depends on this interface.",
+      "package_files": 7,
+      "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
+    },
+    {
+      "name": "searching-design-corpus",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 3,
+      "local_entrypoint_sha256": "f8935c9bd28c80f554cdfd17e9267f78b2f8e8837c1475cdc8a53c2908c8d8c1"
+    },
+    {
+      "name": "semantic-density",
+      "prepared_on": "2026-10-12",
+      "refresh": "Current local and public guidance agree.",
+      "package_files": 2,
+      "local_entrypoint_sha256": "21b09184ae1f22ed66c9c94e4f380bcc6dd61e3952b75cee55b0e4edf0bcfbe1",
+      "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
+    },
+    {
+      "name": "sharp-edit",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 2,
+      "local_entrypoint_sha256": "acd9e8ba811980dd3120992a3f5bc3e725c6b4c0873f3fba3bdc7e81b4766a5a"
+    },
+    {
+      "name": "strategic-decision-mapping",
+      "prepared_on": "2026-10-12",
+      "refresh": "Preserved portable finite-game helper and evidence-first public framework instead of adding private corpus coupling.",
+      "package_files": 9,
+      "local_entrypoint_sha256": "9080379c3d7c6b495e5e7104491f68429f5248bf8950f0374466568660b87bfa",
+      "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
+    },
+    {
+      "name": "supervise",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 2,
+      "local_entrypoint_sha256": "b772cee6aaee20ab33d18634200b52e28ef227e38f7e148bb4d860d1686463b6"
+    },
+    {
+      "name": "supervise-fable",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 2,
+      "local_entrypoint_sha256": "923fcb65d3c4e8e0f73412f4699097a4f8b23aead174616f17f8c3a071ad7b58"
+    },
+    {
+      "name": "supervise-kimi",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 2,
+      "local_entrypoint_sha256": "535a0aea238c10c3c7d818b7de78b59883823942ebafffd8f486ec0ba2dec894"
+    },
+    {
+      "name": "supervise-opus",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 2,
+      "local_entrypoint_sha256": "56fb6a21410f287b2438c39bb940307ed432722633bda7db1f479c52625b44c5"
+    },
+    {
+      "name": "supervise-workflow",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 11,
+      "local_entrypoint_sha256": "9924f8efe50bebbefc65985412e0e4e94e83174c95157c97bff0b2ff5bda1c71"
+    },
+    {
+      "name": "teach",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 5,
+      "local_entrypoint_sha256": "6d2dbe5e03084cf26fef66b535127b36cd1bcbe9478e26b0626029cd51dc2259"
+    },
+    {
+      "name": "terraform-gcp",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 13,
+      "local_entrypoint_sha256": "25292627b24cc29be60749192fd3db8ea2c6cd5feb2a1c70780467f807ce3dee"
+    },
+    {
+      "name": "thinking-scientific-method",
+      "prepared_on": "2026-10-12",
+      "refresh": "Original portable instructions inspired by general scientific-method discipline; no unlicensed upstream text redistributed.",
+      "package_files": 1,
+      "local_entrypoint_sha256": "a2808f3b5640fd034c982b217493268509b820e423cffb5b6b5ae7c2666ed3cb"
+    },
+    {
+      "name": "tometo-mode",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 5,
+      "local_entrypoint_sha256": "3c251ad32319343777681460a11fbdd699f906cc6d98cd72ac418649dbd131a3"
+    },
+    {
+      "name": "typescript",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 11,
+      "local_entrypoint_sha256": "cf57684f6d5ef7e790c6edc017da6fea0d9c7ffad0fa35a0011fe0cdfa6cd25a",
+      "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
+    },
+    {
+      "name": "zig",
+      "prepared_on": "2026-10-12",
+      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "package_files": 13,
+      "local_entrypoint_sha256": "e2df7a9f888a4042061840c127478acf0aee89d49d68bdae77027c6f433e1b38",
+      "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
+    }
+  ]
+}

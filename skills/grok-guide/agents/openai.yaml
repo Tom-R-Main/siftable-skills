@@ -1,0 +1,6 @@
+interface:
+  display_name: "Grok Guide"
+  short_description: "Grok strategic control plane for Codex"
+  default_prompt: "Use $grok-guide to let Grok frame and govern this task before Codex implements it."
+policy:
+  allow_implicit_invocation: false

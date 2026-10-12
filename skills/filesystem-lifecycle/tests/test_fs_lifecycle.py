@@ -20,6 +20,22 @@ SPEC.loader.exec_module(FS)
 
 
 class FilesystemLifecycleTests(unittest.TestCase):
+    def test_owned_fixture_does_not_inherit_parent_task_but_keeps_exact_veto(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            workspace = Path(temp)
+            project = workspace / "project"
+            target = project / "node_modules"
+            target.mkdir(parents=True)
+            candidate = self.candidate(workspace, target)
+            parent_task = [{"session_file": "parent", "root": str(workspace)}]
+            with self.assertRaisesRegex(RuntimeError, "live reference"):
+                FS.revalidate_liveness(candidate, target, [], True, parent_task)
+            candidate["owner_root"] = str(project)
+            FS.revalidate_liveness(candidate, target, [], True, parent_task)
+            exact_task = [{"session_file": "exact", "root": str(project)}]
+            with self.assertRaisesRegex(RuntimeError, "live reference"):
+                FS.revalidate_liveness(candidate, target, [], True, exact_task)
+
     def candidate(self, root: Path, path: Path) -> dict:
         return FS.candidate_base(
             path,

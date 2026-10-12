@@ -1,0 +1,57 @@
+{
+  "skill": "go",
+  "evaluations": [
+    {
+      "name": "repository-native dependency update",
+      "query": "Update a dependency in this multi-module Go repository. Its AGENTS.md says go.mod and go.work are generated and Make targets are authoritative.",
+      "expected_activation": true,
+      "expected_behavior": [
+        "Reads repository guidance, workspace files, generation policy, and the relevant Make recipes before editing",
+        "Separates the module go directive, preferred toolchain, and CI version",
+        "Uses the repository update and verification targets rather than generic go mod tidy or go work sync",
+        "Reviews generated, dependency-graph, vendor, and compatibility effects without unrelated upgrades"
+      ]
+    },
+    {
+      "name": "cancellation leak regression",
+      "query": "Fix a Go HTTP client method that leaks a goroutine when its context is canceled while a result send is blocked.",
+      "expected_activation": true,
+      "expected_behavior": [
+        "Explains goroutine ownership, exit paths, channel ownership, cancellation observation, and the required happens-before edges",
+        "Adds or identifies a focused regression test that fails for the leak before changing the implementation",
+        "Uses testing/synctest only if the selected Go version supports the needed API and otherwise follows repository conventions",
+        "Runs focused tests and an applicable race lane, then reports what those checks do and do not prove"
+      ]
+    },
+    {
+      "name": "resource ownership API review",
+      "query": "Review a Go library change that wraps a foreign file descriptor, exposes a byte slice view, and adds Close support.",
+      "expected_activation": true,
+      "expected_behavior": [
+        "Determines whether descriptor ownership transfers and who may close it",
+        "Documents byte-slice aliasing, retention, mutation, concurrent access, and lifetime",
+        "Checks error identity, repeated Close behavior, finalization or cleanup assumptions, and platform-specific ABI constraints",
+        "Requests or runs target-specific invalid-input and allocation/free lifecycle tests"
+      ]
+    },
+    {
+      "name": "measured iterator optimization",
+      "query": "Optimize allocations in a hot Go iterator without changing its public behavior.",
+      "expected_activation": true,
+      "expected_behavior": [
+        "Defines the representative workload and compatibility invariants before optimizing",
+        "Captures repeated before and after benchmarks under the same toolchain, target, and flags",
+        "Uses benchstat and profiles or allocation evidence rather than a single benchmark number",
+        "Runs correctness gates and reports sample counts, variance, and remaining uncertainty"
+      ]
+    },
+    {
+      "name": "non-Go styling request",
+      "query": "Adjust the responsive Tailwind classes in this TypeScript component without changing application behavior.",
+      "expected_activation": false,
+      "expected_behavior": [
+        "Does not select the Go skill merely because the repository may contain unrelated Go code"
+      ]
+    }
+  ]
+}

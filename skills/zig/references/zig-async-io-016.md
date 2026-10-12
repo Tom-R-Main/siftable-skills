@@ -1,8 +1,6 @@
-# Zig std.Io async I/O, 0.16+
+# Zig std.Io async I/O, Zig 0.17
 
-This reference tracks the versioned `std.Io` surface summarized in `source-grounding.md`. Treat its code as 0.16-oriented migration guidance and compile it against the pinned project toolchain.
-
-Use only when the project is pinned to a Zig version that has the new `std.Io` primitives or when explicitly migrating toward them. For older Zig, the language-level `async` / `await` keywords are removed and should not be reintroduced.
+This file retains its earlier filename, but examples target Zig 0.17.0. Match older project pins explicitly. `io.async` and `future.await(io)` are library methods; the removed language-level `async` / `await` syntax must not be reintroduced.
 
 ## Mental model
 
@@ -10,7 +8,7 @@ Use only when the project is pinned to a Zig version that has the new `std.Io` p
 - `concurrent` means work must make progress simultaneously; use it only when simultaneous execution is required.
 - The I/O implementation decides how asynchrony is executed: blocking, thread pool, event loop, io_uring/kqueue/iocp, or another strategy.
 
-Pass `std.Io` like an allocator: explicit, testable, and not global.
+Pass `std.Io` like an allocator: explicit, testable, and not global. Ordinary executables can use `std.process.Init`; embedded runtimes that own an `Io.Threaded` instance must join/cancel tasks before deinitializing it.
 
 ```zig
 const std = @import("std");
@@ -21,16 +19,8 @@ fn mainImpl(gpa: Allocator, io: Io) !void {
     try runWork(gpa, io);
 }
 
-pub fn main() !void {
-    var debug_allocator: std.heap.DebugAllocator(.{}) = .init;
-    defer std.debug.assert(debug_allocator.deinit() == .ok);
-    const gpa = debug_allocator.allocator();
-
-    var threaded: std.Io.Threaded = .init(gpa, .{});
-    defer threaded.deinit();
-    const io = threaded.io();
-
-    try mainImpl(gpa, io);
+pub fn main(init: std.process.Init) !void {
+    try mainImpl(init.gpa, init.io);
 }
 ```
 
@@ -59,11 +49,13 @@ const b_bytes = try b.await(io);
 useBytes(a_bytes, b_bytes);
 ```
 
+Here the cancel defers are the sole owners of successful result buffers; `useBytes` borrows them. Do not also free or transfer those slices without changing the cleanup path: await/cancel cache the same result and repeated calls do not create fresh ownership. Future await/cancel are idempotent but not thread-safe. Propagate `error.Canceled` rather than silently swallowing it inside task bodies.
+
 This pattern keeps ordinary `try` / `return` flow and prevents leaks when one task fails before another completes.
 
 ## Async vs concurrent
 
-Use `io.async` when tasks can be scheduled opportunistically and sequential awaiting is valid.
+Use `io.async` when tasks can be scheduled opportunistically and sequential awaiting is valid. The function may execute inline **before `io.async` returns**. Do not start a blocking producer, an indefinite sleeper, or a worker awaiting a signal from the caller this way; later cancellation cannot help if the spawn call never returns.
 
 Use `try io.concurrent` when a deadlock is possible unless producer and consumer make progress at the same time.
 
@@ -79,11 +71,11 @@ defer _ = consumer_task.cancel(io) catch {};
 const item = try consumer_task.await(io);
 ```
 
-Handle `error.ConcurrencyUnavailable`, especially in single-threaded builds or constrained runtimes.
+Handle `error.ConcurrencyUnavailable`, especially in single-threaded builds or constrained runtimes. For an `Io.Group`, install `defer group.cancel(io)` before spawning members so partial spawn failures still join/cancel existing tasks. Pure computation has no automatic cancellation points: add `try io.checkCancel()` in long-running loops when prompt cancellation is part of the contract. Keep shared state alive until every task has joined.
 
 ## zio compatibility note
 
-If a repo uses [`lalinsky/zio`](https://github.com/lalinsky/zio), treat it as a project-level async runtime choice. Inspect the pinned zio version and branch before editing. Do not mix raw `std.Io` assumptions into a zio codebase unless the repo already bridges them.
+If a repo uses `github.com/lalinsky/zio`, treat it as a project-level async runtime choice. Inspect the pinned zio version and branch before editing. Do not mix raw `std.Io` assumptions into a zio codebase unless the repo already bridges them.
 
 Recent Zio design notes emphasize features beyond direct `std.Io` expression, such as generalized timeout/cancellation helpers (`AutoCancel`) and backend-specific behavior. Do not assume a std-only rewrite preserves Zio semantics.
 
