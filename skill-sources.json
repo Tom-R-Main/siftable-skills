@@ -13,9 +13,9 @@
     {
       "name": "c-systems-programming",
       "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "refresh": "Original public systems-C workflow grounded in official POSIX/Linux references. Replaces a restricted-license local tutorial; no tutorial text, examples, or installer metadata retained.",
       "package_files": 2,
-      "local_entrypoint_sha256": "25c15c5d6c0c2a4b36baa85c11daa020724090e6d55f271fa72a7611e60d8d07"
+      "source_kind": "original-public-workflow"
     },
     {
       "name": "cloud-environment-runtime",

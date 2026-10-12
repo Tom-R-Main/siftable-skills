@@ -11,10 +11,18 @@ at commits `5bf2b1544db739998121a306340631963c2ff3de` and
 applicable revision. The [upstream MIT notice](third_party/pstack-LICENSE.txt)
 is also bundled with each derived skill so individual installations retain it.
 
-`playwright` and `gh-fix-ci` retain their bundled Apache 2.0 licenses and notices
+`playwright`, `gh-fix-ci`, and `terraform-gcp` retain their bundled Apache 2.0 licenses and notices
 from the OpenAI skills collection. The portable changes do not grant tool access,
 provider subscriptions, or permission to redistribute external runtime engines.
 
 `cloud-environment-runtime` is an original routing guide linked to official
 documentation. It does not redistribute the managed-environment plugin's code,
 network policy, credentials, or connector registration.
+
+The current `c-systems-programming` skill is original repository material.
+An earlier review-branch revision (`c087fd1`) briefly included a local tutorial
+originating from The Bushido Collective's Han project. That historical tutorial
+is attributable to The Bushido Collective and subject to its
+[FSL-1.1-ALv2 terms](https://github.com/TheBushidoCollective/han/blob/main/LICENSE),
+not this repository's MIT license. The current skill replaces that tutorial and
+does not retain its text, examples, or installer metadata.
