@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sharp Edit"
+  short_description: "Sharpen business writing and decision memos"
+  default_prompt: "Use $sharp-edit to tighten this business writing while preserving its meaning, facts, and voice."

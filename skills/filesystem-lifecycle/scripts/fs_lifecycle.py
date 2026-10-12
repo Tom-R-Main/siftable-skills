@@ -1510,6 +1510,9 @@ def self_test(_: argparse.Namespace) -> int:
             {"level": "regenerable", "method": "package install"},
             {"driver": "filesystem", "operation": "delete_exact_tree"},
         )
+        # Real generated-artifact manifests bind the owning project. This fixture
+        # must do the same when its temp root sits inside an active workspace.
+        apply_candidate["owner_root"] = str(project.resolve())
         apply_candidate["classification"] = CLASS_SAFE
         apply_manifest_data = {
             "schema": SCHEMA,

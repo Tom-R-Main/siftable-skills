@@ -1,20 +1,20 @@
 ---
 name: zig
-description: Build, review, debug, migrate, or optimize Zig code. Use for .zig, build.zig, build.zig.zon, Zig standard-library API questions, allocator and ownership bugs, comptime code, C ABI or host FFI modules for Bun/Node/TypeScript, terminal/TUI kernels, byte scanners, benchmarks, or Zig 0.15/0.16+ std.Io migration work. Prioritize local version detection, current official docs, explicit memory ownership, safety-mode choices, and measured performance claims.
+description: Build, review, debug, migrate, and optimize Zig code. Use for build scripts, allocator lifetimes, std.Io, C FFI, and measured performance with the project toolchain.
 ---
 
 # Zig
 
-Use this skill for Zig implementation, review, migration, and performance work. Zig changes quickly; prefer the repository's pinned compiler, nearby working code, and official docs over memory.
+Use this skill for Zig implementation, review, migration, and performance work. The guidance targets **Zig 0.17.0** for new, unpinned work. Preserve an existing project's compiler pin unless migration is requested; 0.16 and 0.18-dev are different dialects.
 
 ## First Moves
 
 1. Identify the actual Zig dialect before editing: inspect `.zig-version`, `build.zig.zon`, CI config, `README`, and existing `build.zig` patterns.
-2. If shell access is available, run `zig version`; use `zig env` or `zig std` when API behavior is unclear.
+2. Run the project-selected `zig version` and inspect `zig env` for its standard-library directory. A global compiler or reference checkout may be a different version; do not treat either as the project toolchain.
 3. Match the local codebase unless the request is explicitly a migration.
 4. Report the version assumption when it affects the patch, review, or answer.
-5. For current-language questions, check the official Zig docs at `https://ziglang.org/documentation/master/`; prefer versioned docs when the project is pinned.
-6. Read `references/source-grounding.md` when a recommendation depends on a versioned API, an adopted external convention, or community experience rather than local evidence.
+5. For 0.17 work, use the [versioned language reference](https://ziglang.org/documentation/0.17.0/), [standard-library docs](https://ziglang.org/documentation/0.17.0/std/), and [release notes](https://ziglang.org/download/0.17.0/release-notes.html). Use master only for an explicitly selected development compiler.
+6. For a 0.16 → 0.17 migration, read `references/zig-migration-017.md` before editing. Audit semantic changes as well as compilation failures, especially `containsAtLeastScalar`, `@bitCast`, and `@hasDecl`.
 
 ## Implementation Bias
 
@@ -31,7 +31,9 @@ Write Zig as explicit systems code whose invariants are visible at call sites.
 - Keep `anytype` and comptime interfaces narrow and discoverable; use concrete types or runtime interfaces when substitution happens at runtime, and measure specialization, compile-time, and code-size costs.
 - Optimize representation before instructions: consider contiguous storage, stable indices, compact handles, and bulk lifetime management before tuning individual loops.
 - Contain volatile pre-1.0 standard-library APIs behind small local adapters instead of leaking version-specific `std.Io`, build, or container details through otherwise stable library boundaries.
-- Treat ReleaseFast and ReleaseSmall as safety-check-off modes; prove correctness in Debug or ReleaseSafe before benchmarking.
+- For parsers, queues, caches, and decoded payloads, choose explicit resource bounds and capacity behavior where input or retained work can grow. Distinguish a per-allocation limit from a total memory budget.
+- Keep programmer invariants separate from external-input validation. Test fallible mutations for both resource cleanup and state rollback; leak-free failure can still leave corrupt counters or published state.
+- In 0.17, use `.debug`, `.safe`, `.fast`, and `.small` (`std.lang.Optimize`). The last two disable runtime safety checks; prove correctness in debug or safe before benchmarking.
 
 ## Zig Versus Host Code
 
@@ -46,10 +48,16 @@ For agent, CLI, and TUI products, keep Zig narrow until measurement proves a bro
 After touching Zig, run the narrowest meaningful gates first, then broaden:
 
 ```sh
-zig fmt --check $(git ls-files '*.zig')
+zig fmt --check build.zig src
 zig build test
 zig build
 ```
+
+Adapt paths and test steps to the project. Use its selected compiler; do not run these examples with an unrelated global Zig. If a required compiler is unavailable, report that limit rather than claiming compilation or installing it without authorization.
+
+Select additional gates from the changed contract: split-input/property and fuzz tests for parsers/codecs; real host/layout tests for FFI; native backend tests for platform changes; deterministic fault/recovery checks for stateful systems. Verify that the step imports/instantiates the changed module and distinguish executed tests from compile-only, skipped, suppressed, or report-only checks. See `references/zig-production-patterns.md`.
+
+For C/FFI memory corruption or leaks, read `references/zig-valgrind.md` to choose a Memcheck lane with visible allocation boundaries and reviewed suppressions. Keep ordinary safe-mode and allocator-failure coverage.
 
 Use `scripts/zig-gates.sh` from this skill as a conservative helper when a repo has a normal `build.zig`:
 
@@ -64,14 +72,17 @@ Supported environment knobs:
 - `ZIG_BUILD_ARGS="..."` for extra build args.
 - `ZIG_TEST_ARGS="..."` for extra test args.
 
-Only claim speedups with before/after numbers from ReleaseFast or the repo's benchmark lane, plus correctness evidence from Debug or ReleaseSafe.
+Only claim speedups with before/after numbers from `-O fast` / `-Doptimize=fast` or the repo's benchmark lane, plus correctness evidence from debug or safe. Older compiler pins use their own mode spellings.
 
 ## Open References As Needed
 
-- `references/zig-current-apis.md`: modern build-system, writer/reader, allocator, and stale API traps.
+- `references/source-grounding.md`: primary source provenance and adopted conventions.
+- `references/zig-current-apis.md`: 0.17 build-system, writer/reader, allocator, and formatting patterns.
+- `references/zig-migration-017.md`: 0.16 → 0.17 language, reflection, container, build, and C translation changes; silent behavior traps.
 - `references/zig-philosophy-style.md`: ownership, naming, invariants, error handling, and style.
-- `references/zig-async-io-016.md`: `std.Io`, async/concurrent/cancel patterns for 0.16+ code.
+- `references/zig-async-io-016.md`: `std.Io`, async/concurrent/cancel patterns checked against 0.17; retains its existing filename for compatibility.
+- `references/zig-production-patterns.md`: source-backed Ghostty/TigerBeetle architecture, domain map, allocation, FFI, simulation, testing, and measurement choices; both source checkouts currently target 0.16.
+- `references/zig-valgrind.md`: Ghostty Memcheck integration, allocator visibility, definedness, suppressions, supported platforms, and evidence limits.
 - `references/zig-tui-ffi.md`: terminal kernels, host FFI boundaries, and benchmark shaping.
-- `references/source-grounding.md`: official documentation, adopted conventions, community inputs, and the boundary between sourced facts and this skill's synthesis.
 
 Keep these as checklists, not laws. If local compiler errors or nearby working code disagree, follow the pinned project and document the reason.

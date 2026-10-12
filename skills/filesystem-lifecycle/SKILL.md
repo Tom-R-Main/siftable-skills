@@ -40,6 +40,8 @@ Do not infer branch deletion, history deletion, container or volume deletion, us
 
 Never skip freeze-and-revalidate. Concurrent agents can create worktrees, acquire handles, or consume newly freed space during the run.
 
+For a writer pause, freeze the initial process baseline and bind its digest before the first deletion. Identify processes by PID, start time and a hash of the command line. Starting an agent session can launch MCP servers through package-resolving commands such as `npm exec ...@latest` or `uvx ...@latest`. Include new sessions and launchers in the pause; detect new or changed writers rather than accepting them into a refreshed baseline. Close the pause explicitly when the approved work ends.
+
 Keep apply-time revalidation candidate-local. Do not rerun broad discovery or storage sizing inside the selected-candidate loop. Complete identity, boundary, and owner-state checks first; then take the fresh liveness snapshot immediately before the owner action. Emit per-candidate progress and phase timings for any batch.
 
 Scope Codex task roots through the resource owner's workspace. A task rooted in one Git worktree protects that worktree's generated artifacts, but it does not automatically claim nested or sibling worktrees merely because their paths share an ancestor. Exact task roots, descendant task roots, CWDs, and open handles remain vetoes.
@@ -91,7 +93,7 @@ Add each relevant repository with `--repo`. Add explicitly named search roots wi
 ## Load references only when needed
 
 - Before deletion or executor changes, read `references/safety-invariants.md`.
-- For manifest fields and extension points, read `references/object-model.md` and `references/owner-adapters.md`.
+- For manifest fields and extension points, read `references/object-model.md` and `references/owner-adapters.md`. The owner reference also covers package-cache audits and pruning.
 - For Git worktrees, read `references/git-worktrees.md`.
 - For dependency and build output, read `references/generated-artifacts.md`.
 - For Docker, read `references/docker.md`.
@@ -175,7 +177,11 @@ Do not hand-edit a candidate into `safe_now`. Regenerate the manifest.
 
 Lead with fresh target-volume free-space change. Then report exact actions and skips, candidate storage evidence, shortfall, preserved resources, failures or unknowns, and the likely cause of regrowth.
 
-Never report the sum of candidate sizes as reclaimed disk space.
+Never report the sum of candidate sizes as reclaimed disk space. Caches rebuild with use; report the measured gain at check time, not as a lasting saving.
+
+## Return to the user's main task
+
+When the user changes priorities, stop expanding discovery. Reconcile any in-flight mutation, preserve held items, and record the unresolved candidates before returning to the requested work. Build a custom adapter only when owner operations cannot preserve the approved scope, the expected recovery justifies the effort, and fixtures can qualify the narrow boundary. Park uncertain or low-yield candidates when the user wants to return to other work.
 
 ## Prevent regrowth
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Supervise Kimi"
+  short_description: "Supervise Kimi design work with Opus review"
+  default_prompt: "Use $supervise-kimi to run this design-heavy task with one Kimi K3 writer and a fresh Opus 5 xhigh review."

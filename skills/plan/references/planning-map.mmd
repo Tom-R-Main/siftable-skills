@@ -1,0 +1,10 @@
+flowchart TD
+  U[User Request] --> A[Planning Assistant]
+  A --> LC[Local Codebase]
+  A --> ST[Project Tasks]
+  A --> NC[Authorized Context]
+  A --> AQ[Agent Queue]
+  LC --> SE[Search & Edit]
+  ST --> TL[Task Lifecycle]
+  NC --> CE[CRM & Events]
+  AQ --> CR[Claim & Run]

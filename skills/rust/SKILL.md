@@ -1,6 +1,6 @@
 ---
 name: rust
-description: Build, review, debug, migrate, test, or optimize Rust code. Use for .rs files, Cargo.toml/Cargo.lock, rust-toolchain files, workspaces and features, ownership/borrowing/lifetime errors, traits/generics/closures/macros and dyn compatibility, Result-based error design, async/Tokio concurrency (Pin, cancellation, select!, streams), unsafe code and C FFI, edition (2024) or MSRV migrations, Clippy/rustfmt failures, testing/fuzzing/benchmarking, and actually running Rust binaries, libraries, services, or native modules. Prioritize the repository's pinned toolchain, build driver, and existing patterns; explicit ownership and invariants; safe abstractions around unsafe code; bounded structured concurrency; and measured performance claims.
+description: Build, review, debug, migrate, test, and optimize Rust crates and workspaces. Use for ownership, async, unsafe/FFI, editions, MSRV, and repository-aware Cargo gates.
 ---
 
 # Rust
@@ -12,9 +12,9 @@ over remembered APIs or blanket style rules. Neither this skill nor the model is
 a source of truth: when a claim matters, read the pinned crate source, the
 versioned std docs, or the Reference, and say what you found.
 
-Paths below are relative to this skill directory, wherever your agent installed
-it. Each reference opens with an anchor line naming the toolchain and date its
-version-gated claims were reviewed against; anything newer is unverified.
+Resolve `RUST_SKILL_DIR` to the absolute directory containing this loaded `SKILL.md`.
+Run its scripts from the target package or workspace root. Each reference names
+the toolchain and review date for version-gated claims; newer versions are unverified.
 
 Not covered here: `no_std` and embedded targets, proc-macro authoring
 (`syn`/`quote`/`trybuild`), dependency auditing beyond honoring the
@@ -153,16 +153,44 @@ cargo xtask ci                            # xtask pattern
 just check && just test                   # justfile pattern
 
 # Cargo-native repos:
-scripts/rust-gates.sh
+"$RUST_SKILL_DIR/scripts/rust-gates.sh"
 ```
 
-The helper refuses (exit 3) when it detects a build driver, and fails (exit 4)
-instead of printing diffs when `rustfmt.toml` uses nightly-only options on the
-current toolchain — stable rustfmt silently drops them, so those diffs measure
-the wrong configuration. Otherwise it runs non-mutating gates: rustfmt check,
-Clippy (`cargo check` only as an opt-in fast-fail, since Clippy repeats it),
-and tests. It respects `Cargo.lock`, supports workspace/package and feature
-selection, and documents its knobs in the script header and under `--help`.
+The helper (`scripts/rust_gates.py`; `rust-gates.sh` is a shim) ends with a
+one-line summary a model can act on without re-reading the log —
+`summary: preflight=ok(1.98.0,msrv=1.96) fmt=ok clippy=advisory(1036w,benches-excluded)
+test=cargo(1218/0/3) deny=n/a vet=n/a ci=2/2 exit=0` — or a JSON object with
+`--json`. What it does, in order:
+
+- Refuses (exit 3) when the repo has a build driver, searching from the current
+  directory up to the git top level so a root-level `justfile` still governs a
+  nested workspace; the refusal lists the driver's non-mutating recipes.
+  `RUST_GATES_USE_DRIVER=1` runs those recipes instead (fmt-check, check, lint,
+  clippy, test — never `fmt`/`fix`); `RUST_GATES_DRIVER_RECIPES=a,b` picks.
+- Preflights the toolchain (exit 6): rustup auto-install is disabled so a
+  missing pinned toolchain is reported, not downloaded; rustfmt/clippy must be
+  present; rustc must satisfy the declared `rust-version`. Cargo enforces MSRV
+  only at build time, so without this a repo like ripgrep passes fmt and dies
+  in Clippy. When an installed toolchain satisfies the MSRV it says which;
+  `RUST_GATES_SELECT_TOOLCHAIN=1` switches to it unless a file pins the choice.
+- Promotes nightly-only `rustfmt.toml` options to `--config`, which stable
+  rustfmt honors even though it drops them from the file; exit 4 only when
+  that is impossible.
+- Runs Clippy with `-D warnings` only when the repo has a Clippy policy
+  (`clippy.toml`, `[lints.clippy]`, or clippy in CI); otherwise advisory —
+  warnings aggregated by lint, full output to a file, gate does not fail.
+  `--all-targets` builds that fail only because a bench needs nightly (E0554)
+  are retried without benches.
+- Uses `cargo nextest run` plus `cargo test --doc` when `.config/nextest.toml`
+  exists (exit 5 if nextest is missing); `cargo test` otherwise.
+- Runs `cargo deny check` / `cargo vet` when `deny.toml` / `supply-chain/`
+  exist and the tool is installed; otherwise names the unchecked policy.
+- Reads `.github/workflows` for the repo's real CI contract (cargo
+  subcommands and the cargo-deny/vet/hack/nextest actions) and reports what
+  this run covered and what it did not.
+
+It respects `Cargo.lock`, supports workspace/package and feature selection,
+and documents every knob and exit code under `--help`.
 
 The direct baseline is:
 
@@ -251,7 +279,9 @@ nearby code, or project policy disagrees, follow the project and record why.
 
 - Rustfmt without `--check` mutates files. Use check mode for review-only work.
   Stable rustfmt ignores nightly-only options in `rustfmt.toml` with only a
-  warning; check with the toolchain the repo formats with.
+  warning, but honors the same options passed as `--config key=val`; repos
+  that pin stable and want e.g. `imports_granularity` rely on that, so match
+  the CI invocation rather than switching to nightly.
 - `cargo check` is not a runtime test, and test/debug profiles can differ from
   release in overflow checks, optimization, timing, and layout.
 - Futures are lazy. Creating a future does nothing until it is polled; dropping

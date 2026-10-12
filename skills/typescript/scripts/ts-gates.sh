@@ -19,6 +19,11 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
   exit 0
 fi
 
+if (($# > 0)); then
+  printf "[ts-gates] unsupported argument: %s\n" "$1" >&2
+  exit 2
+fi
+
 log() { printf '[ts-gates] %s\n' "$*"; }
 
 [[ -f package.json || -f tsconfig.json || -n "${TS_TSCONFIG:-}" ]] || {
@@ -26,14 +31,29 @@ log() { printf '[ts-gates] %s\n' "$*"; }
   exit 1
 }
 
-# --- detect package manager from the nearest lockfile ---
+# Honor the package manager declaration or nearest in-scope lockfile.
 pm="npm"
-if   [[ -f pnpm-lock.yaml ]]; then pm="pnpm"
-elif [[ -f yarn.lock      ]]; then pm="yarn"
-elif [[ -f bun.lockb || -f bun.lock ]]; then pm="bun"
-elif [[ -f package-lock.json ]]; then pm="npm"
+if [[ -f package.json ]]; then
+  command -v node >/dev/null 2>&1 || { echo 'node is required to inspect package.json' >&2; exit 127; }
+  declared_pm="$(node -e 'const p=require("./package.json"); if(p.packageManager) console.log(p.packageManager.split("@")[0]);')"
+  if [[ -n "$declared_pm" ]]; then
+    case "$declared_pm" in npm|pnpm|yarn|bun) pm="$declared_pm" ;; *) echo "unsupported package manager: $declared_pm" >&2; exit 2 ;; esac
+  fi
 fi
-command -v "$pm" >/dev/null 2>&1 || pm="npm"
+if [[ -z "${declared_pm:-}" ]]; then
+  search_dir="$(pwd -P)"
+  workspace_root="$(git rev-parse --show-toplevel 2>/dev/null || printf '%s' "$search_dir")"
+  workspace_root="$(cd "$workspace_root" && pwd -P)"
+  while :; do
+    if [[ -f "$search_dir/pnpm-lock.yaml" ]]; then pm="pnpm"; break
+    elif [[ -f "$search_dir/yarn.lock" ]]; then pm="yarn"; break
+    elif [[ -f "$search_dir/bun.lockb" || -f "$search_dir/bun.lock" ]]; then pm="bun"; break
+    elif [[ -f "$search_dir/package-lock.json" ]]; then pm="npm"; break
+    fi
+    [[ "$search_dir" == "$workspace_root" || "$search_dir" == "/" ]] && break
+    search_dir="$(dirname "$search_dir")"
+  done
+fi
 
 # has_script <name> — true if package.json defines a non-placeholder script
 has_script() {
@@ -47,31 +67,31 @@ has_script() {
   ' "$1" 2>/dev/null
 }
 run_script() {
+  command -v "$pm" >/dev/null 2>&1 || { echo "required package manager $pm is unavailable; use the repository pinned installation" >&2; return 127; }
   case "$pm" in
     yarn) yarn "$1" ;;
     *)    "$pm" run "$1" ;;
   esac
 }
 
-# Prefer the project's compiler, then an already-installed global compiler.
-# Never fetch a toolchain implicitly; installation is a separate user decision.
-if [[ -x node_modules/.bin/tsc ]]; then
-  TSC="node_modules/.bin/tsc"
-  log "pm=$pm  tsc=$($TSC --version 2>/dev/null || echo '?')"
-elif command -v tsc >/dev/null 2>&1; then
-  TSC="$(command -v tsc)"
-  log "pm=$pm  tsc=$($TSC --version 2>/dev/null || echo '?') (global)"
-else
-  printf '[ts-gates] no TypeScript compiler found; install TypeScript in the project or provide tsc on PATH\n' >&2
-  exit 127
-fi
-
-# Native Go port (TypeScript 7) — opt-in only; the project's own tsc stays the
-# authoritative gate. tsgo is a drop-in CLI (same --noEmit/-p/-b flags, same codes).
-if [[ "${TS_USE_TSGO:-0}" == "1" && -x node_modules/.bin/tsgo ]]; then
-  TSC="node_modules/.bin/tsgo"
-  log "TS_USE_TSGO=1 -> tsgo (preview; cross-check only)"
-fi
+# Resolve only an installed workspace compiler. Repository scripts stay first.
+find_compiler() {
+  local search_dir workspace_root
+  search_dir="$(pwd -P)"
+  workspace_root="$(git rev-parse --show-toplevel 2>/dev/null || printf '%s' "$search_dir")"
+  workspace_root="$(cd "$workspace_root" && pwd -P)"
+  while :; do
+    if [[ -x "$search_dir/node_modules/.bin/tsc" ]]; then
+      TSC="$search_dir/node_modules/.bin/tsc"
+      return 0
+    fi
+    [[ "$search_dir" == "$workspace_root" || "$search_dir" == "/" ]] && break
+    search_dir="$(dirname "$search_dir")"
+  done
+  printf '[ts-gates] no installed workspace TypeScript compiler; install locked dependencies with authorization or use the repository typecheck script\n' >&2
+  return 1
+}
+log "pm=$pm"
 
 # --- 1. typecheck (the gate that matters most) ---
 if [[ "${SKIP_TS_TYPECHECK:-0}" != "1" ]]; then
@@ -82,17 +102,28 @@ if [[ "${SKIP_TS_TYPECHECK:-0}" != "1" ]]; then
   else
     cfg="${TS_TSCONFIG:-tsconfig.json}"
     if [[ -f "$cfg" ]]; then
+      find_compiler
       if grep -q '"references"' "$cfg" 2>/dev/null; then
         log "$TSC -b $cfg  (project references / composite build)"
-        # shellcheck disable=SC2086
-        $TSC -b "$cfg"
+        "$TSC" -b "$cfg"
       else
         log "$TSC --noEmit -p $cfg"
-        # shellcheck disable=SC2086
-        $TSC --noEmit -p "$cfg"
+        "$TSC" --noEmit -p "$cfg"
       fi
     else
       log "no tsconfig ($cfg); skipping typecheck"
+    fi
+  fi
+  # Optional preview compiler is an additional check, never the primary gate.
+  if [[ "${TS_USE_TSGO:-0}" == "1" && -x node_modules/.bin/tsgo ]]; then
+    cfg="${TS_TSCONFIG:-tsconfig.json}"
+    if [[ -f "$cfg" ]]; then
+      log "tsgo cross-check after authoritative typecheck"
+      if grep -q '"references"' "$cfg" 2>/dev/null; then
+        node_modules/.bin/tsgo -b "$cfg"
+      else
+        node_modules/.bin/tsgo --noEmit -p "$cfg"
+      fi
     fi
   fi
 else

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pstack Investigate"
+  short_description: "Reproduce a software defect, distinguish competing causes,"
+  default_prompt: "Use $pstack-investigate for this task, preserving its scope and existing authorization."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Footwork Tools"
+  short_description: "Give agents observation and action tools by context"
+  default_prompt: "Use $footwork-tools to establish the tools for observing, driving, and reading back the task's actual surface."

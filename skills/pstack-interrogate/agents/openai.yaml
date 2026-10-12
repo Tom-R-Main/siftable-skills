@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pstack Interrogate"
+  short_description: "Review a scoped code diff with independent scrutiny,"
+  default_prompt: "Use $pstack-interrogate for this task, preserving its scope and existing authorization."

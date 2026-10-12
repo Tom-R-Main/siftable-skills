@@ -1,0 +1,4 @@
+interface:
+  display_name: "Supervise Opus"
+  short_description: "Opus plans and reviews Sol or Kimi implementation"
+  default_prompt: "Use $supervise-opus to implement and review this bounded coding task, or independently review an existing committed diff."

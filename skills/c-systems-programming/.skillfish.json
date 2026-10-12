@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "c-systems-programming",
+  "owner": "thebushidocollective",
+  "repo": "han",
+  "path": "plugins/languages/c/c-systems-programming",
+  "branch": "main",
+  "sha": "d030f3bda944ad5b383a85b3bdc5a813674f9ac8",
+  "source": "manual"
+}

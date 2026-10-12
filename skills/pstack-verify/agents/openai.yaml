@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pstack Verify"
+  short_description: "Prove changed behavior with reproducible evidence"
+  default_prompt: "Use $pstack-verify to prove the changed behavior on its real surface and report evidence and coverage gaps."

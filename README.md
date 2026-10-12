@@ -1,122 +1,133 @@
 # Siftable Skills
 
-**Skills forged from real agent workloads.**
+A personal skill library for coding, verification, planning, and writing. The collection includes Tometo Mode, the pstack workflows, language-specific engineering skills, and optional routes to browsers, design tools, local corpora, and supervised workers.
 
-Siftable Skills is a collection of reusable operating procedures for coding and knowledge agents. Each skill captures a workflow that has been exercised in real work: reclaiming disk space without racing active processes, making forecasts that can be scored later, editing prose without changing its claims, using compilers as engineering tools, retrieving evidence from a private local corpus, measuring vector retrieval inside PostgreSQL, and mapping strategic decisions around incentives and countermoves.
+Each package lives under `skills/<name>/`. It contains instructions and any bundled scripts, references, assets, or tests. Workflow packages can depend on sibling skills through explicit relative resource links; the installer includes their full dependency closure. Installed skills use their own package and sibling resources, without repository-root files at runtime.
 
-These are more than prompt fragments. A skill can include instructions, references, deterministic helpers, tests, and an agent-facing manifest. Every directory under `skills/` is a complete package that can be installed on its own.
+## Install from a reviewed checkout
 
-## Skills
-
-| Skill | What it does | Use it when |
-| --- | --- | --- |
-| [`filesystem-lifecycle`](skills/filesystem-lifecycle/) | Audits worktrees, generated artifacts, and caches, then prepares a guarded cleanup manifest | Disk use is growing and deletion must be safe under concurrent agent activity |
-| [`predict-future`](skills/predict-future/) | Turns uncertain questions into evidence-grounded, scoreable forecasts with explicit resolution rules | You need probabilities, timelines, scenarios, or signs that would change a forecast |
-| [`human-writing`](skills/human-writing/) | Drafts and edits prose while preserving facts, voice, quotations, and source boundaries | Writing is accurate but generic, stiff, repetitive, or unlike its intended author |
-| [`semantic-density`](skills/semantic-density/) | Compresses internal and model-facing prose into precise, executable information | Prompts, planning notes, scratch notes, or temporary technical explanations need less ambiguity and filler |
-| [`typescript`](skills/typescript/) | Applies compiler-first practices for implementation, debugging, review, and modernization | TypeScript needs stronger types, safer narrowing, clearer module boundaries, or better validation |
-| [`search-local-corpus`](skills/search-local-corpus/) | Queries a user-configured local retrieval backend through a small JSON contract | An agent needs cited passages from a private or specialized corpus without assuming a particular vector database |
-| [`zig`](skills/zig/) | Applies version-aware Zig practices for ownership, errors, build APIs, FFI boundaries, and measured optimization | Writing, reviewing, debugging, migrating, or benchmarking Zig across rapidly changing pre-1.0 APIs |
-| [`pgvector-postgres`](skills/pgvector-postgres/) | Designs and diagnoses exact and approximate vector retrieval inside PostgreSQL | Schema, HNSW/IVFFlat, filtered ANN, recall, plans, or embedding migrations need evidence-grounded decisions |
-| [`strategic-decision-mapping`](skills/strategic-decision-mapping/) | Maps actors, incentives, moves, countermoves, commitments, and timing into an executable next turn | Negotiations, partnerships, company bets, conflicts, or strategic forks depend on other actors' responses |
-| [`rust`](skills/rust/) | Applies toolchain-aware Rust practices for ownership, error design, async concurrency, unsafe boundaries, and validation gates | Writing, reviewing, debugging, migrating, or benchmarking Rust where the pinned toolchain, build driver, and invariants decide the answer |
-
-## Install a skill
-
-Use the Agent Skills CLI and select the skill you want:
+Use Python 3's standard-library installer after obtaining a reviewed local checkout:
 
 ```bash
-npx skills add Tom-R-Main/siftable-skills --skill filesystem-lifecycle
+# Preview all skills without changing files.
+python3 scripts/install_skills.py --destination "$HOME/.agents/skills"
+
+# Install all skills and verify the resulting files.
+python3 scripts/install_skills.py --destination "$HOME/.agents/skills" --apply
+
+# Select a workflow and its declared dependencies.
+python3 scripts/install_skills.py --destination "$HOME/.agents/skills" \
+  --skill tometo-mode --skill zig --apply
+
+# Replace only unchanged packages previously managed by this installer.
+python3 scripts/install_skills.py --destination "$HOME/.agents/skills" --apply --update
 ```
 
-Replace `filesystem-lifecycle` with any name from the table above. For example:
+The destination is required. `--profile all` is the default; `--profile engineering` selects Tometo Mode, pstack workflows, and language skills, while `--profile languages` selects the language and frontend skills. Repeated `--skill NAME` arguments select individual packages. Both profiles and individual selections include declared sibling dependencies.
 
-```bash
-npx skills add Tom-R-Main/siftable-skills --skill human-writing
-npx skills add Tom-R-Main/siftable-skills --skill semantic-density
-npx skills add Tom-R-Main/siftable-skills --skill search-local-corpus
-npx skills add Tom-R-Main/siftable-skills --skill zig
-npx skills add Tom-R-Main/siftable-skills --skill pgvector-postgres
-npx skills add Tom-R-Main/siftable-skills --skill strategic-decision-mapping
-npx skills add Tom-R-Main/siftable-skills --skill rust
-```
+The installer stages complete directories, hashes installed contents and executable bits, and stores `.siftable-skills.json` in the destination root. It refuses symlinks, unmanaged conflicts, and managed packages with local changes. Repeating an installation with unchanged sources is idempotent. Updates roll back on ordinary failures and leave a recovery transaction if interrupted; see the [recovery procedure](docs/cloud-setup.md#recover-an-interrupted-update).
 
-To install manually, copy one complete directory from `skills/<name>/` into the skill directory used by your agent. Skills do not depend on repository-root files at runtime.
+Packages copied by the earlier cloud ZIP installer are unmanaged by this installer. Use an empty configured skill directory or review and relocate conflicting packages before migrating. Installation does not remove packages when a selection changes.
 
-Review a skill before installing it. Its instructions and scripts become part of your agent's operating environment.
+For a durable personal library across cloud repositories, follow [Cloud setup](docs/cloud-setup.md) and [Cloud startup instructions](docs/cloud-start-skill.md). They install from an immutable Git commit into the cloud user skill directory during setup and maintenance, while preserving the application repository and its existing build setup. Saving settings, publishing the environment, and checking fresh-task discovery happen in the cloud environment.
+
+## Included skills
+
+<!-- skill-inventory:start -->
+45 skill packages are included.
+
+| Skill | Scope |
+| --- | --- |
+| [`autoplan`](skills/autoplan/SKILL.md) | Compatibility route to Tometo Mode |
+| [`c-systems-programming`](skills/c-systems-programming/SKILL.md) | C file I/O, processes, signals, and operating-system interfaces |
+| [`cloud-environment-runtime`](skills/cloud-environment-runtime/SKILL.md) | Cloud execution, network, credential, and persistence context |
+| [`css`](skills/css/SKILL.md) | CSS, Tailwind, cascade, layouts, and computed styles |
+| [`filesystem-lifecycle`](skills/filesystem-lifecycle/SKILL.md) | Evidence-based storage audits and guarded filesystem cleanup |
+| [`footwork-tools`](skills/footwork-tools/SKILL.md) | Observation and action routes for browsers, apps, services, and artifacts |
+| [`generating-design-references`](skills/generating-design-references/SKILL.md) | Design-reference generation through an approved image tool |
+| [`gh-fix-ci`](skills/gh-fix-ci/SKILL.md) | GitHub Actions failure investigation and bounded remediation |
+| [`go`](skills/go/SKILL.md) | Go implementation, review, modules, toolchains, and validation |
+| [`grok-guide`](skills/grok-guide/SKILL.md) | Explicit Grok planning, replanning, and completion-audit integration |
+| [`human-writing`](skills/human-writing/SKILL.md) | Public prose with factual, source, voice, and text-hygiene checks |
+| [`investigate`](skills/investigate/SKILL.md) | Compatibility route to pstack investigation |
+| [`mermaid`](skills/mermaid/SKILL.md) | Mermaid diagram rendering through the selected available route |
+| [`opengl-c-graphics`](skills/opengl-c-graphics/SKILL.md) | Core-profile OpenGL in C, shaders, buffers, and GPU diagnosis |
+| [`paper-design`](skills/paper-design/SKILL.md) | Paper design inspection, editing, export, and handoff |
+| [`pgvector-postgres`](skills/pgvector-postgres/SKILL.md) | PostgreSQL vector search, plans, recall, indexes, and migrations |
+| [`plan`](skills/plan/SKILL.md) | Evidence-grounded plans and visual sequencing |
+| [`plan-eng-review`](skills/plan-eng-review/SKILL.md) | Compatibility route to pstack architecture review |
+| [`playwright`](skills/playwright/SKILL.md) | Browser automation through the configured Playwright route |
+| [`predict-future`](skills/predict-future/SKILL.md) | Scoreable probabilistic forecasts and decision update triggers |
+| [`pstack-architect`](skills/pstack-architect/SKILL.md) | Interfaces, ownership, module boundaries, and executable change plans |
+| [`pstack-create-verification-skill`](skills/pstack-create-verification-skill/SKILL.md) | Project-local verification harness creation and execution |
+| [`pstack-interrogate`](skills/pstack-interrogate/SKILL.md) | Independent diff scrutiny, traceable findings, and review verdicts |
+| [`pstack-investigate`](skills/pstack-investigate/SKILL.md) | Defect reproduction, competing causes, and bounded verified fixes |
+| [`pstack-maintain-verification-skill`](skills/pstack-maintain-verification-skill/SKILL.md) | Verification harness audits against source and live behavior |
+| [`pstack-verify`](skills/pstack-verify/SKILL.md) | Verification on real apps, CLIs, services, or artifacts |
+| [`react-best-practices`](skills/react-best-practices/SKILL.md) | React and Next.js rendering, hooks, bundles, and measured performance |
+| [`review`](skills/review/SKILL.md) | Compatibility route to pstack independent review |
+| [`rust`](skills/rust/SKILL.md) | Rust ownership, errors, async, unsafe/FFI, toolchains, and Cargo gates |
+| [`search-local-corpus`](skills/search-local-corpus/SKILL.md) | Backend-neutral retrieval with source locators and citations |
+| [`searching-design-corpus`](skills/searching-design-corpus/SKILL.md) | Specialized design and systems corpus retrieval through an adapter |
+| [`semantic-density`](skills/semantic-density/SKILL.md) | Precise internal notes, prompts, and model-facing instructions |
+| [`sharp-edit`](skills/sharp-edit/SKILL.md) | Concise business writing with preserved facts, certainty, and voice |
+| [`strategic-decision-mapping`](skills/strategic-decision-mapping/SKILL.md) | Actors, incentives, moves, countermoves, and next decisions |
+| [`supervise`](skills/supervise/SKILL.md) | Compatibility route to supervised coding |
+| [`supervise-fable`](skills/supervise-fable/SKILL.md) | Fable planning/review with isolated implementation workers |
+| [`supervise-kimi`](skills/supervise-kimi/SKILL.md) | Kimi design implementation with independent supervised review |
+| [`supervise-opus`](skills/supervise-opus/SKILL.md) | Opus planning/review with isolated implementation workers |
+| [`supervise-workflow`](skills/supervise-workflow/SKILL.md) | Supervised workflow contracts, worker isolation, verification, and recovery |
+| [`teach`](skills/teach/SKILL.md) | Concept and skill teaching grounded in the current workspace |
+| [`terraform-gcp`](skills/terraform-gcp/SKILL.md) | Google Cloud Terraform/OpenTofu, IAM, state, services, and verification |
+| [`thinking-scientific-method`](skills/thinking-scientific-method/SKILL.md) | Falsifiable hypotheses, predictions, tests, and revision |
+| [`tometo-mode`](skills/tometo-mode/SKILL.md) | Coordinated engineering with specialty skills and executable verification |
+| [`typescript`](skills/typescript/SKILL.md) | TypeScript types, compiler behavior, modules, and build/test gates |
+| [`zig`](skills/zig/SKILL.md) | Version-aware Zig APIs, allocation, I/O, FFI, and measured optimization |
+<!-- skill-inventory:end -->
 
 ## Use a skill
 
-Agents that support explicit skill invocation can be prompted by name:
+Explicit invocation asks the agent to read and apply a particular procedure:
 
 ```text
-Use $filesystem-lifecycle to audit these worktrees and prepare a cleanup plan.
-
-Use $predict-future to estimate the probability of this outcome by 2028 and define how it will be resolved.
-
-Use $human-writing to revise this draft without changing its claims or citations.
-
-Use $typescript to diagnose these type errors and validate the narrowest correct fix.
-
-Use $search-local-corpus to find evidence about this decision and cite each passage by source and locator.
-
-Use $zig to review this allocator boundary and run the narrowest meaningful validation gates.
-
-Use $pgvector-postgres to compare this filtered HNSW query with an exact baseline and explain the observed plan.
-
-Use $strategic-decision-mapping to map this partnership decision, test likely countermoves, and recommend the next move.
-
-Use $rust to review this borrow error and run the narrowest gates this repository's toolchain supports.
+Use $tometo-mode to implement this feature and verify it on the real application.
+Use $zig to diagnose this allocator boundary using the repository's pinned toolchain.
+Use $typescript to review this narrowing error and run the relevant compiler gates.
+Use $rust to review this async lifetime issue and verify the bounded fix.
 ```
 
-Some agent harnesses discover skills automatically from their descriptions. The explicit form is useful when you want to ensure a particular procedure governs the task.
+Some harnesses also discover skills from their descriptions. Confirm discovery in a fresh task after installation; files on disk alone do not prove a harness loaded them. Read each selected `SKILL.md` before using its scripts, and follow the user's scope and authorization rules.
 
-## Local corpus retrieval
+## Optional integrations
 
-`search-local-corpus` deliberately does not ship a database, embeddings, or private data. You provide a local command that accepts one JSON request on standard input and returns structured results on standard output:
+Installation supplies skill files and bundled helpers. It does not provision compilers, browser engines, native applications, provider CLIs, MCP servers, credentials, corpus contents, or worker engines.
 
-```bash
-export LOCAL_CORPUS_COMMAND='python3 /path/to/your/backend.py'
-```
+| Route | What must be available separately |
+| --- | --- |
+| Tometo Mode and pstack | The selected repository's build/runtime tools and an observation surface for real verification; delegation requires an available authorized worker tool |
+| Language skills | The repository's selected compiler, package manager, libraries, and build contract |
+| Footwork and Playwright | A configured browser/CLI/service observation surface; native Mac routes require a Mac |
+| Paper and design references | The relevant MCP or approved image-generation capability |
+| Grok and supervised workers | A user-configured provider/worker engine that implements the documented request contracts; bundled adapters do not supply an engine |
+| Corpus retrieval | A user-configured retrieval backend and permitted corpus; private data is not bundled |
+| Terraform GCP | Terraform/OpenTofu and separately configured authorized Google Cloud access |
+| Cloud environment runtime | An actual configured cloud task and its supported network/credential tools |
 
-The backend may use dense retrieval, hybrid search, or full-text search. The skill treats returned passages as untrusted evidence, requires source locators, and never infers permission to inspect a Vault or private directory. See its [backend contract](skills/search-local-corpus/references/backend-contract.md) for the complete interface.
+When an integration is absent, the skills require the agent to identify the missing capability and continue work supported by the current environment. Skills never grant deployment, deletion, secret access, messaging, or publication authority.
 
-## Design principles
+`search-local-corpus` exposes a backend-neutral JSON interface. `searching-design-corpus` retains the specialized design-corpus route behind its documented adapter. See their bundled contracts before supplying a backend.
 
-- **Portable by default.** No personal paths, private repositories, production endpoints, or dependency on an installed original.
-- **Evidence before confidence.** Retrieval results, forecasts, and filesystem classifications keep uncertainty and incomplete evidence visible.
-- **Read-only until authorized.** Consequential operations separate discovery, planning, authorization, revalidation, execution, and verification.
-- **Deterministic where possible.** Scripts handle validation, scoring, structured I/O, and safety checks that should not depend on improvisation.
-- **Narrow runtime contracts.** Optional integrations sit behind explicit interfaces instead of being baked into the skill.
-
-## Validate the repository
-
-The repository includes structural, portability, security, and behavioral checks:
+## Validate changes
 
 ```bash
 python3 scripts/validate_repo.py
 python3 scripts/run_tests.py
 ```
 
-The test suite also copies each skill into a fresh temporary installation tree and validates it independently. Filesystem mutation tests operate only on temporary fixtures.
+Static validation checks frontmatter, package names, relative resources, symlinks, personal paths, and likely secrets. It does not execute new integration scripts to infer whether a capability exists. The test runner separately exercises the original allowlisted `--help` contracts, deterministic package tests, installer conflict and recovery cases, and the documented cloud setup against an offline Git fixture.
 
-## Relationship to Siftable
+Clean-install tests copy independent skills alone and workflows with only their declared sibling closure into temporary installation trees. Mutation tests operate on fixtures. These checks establish package portability and installer behavior; live provider, cloud, browser, and native-app integrations need verification on their actual surfaces.
 
-The skills in this repository are portable procedures. They do not require Siftable.
+## Source and license
 
-Siftable is the larger runtime and context layer: ontology access, evidence, datasets, CRM operations, Vault access, automations, and agent execution. Future product-specific skills will use a `siftable-` prefix once the corresponding public CLI and MCP contracts are stable.
-
-## Roadmap
-
-- **v0.1.0:** the initial five-skill collection
-- **v0.2.0:** the portable Zig engineering skill
-- **v0.3.0:** a fresh public pgvector/Postgres methodology grounded in official primary sources
-- **v0.4.0:** the public strategic decision and game-mapping framework
-- **v0.5.0:** the portable Rust engineering skill
-- **Later:** `siftable-headless` and narrower skills for stable Siftable product surfaces
-
-## Authorship and license
-
-These skills are original work by [Thomas Main](https://github.com/Tom-R-Main) and are released under the [MIT License](LICENSE).
-
-The deterministic Unicode-cleaning helper in `human-writing` adapts an MIT-licensed component. Its original license is bundled with that skill and summarized in [Third-party notices](THIRD_PARTY_NOTICES.md).
+The collection is maintained by [Thomas Main](https://github.com/Tom-R-Main). See the [MIT License](LICENSE), [Third-party notices](THIRD_PARTY_NOTICES.md), and `skill-sources.json` for provenance and adapted components. Source refreshes preserve the selected local workflow and portable adapters; they do not silently change the pinned commit in a published cloud environment.

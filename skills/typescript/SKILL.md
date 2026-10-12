@@ -1,6 +1,6 @@
 ---
 name: typescript
-description: Write, review, debug, migrate, or optimize TypeScript in any project. Use for .ts/.tsx files, tsconfig, type errors, generics/conditional/mapped/template-literal types, narrowing & discriminated unions, declaration (.d.ts) files, module-resolution problems, React/JSX typing, and strictness migrations — and to typecheck, build, test, and actually run the artifact. Prioritize local toolchain detection (tsc version, tsconfig, package manager), strict mode, parse-don't-validate, deriving types over duplicating them, and the project's existing patterns over memory.
+description: Write, review, debug, migrate, and run TypeScript projects. Use for .ts/.tsx, strict typing, tsconfig, module resolution, declarations, and compiler/build/test gates.
 ---
 
 # TypeScript
@@ -17,11 +17,15 @@ or `tsconfig.json`).
 ## First moves (detect the toolchain before editing)
 
 ```sh
-node_modules/.bin/tsc --version 2>/dev/null || npx tsc --version   # the pinned compiler
+if [ -x node_modules/.bin/tsc ]; then node_modules/.bin/tsc --version; fi
 ls package-lock.json pnpm-lock.yaml yarn.lock bun.lock* 2>/dev/null # package manager
 find . -maxdepth 2 -name 'tsconfig*.json' -not -path '*/node_modules/*'
 node -e "console.log(Object.keys(require('./package.json').scripts||{}).join(' '))"
 ```
+
+If the compiler is absent, inspect the workspace root and declared scripts for the
+pinned compiler. Do not fetch via bare `npx tsc` or use an unrelated global compiler.
+Install locked dependencies only with authorization; otherwise report the blocked gate.
 
 Then read the nearest `tsconfig.json`: is `strict` on? `noUncheckedIndexedAccess`?
 `moduleResolution` (`bundler` vs `nodenext` changes import rules)? Is it a monorepo
@@ -45,7 +49,7 @@ pass." Run from the package root:
 
 ```sh
 "$TYPESCRIPT_SKILL_DIR/scripts/drive.sh"              # gates + build + probe bins (--help)
-"$TYPESCRIPT_SKILL_DIR/scripts/drive.sh" --version    # probe with a different flag
+"$TYPESCRIPT_SKILL_DIR/scripts/drive.sh" --probe-argument --version    # probe with a different flag
 ```
 
 `drive.sh` is the floor. To drive a real flow, extend per project type:

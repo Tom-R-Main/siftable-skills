@@ -4,9 +4,9 @@ This skill is an original synthesis of practical Zig implementation and review w
 
 ## Authoritative versioned sources
 
-- [Zig 0.16.0 language reference](https://ziglang.org/documentation/0.16.0/) grounds language semantics, build modes, `comptime`, error unions, `defer`/`errdefer`, and allocator selection.
-- [Zig 0.16.0 standard library](https://ziglang.org/documentation/0.16.0/std/) grounds concrete standard-library types and signatures.
-- [Zig 0.16.0 release notes](https://ziglang.org/download/0.16.0/release-notes.html) ground the `std.Io`, container, build-system, and migration guidance specific to that release.
+- [Zig 0.17.0 language reference](https://ziglang.org/documentation/0.17.0/) grounds language semantics, build modes, `comptime`, error unions, `defer`/`errdefer`, and allocator selection.
+- [Zig 0.17.0 standard library](https://ziglang.org/documentation/0.17.0/std/) grounds concrete standard-library types and signatures.
+- [Zig 0.17.0 release notes](https://ziglang.org/download/0.17.0/release-notes.html) ground the `std.Io`, container, build-system, and migration guidance specific to that release.
 - [Zig build-system documentation](https://ziglang.org/learn/build-system/) grounds modules, dependencies, artifacts, and build steps.
 
 Use the matching versioned documentation when a project pins another Zig release. Use master documentation only as migration input.

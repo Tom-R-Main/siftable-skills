@@ -1,6 +1,6 @@
 # Zig philosophy and style
 
-Use this when reviewing whether code feels like Zig rather than C-with-syntax or Rust-without-borrow-checking. These are review heuristics, not language rules; `source-grounding.md` distinguishes official semantics, adopted conventions, community input, and original synthesis.
+Use this when reviewing whether code feels like Zig rather than C-with-syntax or Rust-without-borrow-checking.
 
 ## The Zig contract
 
@@ -15,7 +15,7 @@ The recurring question is: **where are the bytes?** Know who owns each allocatio
 
 ## Naming: make unit bugs visible
 
-Consider the [TigerBeetle-style](https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md#off-by-one-errors) suffix convention for low-level code when it makes unit conversions and off-by-one risks easier to see:
+Adopt the TigerBeetle-style suffix convention for low-level code:
 
 | Suffix | Meaning | Valid comparisons |
 |---|---|---|
@@ -151,4 +151,4 @@ Prefer the pinned version's documentation and nearby working code. Treat master 
 
 ## Safety modes
 
-Debug and ReleaseSafe are allies. ReleaseFast is for measured hot paths where safety tradeoffs are intentional. Keep Debug/ReleaseSafe passing even when production artifacts use ReleaseFast for benchmarks.
+For Zig 0.17, debug and safe enable runtime checks; fast and small disable them. Keep debug/safe passing when production or benchmarks use fast. Older compiler pins use Debug/ReleaseSafe/ReleaseFast/ReleaseSmall spellings. For module-specific decisions use `@import("builtin").optimize.runtimeSafety()` rather than assuming the standard library was compiled in the same mode.

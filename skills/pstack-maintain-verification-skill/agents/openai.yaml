@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pstack Maintain Verification Skill"
+  short_description: "Audit a project verification skill against source and live"
+  default_prompt: "Use $pstack-maintain-verification-skill for this task, preserving its scope and existing authorization."
