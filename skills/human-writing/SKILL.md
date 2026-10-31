@@ -27,6 +27,8 @@ Use this skill for public-facing writing, product copy, documentation, and durab
 
 For personal notes, internal planning, messages to models, scratch notes, and temporary technical explanations, use `semantic-density` instead. That skill optimizes for precise, concise, executable information without imposing a public-facing human voice. Do not use either writing skill to rewrite code, schemas, commands, identifiers, structured data, or quoted material unless the request explicitly includes them.
 
+For requested use of a user-configured local Colophon profile, follow [colophon](../colophon/SKILL.md). It handles native profile discovery, private prompt export, and Markdown candidate checks. Keep this skill's factual review and text hygiene; profile availability and an artifact receipt do not establish writing quality or authorize disclosure of private material.
+
 ## Priority order
 
 When instructions conflict, follow this order:

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Colophon"
+  short_description: "Local voice profiles and verified Markdown guidance"
+  default_prompt: "Use $colophon to discover my local profile and prepare a verified README editing workflow."

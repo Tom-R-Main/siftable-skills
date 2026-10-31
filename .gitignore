@@ -6,3 +6,14 @@ __pycache__/
 htmlcov/
 .venv/
 node_modules/
+
+# Local Colophon source/profile material and derived private guidance.
+/corpus/
+/profiles/
+/prompts/
+*.voice.json
+*.profile.json
+*.analysis.json
+*.colophon.json
+*.prompt.txt
+*.prompt.md

@@ -12,6 +12,12 @@ For changed behavior, [pstack-verify](../skills/pstack-verify/SKILL.md) starts f
 
 Load optional references for a concrete reason. Formal checks address a selected invariant; recurring-work controls address triggers, deduplication, handoffs, and recovery. Neither is a prerequisite for an ordinary feature change.
 
+## Use locally configured writing guidance
+
+For a requested Colophon workflow, use [colophon](../skills/colophon/SKILL.md) to discover an alias from the native private registry and export receipt-verified guidance. The calling agent uses its already authorized writing tool to draft a separate candidate. Keep profiles and exported source passages outside public changes, including when they live under an ignored local directory.
+
+Run the adapter's `check-candidate` before applying a Markdown rewrite, then inspect factual claims, quotations, and the full diff through [human-writing](../skills/human-writing/SKILL.md). Discovery, local export, generation, structural preservation, and literary review establish different things. The adapter supplies no author corpus, provider, credentials, or authority to publish.
+
 ## Learn from another repository
 
 [Repo-learn](../skills/repo-learn/SKILL.md) helps answer a transfer question: which mechanism in a source repository could improve a decision in the target project? Read the source checkout without modifying it, identify a counterexample, and test the proposed transfer before relying on it.
