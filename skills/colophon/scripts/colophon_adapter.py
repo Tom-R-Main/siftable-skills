@@ -399,8 +399,15 @@ def protected_spans(text):
             elif text[cursor] == "(" and not angle: depth += 1
             elif text[cursor] == ")" and not angle: depth -= 1
             cursor += 1
-        if not depth and available(start, cursor):
-            spans.append((start, cursor, "link_destination"))
+        if not depth:
+            overlaps = [(left, right, kind) for left, right, kind in spans
+                        if start < right and cursor > left]
+            # Backticks in a link title belong to the complete destination,
+            # while a link literal inside an outer code span stays code.
+            if all(kind == "inline_code" and start <= left and right <= cursor
+                   for left, right, kind in overlaps):
+                spans = [span for span in spans if span not in overlaps]
+                spans.append((start, cursor, "link_destination"))
     for pattern, kind in ((r"!?\[[^\]\n]*\](\[[^\]\n]*\])", "reference_link"),
                           (r"<(?:https?://|mailto:)[^>\n]+>", "autolink"),
                           (r"(?i)\b(?:href|src)\s*=\s*([\"'])(.*?)\1", "html_destination")):

@@ -282,6 +282,20 @@ class AdapterTests(unittest.TestCase):
             self.assertEqual((code, result["status"]), (1, "rejected"), (old, result))
             self.assertEqual(source.read_text(), text)
 
+    def test_link_title_backticks_cannot_hide_destination_changes(self):
+        source = self.project / "README.md"
+        candidate = self.project / "candidate.md"
+        text = 'Original [docs](docs/setup.md "Use `setup` first") and `[literal](safe.md)`.\n'
+        source.write_text(text)
+        candidate.write_text(text.replace('Original', 'Revised'))
+        code, result = self.cli("check-candidate", source, candidate, runtime=False, registry=False)
+        self.assertEqual((code, result["status"]), (0, "preserved"))
+        for old, new in (("docs/setup.md", "https://other.invalid"), ("[literal]", "[changed]")):
+            candidate.write_text(text.replace(old, new))
+            code, result = self.cli("check-candidate", source, candidate, runtime=False, registry=False)
+            self.assertEqual((code, result["status"]), (1, "rejected"))
+        self.assertEqual(source.read_text(), text)
+
     def test_indented_commands_are_guarded_conservatively(self):
         source = self.project / "README.md"
         candidate = self.project / "candidate.md"
