@@ -1,0 +1,147 @@
+assessment:
+  organization: ""
+  service: ""
+  legal_entity: ""
+  report_type: ""
+  report_date_or_period: ""
+  trust_services_categories: []
+  auditor: ""
+  prepared_by: ""
+  prepared_at: ""
+  evidence_cutoff: ""
+
+status_values:
+  - verified
+  - reported
+  - inferred
+  - missing
+  - not_applicable
+
+questions:
+  - id: ENG-01
+    domain: engagement_boundary
+    prompt: What service, product, and legal entity will the report describe?
+  - id: ENG-02
+    domain: engagement_boundary
+    prompt: Type 1 or Type 2, and what date or period?
+  - id: ENG-03
+    domain: engagement_boundary
+    prompt: Which Trust Services Categories apply?
+  - id: ENG-04
+    domain: engagement_boundary
+    prompt: Which promises, requirements, and obligations apply?
+  - id: ENG-05
+    domain: engagement_boundary
+    prompt: Which systems, environments, locations, teams, and processes are included?
+  - id: ENG-06
+    domain: engagement_boundary
+    prompt: What is excluded, and can each exclusion withstand challenge?
+  - id: ENG-07
+    domain: engagement_boundary
+    prompt: Which subservice organizations matter, and is each carved out or included?
+  - id: ENG-08
+    domain: engagement_boundary
+    prompt: Which complementary user-entity controls are required?
+  - id: ENG-09
+    domain: engagement_boundary
+    prompt: Which data classes exist, and how do they flow, persist, and disappear?
+  - id: ENG-10
+    domain: engagement_boundary
+    prompt: Which auditor, prior findings, and evidence expectations apply?
+  - id: IAM-01
+    domain: identity_access
+    prompt: What are the authoritative identity populations?
+  - id: IAM-02
+    domain: identity_access
+    prompt: How does joiner-mover-leaver processing operate?
+  - id: IAM-03
+    domain: identity_access
+    prompt: Who can reach production, customer data, and security-sensitive systems?
+  - id: IAM-04
+    domain: identity_access
+    prompt: How are access reviews defined and populated?
+  - id: IAM-05
+    domain: identity_access
+    prompt: How are MFA, passwords, sessions, recovery, secrets, keys, and emergency access protected?
+  - id: ENGR-01
+    domain: engineering_vulnerability
+    prompt: What paths can change production?
+  - id: ENGR-02
+    domain: engineering_vulnerability
+    prompt: How are ordinary changes reviewed, tested, approved, deployed, and rolled back?
+  - id: ENGR-03
+    domain: engineering_vulnerability
+    prompt: How are emergency changes identified and reviewed?
+  - id: ENGR-04
+    domain: engineering_vulnerability
+    prompt: Does vulnerability discovery cover the attack surface?
+  - id: ENGR-05
+    domain: engineering_vulnerability
+    prompt: How are vulnerabilities prioritized, excepted, remediated, and retested?
+  - id: ENGR-06
+    domain: engineering_vulnerability
+    prompt: Which API and workflow security properties are tested?
+  - id: ENGR-07
+    domain: engineering_vulnerability
+    prompt: How are penetration-test findings linked to accountable closure?
+  - id: DET-01
+    domain: detection_response
+    prompt: Which logs are collected, and where are the material gaps?
+  - id: DET-02
+    domain: detection_response
+    prompt: How are log completeness, timing, retention, integrity, and monitoring health proven?
+  - id: DET-03
+    domain: detection_response
+    prompt: How is the detection catalog governed?
+  - id: DET-04
+    domain: detection_response
+    prompt: What distinguishes an event, alert, case, and incident?
+  - id: DET-05
+    domain: detection_response
+    prompt: What must an incident record contain?
+  - id: DET-06
+    domain: detection_response
+    prompt: How do hunts, incidents, vulnerabilities, and intelligence improve controls?
+  - id: RES-01
+    domain: resilience
+    prompt: What are the recovery objectives and how are they demonstrated?
+  - id: CTL-01
+    domain: control_assurance
+    prompt: Is every control specified and testable?
+
+record_template:
+  status: missing
+  current_practice: ""
+  target_practice: ""
+  answer: ""
+  assumptions: []
+  inclusions: []
+  exclusions: []
+  unresolved_decisions: []
+  authoritative_population:
+    source_system: ""
+    query_or_export: ""
+    period: ""
+    completeness_check: ""
+  inspected_evidence: []
+  expected_evidence: []
+  obligations: []
+  risks: []
+  criteria: []
+  controls: []
+  sources:
+    - title: ""
+      version: ""
+      url_or_local_source: ""
+      accessed_at: ""
+      authority: ""
+  gap:
+    description: ""
+    owner: ""
+    due_at: ""
+    acceptance_test: ""
+    retest_result: ""
+  auditor_confirmation:
+    required: false
+    status: ""
+    notes: ""

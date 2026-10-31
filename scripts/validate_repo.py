@@ -18,9 +18,15 @@ OPTIONAL_FRONTMATTER = {"metadata", "license", "compatibility", "allowed-tools"}
 PORTABILITY_PATTERNS = {
     "personal macOS home": re.compile(r"/Users/[A-Za-z0-9._-]+/"),
     "personal Linux home": re.compile(r"/home/[A-Za-z0-9._-]+/"),
+    "personal Windows home": re.compile(r"[A-Za-z]:\\Users\\[^\\\s]+\\", re.IGNORECASE),
+    "named external volume": re.compile(r"(?<![A-Za-z0-9_/])/Volumes/[^/\n]+/"),
     "installed Codex skill path": re.compile(r"~?/\.codex/skills/|~/\.codex/skills/"),
     "installed Claude skill path": re.compile(r"~?/\.claude/skills/|~/\.claude/skills/"),
     "private project name": re.compile(r"execufunction", re.IGNORECASE),
+    "excluded personal workflow": re.compile(
+        r"\b(?:flirt|dating-decisions|dating-profile|dating-wingman|relationship-conversations|conversation-coach)\b",
+        re.IGNORECASE,
+    ),
 }
 SECRET_PATTERNS = {
     "OpenAI-style key": re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),
@@ -39,6 +45,7 @@ HELP_CONTRACTS = {
     "predict-future/scripts/forecast.py", "rust/scripts/rust-gates.sh",
     "search-local-corpus/scripts/query_local_corpus.py", "strategic-decision-mapping/scripts/analyze_game.py",
     "typescript/scripts/drive.sh", "typescript/scripts/ts-gates.sh", "zig/scripts/zig-gates.sh",
+    "screenshot/scripts/take_screenshot.py",
 }
 IGNORED = {"__pycache__", ".DS_Store", ".pytest_cache"}
 

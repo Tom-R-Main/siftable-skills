@@ -22,8 +22,8 @@ PROFILES = {
     'all': None,
     'engineering': ('tometo-mode', 'pstack-architect', 'pstack-investigate', 'pstack-interrogate', 'pstack-verify',
                     'pstack-create-verification-skill', 'pstack-maintain-verification-skill', 'zig', 'typescript',
-                    'rust', 'go', 'c-systems-programming', 'react-best-practices', 'css'),
-    'languages': ('zig', 'typescript', 'rust', 'go', 'c-systems-programming', 'react-best-practices', 'css'),
+                    'rust', 'go', 'kotlin', 'linux', 'c-systems-programming', 'react-best-practices', 'css'),
+    'languages': ('zig', 'typescript', 'rust', 'go', 'kotlin', 'c-systems-programming', 'react-best-practices', 'css'),
 }
 
 

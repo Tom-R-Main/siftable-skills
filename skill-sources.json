@@ -1,330 +1,435 @@
 {
   "format": 1,
-  "prepared_on": "2026-10-12",
-  "policy": "Refresh records are source provenance, not runtime readiness. Local source hashes identify inspected entrypoints; public helpers may intentionally be stronger than their local counterparts. Do not overwrite this library from a ZIP or local tree without reviewing adapters and preserving tests.",
+  "prepared_on": "2026-10-31",
+  "policy": "Refresh records identify compared source entrypoints, not runtime readiness. Public packages preserve portable adapters, tested helpers, license boundaries and original replacements where local sources are private, restricted or runtime-specific. Personal workflows and material sourced through them are excluded. Never bulk-overwrite this library from installed trees.",
   "skills": [
     {
       "name": "autoplan",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 1,
       "local_entrypoint_sha256": "30c979be1bfb924e2d9dd16d0ffe51d4b3779de38a38d6ac582cca0d4426b0f7"
     },
     {
+      "name": "aws-secrets-manager",
+      "prepared_on": "2026-10-31",
+      "refresh": "Original portable workflow for opaque runtime secret integration. Does not bundle a plaintext-resolving wrapper or assume a local vault, agent endpoint or provider configuration.",
+      "package_files": 1,
+      "local_entrypoint_sha256": "b56b1649bf4342613d2de792d0f1fa499d08349417ed6eeef282b304c8e25ef0",
+      "source_kind": "portable-public-workflow"
+    },
+    {
+      "name": "break-ui",
+      "prepared_on": "2026-10-31",
+      "refresh": "Portable MIT adaptation of current schema-backed UI stress workflow and catalog; isolated fixtures and preserved audit/fix authorization.",
+      "package_files": 5,
+      "local_entrypoint_sha256": "ccaf73a504523a2b407cdf978c47487a98e76c90e270c07f229bf7f9799993b0"
+    },
+    {
       "name": "c-systems-programming",
-      "prepared_on": "2026-10-12",
-      "refresh": "Original public systems-C workflow grounded in official POSIX/Linux references. Replaces a restricted-license local tutorial; no tutorial text, examples, or installer metadata retained.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Retained original public systems-C workflow and official references. Current installed tutorial remains restricted-license material and was not imported.",
       "package_files": 2,
-      "source_kind": "original-public-workflow"
+      "source_kind": "original-public-workflow",
+      "local_entrypoint_sha256": "25c15c5d6c0c2a4b36baa85c11daa020724090e6d55f271fa72a7611e60d8d07"
     },
     {
       "name": "cloud-environment-runtime",
-      "prepared_on": "2026-10-12",
-      "refresh": "Original portable runtime routing guide; no managed-environment plugin code or credentials redistributed.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Retained original portable runtime routing guide; no managed-environment plugin code, credentials or policy redistributed.",
       "package_files": 1
     },
     {
       "name": "css",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 5,
       "local_entrypoint_sha256": "b58cd86c02d4cb58bd4c3d1d2fcc729dea8d5e06e760fa852df164c18476ad14"
     },
     {
+      "name": "emil-design-eng",
+      "prepared_on": "2026-10-31",
+      "refresh": "Portable MIT adaptation of current frontend interaction/motion guidance with conditional specialist references and real-surface verification; no machine or required-tool assumptions.",
+      "package_files": 11,
+      "local_entrypoint_sha256": "5e2d9e42a16703b1f82a324823cadeab7b67e060edb3ac353e501e329817002e"
+    },
+    {
       "name": "filesystem-lifecycle",
-      "prepared_on": "2026-10-12",
-      "refresh": "Refreshed current safety/owner guidance; preserved production safety behavior. Bound the deterministic apply fixture to its project owner and tested parent/exact-root liveness vetoes.",
-      "package_files": 13,
-      "local_entrypoint_sha256": "dd7bb9bd27a46ac765e88bf0c01f2cff58fa9d12956cd1c522b9e532592cc967",
+      "prepared_on": "2026-10-31",
+      "refresh": "Current v3 diagnostics, owner recovery, durable intent/receipt safety, comparison and optional observation with disposable fixture tests. Excluded a project-specific Footwork installation-trial cleanup adapter. Migrated existing public liveness tests without weakening checks.",
+      "package_files": 32,
+      "local_entrypoint_sha256": "a7bb37c7e4146e8439cd237f7ff9e46412f56858dc5c1978d717e5f4462b650c",
       "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
     },
     {
       "name": "footwork-tools",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 5,
       "local_entrypoint_sha256": "99665316e2bd3af098d80c30df0686c34695a979ed78db1cc21b761cdd9f65eb"
     },
     {
       "name": "generating-design-references",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 2,
       "local_entrypoint_sha256": "d65290508c89c0ff086d98c3a7bfcf3e7da546372bd7dcc01edaa61d052e828b"
     },
     {
       "name": "gh-fix-ci",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 5,
       "local_entrypoint_sha256": "7b326b4a2f0f5f85122144628ec02077e48841e0e0e82efce88b3415bcfb7c26"
     },
     {
+      "name": "gis-spatial-analysis",
+      "prepared_on": "2026-10-31",
+      "refresh": "Current reusable GIS methodology and references; private corpus, database and embedding setup replaced by optional configured retrieval and primary sources.",
+      "package_files": 12,
+      "local_entrypoint_sha256": "222e260a4c8d880ba3baaaae8abdd79d466d6c307c8ea3b91651a0f621db3a27"
+    },
+    {
       "name": "go",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed guidance; retained portable public gate helpers. Made the no-Go help fixture use its explicit Python interpreter and allowed a bounded cold standard-library build without network access.",
       "package_files": 13,
       "local_entrypoint_sha256": "164dc939b9719b48c8f5a3ac6a0c71b963cd48239c16a03798d59eb869994ce1"
     },
     {
       "name": "grok-guide",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 6,
       "local_entrypoint_sha256": "2ab391b0d04ab6d4e3ec3cee62bf7bc57ce1b2c6eb4dd351eed30efffc3316c0"
     },
     {
       "name": "human-writing",
-      "prepared_on": "2026-10-12",
-      "refresh": "Current local and public resources agree; preserved tested Unicode helper and bundled license.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 11,
       "local_entrypoint_sha256": "f49b0038dbfc43b15dfc354098683fcb76089b547b82b41dd348a67c996c17f6",
       "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
     },
     {
       "name": "investigate",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 1,
       "local_entrypoint_sha256": "da932106648614cbe451cc5ecc9d083837f7725029adce87db15e64180294849"
     },
     {
+      "name": "kotlin",
+      "prepared_on": "2026-10-31",
+      "refresh": "Current version-aware Kotlin/Gradle, concurrency, API and production-pattern guidance; local checkout paths replaced by portable source identities.",
+      "package_files": 11,
+      "local_entrypoint_sha256": "e53f786a12bfe8ba6a23833343531c8d52a03ff891020e2df73c3d94a05e467c"
+    },
+    {
+      "name": "linux",
+      "prepared_on": "2026-10-31",
+      "refresh": "Current Linux kernel, userspace, service and desktop guidance; target identity and authority preserved without machine-specific checkout paths.",
+      "package_files": 7,
+      "local_entrypoint_sha256": "32240444f3d51a8765d283c2322f3f03d3cd8bcd9a92636cc4755bd1863536cd"
+    },
+    {
       "name": "mermaid",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 1,
       "local_entrypoint_sha256": "c5ecdce2247e9ae11077dd4aba693dc9adb5744caeb75fb65cfecceab75c1e6f"
     },
     {
+      "name": "neo-bauhaus-editorial-ui",
+      "prepared_on": "2026-10-31",
+      "refresh": "Portable editorial design direction with project-neutral journeys and configurable primitives; applied only when requested or fitting the design brief.",
+      "package_files": 4,
+      "local_entrypoint_sha256": "bf80591810dfc746e898578ae36eb32ef778399b1357e51d881dcbc32b57b4c9"
+    },
+    {
       "name": "opengl-c-graphics",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 9,
       "local_entrypoint_sha256": "1ca687f667c4f37f6c09afc45c930994d4ea6b0f8fba50a4ad07c15e2da3feff"
     },
     {
       "name": "paper-design",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 6,
       "local_entrypoint_sha256": "8ecc01049aedba2628f615d5b5f10be7a1c1e39c4b29e39fa5e0e89670ec5860"
     },
     {
+      "name": "pdf",
+      "prepared_on": "2026-10-31",
+      "refresh": "Portable document-operation routing adapted from current installed workflow; no preferred machine-local parser, hardcoded path or provider dependency.",
+      "package_files": 2,
+      "local_entrypoint_sha256": "9a2b5e50c459cad7af4e5951eaa9ab4ed2fab2e192a22474e5ce6afc39a06e05",
+      "source_kind": "portable-public-workflow"
+    },
+    {
       "name": "pgvector-postgres",
-      "prepared_on": "2026-10-12",
-      "refresh": "Preserved portable methodology and exact-recall/plan helpers; refreshed official sources to pgvector v0.8.7.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Retained original public pgvector methodology, official-source references and tested recall/plan helpers. Current private-corpus coupling and local storage-engine references were not imported.",
       "package_files": 14,
       "local_entrypoint_sha256": "4ce96f878ac6b30127d501d9b5bdb41f203bfbdfaba809615090317ce894e99c",
       "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
     },
     {
       "name": "plan",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 2,
       "local_entrypoint_sha256": "dbe7726fc09d7fd19a2881330c13df68e85213ea73306c65424af82b4e56a3b6"
     },
     {
       "name": "plan-eng-review",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 1,
       "local_entrypoint_sha256": "2033116d2c34deb5ec164a6457c2826cf613a454a0a837520cf2d8868362aafc"
     },
     {
       "name": "playwright",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 8,
       "local_entrypoint_sha256": "0ffaabcc8e0990627c4725f18bf1c7955534a796c1c199e872909de2013ce6a8"
     },
     {
       "name": "predict-future",
-      "prepared_on": "2026-10-12",
-      "refresh": "Current behavior resources agree; preserved public helpers and tests.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 10,
       "local_entrypoint_sha256": "7ad9bb81288b1b620e210ebb38d18be42f3e7ec29e192cb28b5769ce1a45a636",
       "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
     },
     {
       "name": "pstack-architect",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 5,
       "local_entrypoint_sha256": "89c1000de91354b18ad73ac567e5377040ca11d23b5f000bbec1f285c9f99567"
     },
     {
       "name": "pstack-create-verification-skill",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
-      "package_files": 5,
-      "local_entrypoint_sha256": "820ee86fc84b30428ba1af1f6d4ee7c17b3027c2c2133a0f1f10f9fefb4aea08"
+      "prepared_on": "2026-10-31",
+      "refresh": "Current clean-start/readiness, run-owned isolation and target setup evidence; preserves portable driver and authority boundaries.",
+      "package_files": 6,
+      "local_entrypoint_sha256": "6f8918880dd4b3fe1d4397410acd0cd960b784ed2e2349d63f73357fec75ea1c"
     },
     {
       "name": "pstack-interrogate",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Current repository standards discovery and independent review contract; preserves portable scope and evidence rubric.",
       "package_files": 6,
-      "local_entrypoint_sha256": "4f5183372e45d805ce0baa733bd865294b86cdf74b03f681bd5a996088f0f3b3"
+      "local_entrypoint_sha256": "1b535f5adcd7033059d51c0e0d2cfa0ebd663d08939a133ea58e5e7f5b163e4c"
     },
     {
       "name": "pstack-investigate",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Current regression-boundary and mutation-readback discipline, plus diagnostic recommendations within authorized scope.",
       "package_files": 5,
-      "local_entrypoint_sha256": "ed39b7e7a74d1f3a4d355e495a6e3b1afb96c5f334bdc2ce42bea5dd7cc1aa86"
+      "local_entrypoint_sha256": "0d06b2fb022224ceffc0b0afe1bbb1274f8696696882271a5177ad786c95c22f"
     },
     {
       "name": "pstack-maintain-verification-skill",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Current isolation and effective endpoint checks for mutable verification recipes; preserves public adapter.",
       "package_files": 5,
-      "local_entrypoint_sha256": "13f5616ac500053431ae74223981981f84ee2f58b7fe18b6a16c54cbff7aed73"
+      "local_entrypoint_sha256": "1fd443218441a7d427e231fda3f6eff3e009cb50670a8d5c19040af63d512610"
     },
     {
       "name": "pstack-verify",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
-      "package_files": 5,
-      "local_entrypoint_sha256": "423208f695786d389fa4cd0065c1ab5933f476b9af1a2172805e4afdc6e99d42"
+      "prepared_on": "2026-10-31",
+      "refresh": "Current public-boundary verification, frontend stress/motion routes and optional advisory sensitivity checks; preserves public grounding.",
+      "package_files": 6,
+      "local_entrypoint_sha256": "26a55a83993bc93afeba303d3d04da597e7b45edefa252f1df1950869cd360a0"
     },
     {
       "name": "react-best-practices",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 7,
       "local_entrypoint_sha256": "6e1369a5a1e6cd5ae40d7a4cb196fc148b4f1ec3e43c58ebd30540c72e5f8f46"
     },
     {
+      "name": "repo-learn",
+      "prepared_on": "2026-10-31",
+      "refresh": "Current repository-learning workflow and standard-library evidence/card CLI with end-to-end tests. Excludes private corpus wrappers, configuration, seed stores and session history; requires an explicit authorized store.",
+      "package_files": 6,
+      "local_entrypoint_sha256": "54688bb07bbdb0c5bbf30562bcf9c42fad7c18b6617b5df98336a1b947691faf"
+    },
+    {
       "name": "review",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 1,
       "local_entrypoint_sha256": "2b7f450d730d5cb280d0f7716cd95b324b8aa63a5c6504f4501ba2bd31f9b965"
     },
     {
       "name": "rust",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
-      "package_files": 12,
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
+      "package_files": 11,
       "local_entrypoint_sha256": "61df39f5b3495853aa40614901581d6935e167c92a311120f89d0e3c79036631",
       "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
     },
     {
+      "name": "screenshot",
+      "prepared_on": "2026-10-31",
+      "refresh": "Portable capture entrypoint with upstream Apache-2.0 OS helpers and license; no capture, permission or runtime readiness inferred from installation.",
+      "package_files": 8,
+      "local_entrypoint_sha256": "081935a6a163277537d46365f49d6b4a3cb40b4748347e7e88759c5927fa8cf5"
+    },
+    {
       "name": "search-local-corpus",
-      "prepared_on": "2026-10-12",
-      "refresh": "Preserved public backend-neutral tested protocol; specialized corpus route depends on this interface.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Retained original backend-neutral public retrieval interface; no private corpus or local store bundled.",
       "package_files": 7,
       "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
     },
     {
       "name": "searching-design-corpus",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 3,
       "local_entrypoint_sha256": "f8935c9bd28c80f554cdfd17e9267f78b2f8e8837c1475cdc8a53c2908c8d8c1"
     },
     {
       "name": "semantic-density",
-      "prepared_on": "2026-10-12",
-      "refresh": "Current local and public guidance agree.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 2,
       "local_entrypoint_sha256": "21b09184ae1f22ed66c9c94e4f380bcc6dd61e3952b75cee55b0e4edf0bcfbe1",
       "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
     },
     {
+      "name": "sentry",
+      "prepared_on": "2026-10-31",
+      "refresh": "Portable read-only investigation workflow; configured connector/client required, no bundled credentials or API client.",
+      "package_files": 2,
+      "local_entrypoint_sha256": "b598ea447ad6bec923f5c3879ace25e4a7f1368a7eac019b5c0e2f79a36322c6",
+      "source_kind": "portable-public-workflow"
+    },
+    {
       "name": "sharp-edit",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 2,
       "local_entrypoint_sha256": "acd9e8ba811980dd3120992a3f5bc3e725c6b4c0873f3fba3bdc7e81b4766a5a"
     },
     {
+      "name": "soc2-compliance",
+      "prepared_on": "2026-10-31",
+      "refresh": "Current readiness/control/evidence workflow and blank discovery register; private corpus/indexing removed and current official criteria remain an explicit evidence requirement.",
+      "package_files": 9,
+      "local_entrypoint_sha256": "fc9d8d1a8592550fd35768300783ab75de2009f673665cb7156afbcc3291ef90"
+    },
+    {
       "name": "strategic-decision-mapping",
-      "prepared_on": "2026-10-12",
-      "refresh": "Preserved portable finite-game helper and evidence-first public framework instead of adding private corpus coupling.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Retained portable finite-game helper and evidence-first public framework. Private corpus wrappers, inventories and source passages remain excluded.",
       "package_files": 9,
       "local_entrypoint_sha256": "9080379c3d7c6b495e5e7104491f68429f5248bf8950f0374466568660b87bfa",
       "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
     },
     {
       "name": "supervise",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 2,
       "local_entrypoint_sha256": "b772cee6aaee20ab33d18634200b52e28ef227e38f7e148bb4d860d1686463b6"
     },
     {
       "name": "supervise-fable",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Updated current source implementation-worker selection; retained public supervisor and external runtime contract.",
       "package_files": 2,
-      "local_entrypoint_sha256": "923fcb65d3c4e8e0f73412f4699097a4f8b23aead174616f17f8c3a071ad7b58"
+      "local_entrypoint_sha256": "20eb172b09ebd1693563ebc9d3e86c240f8a2d41e773969ae59cf4b699aff8e9"
     },
     {
       "name": "supervise-kimi",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 2,
       "local_entrypoint_sha256": "535a0aea238c10c3c7d818b7de78b59883823942ebafffd8f486ec0ba2dec894"
     },
     {
       "name": "supervise-opus",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Updated current source implementation-worker selection; retained public supervisor and external runtime contract.",
       "package_files": 2,
-      "local_entrypoint_sha256": "56fb6a21410f287b2438c39bb940307ed432722633bda7db1f479c52625b44c5"
+      "local_entrypoint_sha256": "36249265c32207e99ff3ab963b1c8637b2b3120b48b19952e3b7f361d64c36bb"
     },
     {
       "name": "supervise-workflow",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Updated current source worker model selection; retained externally provisioned engine/assets contract and excluded local binaries, backups and private repository overlays.",
       "package_files": 11,
-      "local_entrypoint_sha256": "9924f8efe50bebbefc65985412e0e4e94e83174c95157c97bff0b2ff5bda1c71"
+      "local_entrypoint_sha256": "8b1139dbdd794f877f4604cc92ce6bdf3ce5934eea53024016a627f9f56079ac"
     },
     {
       "name": "teach",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 5,
       "local_entrypoint_sha256": "6d2dbe5e03084cf26fef66b535127b36cd1bcbe9478e26b0626029cd51dc2259"
     },
     {
       "name": "terraform-gcp",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 13,
       "local_entrypoint_sha256": "25292627b24cc29be60749192fd3db8ea2c6cd5feb2a1c70780467f807ce3dee"
     },
     {
       "name": "thinking-scientific-method",
-      "prepared_on": "2026-10-12",
-      "refresh": "Original portable instructions inspired by general scientific-method discipline; no unlicensed upstream text redistributed.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Retained original portable scientific-method workflow; no unlicensed source text redistributed. Compared the current installed entrypoint without importing its restricted-source metadata.",
       "package_files": 1,
       "local_entrypoint_sha256": "a2808f3b5640fd034c982b217493268509b820e423cffb5b6b5ae7c2666ed3cb"
     },
     {
       "name": "tometo-mode",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
-      "package_files": 5,
-      "local_entrypoint_sha256": "3c251ad32319343777681460a11fbdd699f906cc6d98cd72ac418649dbd131a3"
+      "prepared_on": "2026-10-31",
+      "refresh": "Complete current portable workflow: task framing, catch-up, formal/recurring controls, repository learning, frontend routes and route-checker tests; removed personal response rules, fixed vault/CLI, host/guard assumptions and implicit state-change authority.",
+      "package_files": 11,
+      "local_entrypoint_sha256": "5292ce3b1e722f27b0a01e62a4485900475e673f95533a6e0edd10981630eaf8"
+    },
+    {
+      "name": "transcribe",
+      "prepared_on": "2026-10-31",
+      "refresh": "Portable recording/transcription workflow; configured local or remote route required, no bundled credentials, fixed provider model or dependency installation.",
+      "package_files": 2,
+      "local_entrypoint_sha256": "f530021da9f377362ee4214e0bc689cbb5404640d2eb88ee272d51d61f530a09",
+      "source_kind": "portable-public-workflow"
     },
     {
       "name": "typescript",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 11,
       "local_entrypoint_sha256": "cf57684f6d5ef7e790c6edc017da6fea0d9c7ffad0fa35a0011fe0cdfa6cd25a",
       "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
     },
     {
       "name": "zig",
-      "prepared_on": "2026-10-12",
-      "refresh": "Compared current local skill and public package; retained substantive guidance while adapting host paths, capability and authority boundaries.",
-      "package_files": 13,
+      "prepared_on": "2026-10-31",
+      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
+      "package_files": 12,
       "local_entrypoint_sha256": "e2df7a9f888a4042061840c127478acf0aee89d49d68bdae77027c6f433e1b38",
       "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
     }
-  ]
+  ],
+  "excluded_sources": {
+    "policy": "Exclude personal and project-specific workflows and any material with personal-workspace provenance. Do not repackage excluded sources under generic names.",
+    "categories": [
+      "personal, dating, relationship and conversation-coaching workflows",
+      "project-specific onboarding and private repository overlays",
+      "humor, marketing and sales additions whose independent non-personal provenance was not established",
+      "third-party plugin collections, local runtimes, backups, private corpora and credentials"
+    ]
+  }
 }

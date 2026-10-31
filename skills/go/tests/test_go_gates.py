@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -19,7 +20,7 @@ class GoGatesTests(unittest.TestCase):
         if missing:
             raise unittest.SkipTest(f"missing required tools: {', '.join(missing)}")
 
-    def run_gate(self, root: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    def run_gate(self, root: Path, *args: str, timeout: int = 45) -> subprocess.CompletedProcess[str]:
         env = os.environ.copy()
         env["PYTHONDONTWRITEBYTECODE"] = "1"
         return subprocess.run(
@@ -29,7 +30,7 @@ class GoGatesTests(unittest.TestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
-            timeout=45,
+            timeout=timeout,
             check=False,
         )
 
@@ -51,8 +52,12 @@ class GoGatesTests(unittest.TestCase):
         )
 
     def test_help_without_go_toolchain(self) -> None:
-        result = subprocess.run(["/bin/sh", str(GATE), "--help"], env={"PATH": ""},
-                                capture_output=True, text=True, timeout=10)
+        with tempfile.TemporaryDirectory() as temp:
+            # Supply only the running interpreter, independently of system
+            # Python shims, toolchains, or package-manager install prefixes.
+            (Path(temp) / "python3").symlink_to(sys.executable)
+            result = subprocess.run(["/bin/sh", str(GATE), "--help"], env={"PATH": temp},
+                                    capture_output=True, text=True, timeout=10)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("usage:", result.stdout)
 
@@ -82,7 +87,8 @@ class GoGatesTests(unittest.TestCase):
             root = Path(temp)
             self.write_module(root)
             self.init_git(root)
-            result = self.run_gate(root, "--fresh")
+            # The first standard-library build can have a cold compiler cache.
+            result = self.run_gate(root, "--fresh", timeout=180)
 
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertIn("format=ok", result.stdout)

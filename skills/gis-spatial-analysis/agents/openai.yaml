@@ -1,0 +1,4 @@
+interface:
+  display_name: "GIS Spatial Analysis"
+  short_description: "Plan GIS workflows, maps, and web-map layers"
+  default_prompt: "Use $gis-spatial-analysis to map this spatial question into a deterministic GIS workflow, validation checks, and a clear map/design recommendation."

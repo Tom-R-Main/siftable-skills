@@ -15,6 +15,8 @@ verify()
 
 Each adapter must define its authoritative identity, unique-state test, recovery method, liveness evidence, path boundary, supported operations, and verification postcondition. Missing evidence produces `unknown`.
 
+Use that result to identify the missing check. Qualification should be achievable for an ordinary inactive installation or cache. Test positive removal cases as well as refusals; a universal `unknown` adapter is discovery support, not cleanup support. Record download/build cost separately from eligibility. Do not demand offline or byte-identical restoration for disposable output.
+
 ## Adapter authority
 
 Prefer specialized adapters because they preserve owner semantics:
@@ -34,6 +36,12 @@ The generic filesystem adapter has the weakest authority. It may remove only an 
 ## Extension rule
 
 Add an adapter when an object repeatedly remains `unknown`. Do not teach the generic adapter a growing list of exceptions. Test discovery, classification, drift rejection, apply, and verification on temporary fixtures before enabling mutation.
+
+The generated-artifact adapters live in `scripts/fs_recovery.py`; disposable owner cache checks live in `scripts/fs_cache_recovery.py`. These inspect allowlisted metadata without invoking installers or cleanup commands. The lifecycle executor still checks scope, filesystem identity, liveness and drift before removal. New diagnostic catalog entries do not inherit mutation authority from these adapters.
+
+Browser binary downloads and persistent browser profiles are different resources. In particular, `~/Library/Caches/ms-playwright-mcp` stores persistent MCP browser profiles, including login and storage state; its cache-looking location does not make it disposable. A blocked profile does not block qualification of a separate browser-binary cache.
+
+Qualified cache layouts currently include Homebrew hashed downloads, versioned node-gyp headers, Cypress installer bundles and public crates.io archives. A mixed Homebrew root can expose its downloads child; Cypress version children can qualify separately from sibling session state. Unknown registries, VM bundle state and unsupported cache formats require further owner evidence. Report the exact blocker and keep working through other qualified resources.
 
 
 ## Package caches

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Linux"
+  short_description: "Linux kernel, userspace, services, and Wayland work"
+  default_prompt: "Use $linux to investigate or implement this Linux change against the target system and verify the affected behavior."

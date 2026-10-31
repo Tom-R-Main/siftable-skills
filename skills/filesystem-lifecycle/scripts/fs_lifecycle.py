@@ -15,6 +15,7 @@ import hashlib
 import io
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import stat
@@ -23,10 +24,12 @@ import sys
 import tempfile
 import time
 from typing import Any, Iterable
+from fs_cache_recovery import cache_recovery, cache_children
+from fs_safety import atomic_json, delete_tree, DeletionFailure, filesystem_identity, finite_number
 
 
-SCHEMA = "filesystem-lifecycle/v2"
-SELECTION_SCHEMA = "filesystem-lifecycle/selection-v1"
+SCHEMA = "filesystem-lifecycle/v3"
+SELECTION_SCHEMA = "filesystem-lifecycle/selection-v3"
 ACK = "DELETE EXACT SAFE-NOW PATHS"
 CLASS_SAFE = "safe_now"
 CLASS_AFTER = "safe_after_active_thread_closeout"
@@ -58,8 +61,9 @@ KNOWN_CACHES: tuple[dict[str, Any], ...] = (
     {"path": "~/.cargo/registry/src", "owner": "cargo", "processes": ("cargo", "rustc",), "recovery": "Cargo re-expands crates"},
     {"path": "~/.cargo/git/checkouts", "owner": "cargo", "processes": ("cargo", "rustc",), "recovery": "Cargo refetches Git dependencies"},
     {"path": "~/Library/Caches/Cypress", "owner": "cypress", "processes": ("cypress",), "recovery": "Cypress redownloads binaries"},
-    {"path": "~/Library/Caches/ms-playwright-mcp", "owner": "playwright", "processes": ("playwright",), "recovery": "Playwright redownloads browser assets"},
+    {"path": "~/Library/Caches/ms-playwright-mcp", "owner": "playwright", "processes": ("playwright",), "recovery": "persistent MCP browser profiles may contain unique state; inspect owner export/recovery"},
     {"path": "~/Library/Caches/node-gyp", "owner": "node-gyp", "processes": ("node", "npm",), "recovery": "node-gyp redownloads headers"},
+    {"path": "~/Library/Caches/Homebrew/downloads", "owner": "homebrew", "processes": ("brew",), "recovery": "Homebrew redownloads installer archives"},
     {"path": "~/Library/Caches/Homebrew", "owner": "homebrew", "processes": ("brew",), "recovery": "Homebrew redownloads artifacts"},
     {"path": "~/Library/Application Support/Claude/vm_bundles", "owner": "claude", "processes": ("claude",), "recovery": "Claude recreates the VM bundle"},
 )
@@ -118,6 +122,7 @@ def path_identity(path: Path) -> dict[str, Any]:
     return {
         "canonical_path": str(real),
         "device": int(st.st_dev),
+        "filesystem_id": filesystem_identity(real)["filesystem_id"],
         "inode": int(st.st_ino),
         "link_count": int(st.st_nlink),
         "mount_id": f"device:{int(real.stat().st_dev)}:{root}",
@@ -126,36 +131,22 @@ def path_identity(path: Path) -> dict[str, Any]:
 
 
 def allocated_bytes(path: Path) -> int:
+    if mounted_descendants(path):
+        raise RuntimeError("sizing refuses nested mounts")
     proc = run(["/usr/bin/du", "-skx", str(path)], timeout=600)
-    if proc.returncode != 0:
-        raise RuntimeError(proc.stderr.decode(errors="replace").strip() or "du failed")
+    if proc.returncode != 0 or proc.stderr.strip():
+        raise RuntimeError("allocated sizing incomplete")
     return int(proc.stdout.split(None, 1)[0]) * 1024
 
 
 def logical_bytes(path: Path) -> int:
-    argv = ["/usr/bin/du", "-skA", str(path)] if sys.platform == "darwin" else ["/usr/bin/du", "-sk", "--apparent-size", str(path)]
+    if mounted_descendants(path):
+        raise RuntimeError("sizing refuses nested mounts")
+    argv = ["/usr/bin/du", "-skAx", str(path)] if sys.platform == "darwin" else ["/usr/bin/du", "-skx", "--apparent-size", str(path)]
     proc = run(argv, timeout=600)
-    if proc.returncode == 0:
-        return int(proc.stdout.split(None, 1)[0]) * 1024
-    total = 0
-    seen: set[tuple[int, int]] = set()
-    root_device = path.stat().st_dev
-    for current, dirs, files in os.walk(path, followlinks=False):
-        current_path = Path(current)
-        dirs[:] = [name for name in dirs if not (current_path / name).is_symlink()]
-        for name in files:
-            child = current_path / name
-            try:
-                st = child.lstat()
-            except OSError:
-                continue
-            if st.st_dev != root_device:
-                continue
-            key = (int(st.st_dev), int(st.st_ino))
-            if key not in seen:
-                seen.add(key)
-                total += int(st.st_size)
-    return total
+    if proc.returncode or proc.stderr.strip():
+        raise RuntimeError("logical sizing incomplete")
+    return int(proc.stdout.split(None, 1)[0]) * 1024
 
 
 def storage_evidence(path: Path, *, allocated_only: bool = False) -> dict[str, Any]:
@@ -167,9 +158,9 @@ def storage_evidence(path: Path, *, allocated_only: bool = False) -> dict[str, A
 
 
 def volume_free(path: Path) -> dict[str, Any]:
-    anchor = path if path.exists() else path.parent
+    anchor = canonical(path)
     usage = shutil.disk_usage(anchor)
-    return {"anchor": str(anchor), "total_bytes": usage.total, "used_bytes": usage.used, "free_bytes": usage.free}
+    return {"anchor": str(anchor), "total_bytes": usage.total, "used_bytes": usage.used, "free_bytes": usage.free, "filesystem": filesystem_identity(anchor)}
 
 
 def pid_tree(root_pid: int) -> list[int]:
@@ -204,37 +195,54 @@ def observer_context() -> dict[str, Any]:
 
 
 def mounted_descendants(path: Path) -> list[str]:
-    proc = run(["mount"], timeout=30)
-    if proc.returncode != 0:
-        raise RuntimeError(proc.stderr.decode(errors="replace").strip() or "mount inventory failed")
-    result: list[str] = []
     real = path.resolve(strict=True)
-    for line in proc.stdout.decode(errors="replace").splitlines():
-        marker = " on "
-        if marker not in line:
-            continue
-        right = line.split(marker, 1)[1]
-        mount_text = (right.split(" (", 1)[0] if " (" in right else right.split(" type ", 1)[0]).replace("\\040", " ")
-        mount_path = Path(mount_text).resolve(strict=False)
-        if mount_path != real and is_within(mount_path, real):
-            result.append(str(mount_path))
+    paths = []
+    def unescape(value):
+        return re.sub(r"\\([0-7]{3})", lambda match: chr(int(match.group(1), 8)), value)
+    if sys.platform.startswith("linux"):
+        for line in Path("/proc/self/mountinfo").read_text().splitlines():
+            fields = line.split()
+            if len(fields) < 10 or "-" not in fields:
+                raise RuntimeError("incomplete mount inventory")
+            paths.append(unescape(fields[4]))
+    else:
+        proc = run(["mount"], timeout=30)
+        if proc.returncode or proc.stderr.strip() or not proc.stdout.strip():
+            raise RuntimeError("mount inventory incomplete")
+        for line in proc.stdout.decode(errors="strict").splitlines():
+            if " on " not in line or " (" not in line:
+                raise RuntimeError("unrecognized mount inventory record")
+            paths.append(unescape(line.split(" on ", 1)[1].rsplit(" (", 1)[0]))
+    result = []
+    for value in paths:
+        mount = Path(value).resolve(strict=False)
+        if mount != real and is_within(mount, real):
+            result.append(str(mount))
     return sorted(set(result))
 
 
-def process_snapshot(exclude_pids: set[int] | None = None) -> tuple[list[dict[str, Any]], bool, str | None]:
+def process_snapshot(exclude_pids: set[int] | None = None, *, include_test_runtimes: bool = False) -> tuple[list[dict[str, Any]], bool, str | None]:
     if shutil.which("lsof") is None:
         return [], False, "lsof unavailable"
-    proc = run(["lsof", "-nP", "-F", "pcfn"], timeout=180)
-    if proc.returncode not in (0, 1):
+    try:
+        proc = run(["lsof", "-nP", "-F0pcfn"], timeout=180)
+    except (OSError, subprocess.TimeoutExpired):
+        return [], False, "lsof unavailable or timed out"
+    if proc.returncode != 0 or proc.stderr.strip() or not proc.stdout.strip():
         return [], False, proc.stderr.decode(errors="replace").strip() or "lsof failed"
     records: list[dict[str, Any]] = []
     current: dict[str, Any] | None = None
     fd = ""
-    for raw in proc.stdout.decode(errors="surrogateescape").splitlines():
+    if b"\0" not in proc.stdout:
+        return [], False, "lsof field delimiters unavailable"
+    for raw in proc.stdout.decode(errors="surrogateescape").split("\0"):
+        raw = raw.lstrip("\n")
         if not raw:
             continue
         tag, value = raw[0], raw[1:]
         if tag == "p":
+            if not value.isdigit():
+                return [], False, "malformed lsof process record"
             if current:
                 records.append(current)
             current = {"pid": int(value), "command": "", "cwd": [], "paths": []}
@@ -251,6 +259,23 @@ def process_snapshot(exclude_pids: set[int] | None = None) -> tuple[list[dict[st
     if current:
         records.append(current)
     excluded = exclude_pids or set()
+    if include_test_runtimes:
+        # Python closes source files after importing them. Retain its environment
+        # from launch arguments as well as mapped files/CWDs; never log raw args.
+        ps=run(['ps','-Aww','-o','pid=,args='],timeout=30)
+        if ps.returncode or ps.stderr.strip() or not ps.stdout.strip():
+            return [],False,'test-runtime process argument observation incomplete'
+        by_pid={r['pid']:r for r in records}
+        for line in ps.stdout.decode(errors='strict').splitlines():
+            fields=line.strip().split(None,1)
+            if not fields or not fields[0].isdigit():return [],False,'malformed test-runtime process observation'
+            pid=int(fields[0])
+            if pid in excluded or len(fields)<2:continue
+            paths=re.findall(r'(/[^\s]+/output/[^/\s]+/(?:venv|empty-cache))(?=/|\s|$)',fields[1])
+            if paths:
+                record=by_pid.setdefault(pid,{'pid':pid,'command':'test-runtime-reference','cwd':[],'paths':[]})
+                record['paths'].extend(paths)
+        records=list(by_pid.values())
     return [record for record in records if record["pid"] not in excluded], True, None
 
 
@@ -293,8 +318,8 @@ def open_codex_roots(processes: list[dict[str, Any]]) -> list[dict[str, str]]:
                         if obj.get("type") == "session_meta" and isinstance(root, str) and root.startswith("/"):
                             results.append({"session_file": value, "root": str(Path(root).resolve(strict=False))})
                             break
-            except (OSError, ValueError, json.JSONDecodeError):
-                continue
+            except (OSError, ValueError, json.JSONDecodeError) as exc:
+                raise RuntimeError("active Codex session metadata unavailable") from exc
     return results
 
 
@@ -321,17 +346,22 @@ def git_stdout(path: Path, args: list[str]) -> tuple[int, bytes, str]:
 
 
 def git_root(path: Path) -> Path | None:
-    code, out, _ = git_stdout(path, ["rev-parse", "--show-toplevel"])
+    code, out, err = git_stdout(path, ["rev-parse", "--show-toplevel"])
     if code != 0:
-        return None
+        if "not a git repository" in err.lower() and not any((ancestor / ".git").exists() for ancestor in (path, *path.parents)):
+            return None
+        raise RuntimeError("Git repository discovery incomplete")
     try:
         return Path(out.decode().strip()).resolve(strict=True)
-    except OSError:
-        return None
+    except OSError as exc:
+        raise RuntimeError("Git root unavailable") from exc
 
 
 def contains_tracked_files(path: Path) -> tuple[bool | None, str | None]:
-    root = git_root(path.parent)
+    try:
+        root = git_root(path.parent)
+    except RuntimeError as exc:
+        return None, str(exc)
     if root is None:
         return False, None
     try:
@@ -345,11 +375,69 @@ def contains_tracked_files(path: Path) -> tuple[bool | None, str | None]:
 
 
 def project_marker(path: Path, rule: dict[str, Any]) -> bool:
+    if rule['owner'] == 'node-package-manager':
+        from fs_recovery import npm_installation, Unqualified
+        try:
+            npm_installation(path)
+            return True
+        except (OSError, Unqualified):
+            return False
     parent = path.parent
     return any((parent / marker).exists() for marker in rule["markers"])
 
 
-def scan_artifacts(roots: Iterable[Path], max_depth: int) -> tuple[list[tuple[Path, Path]], dict[str, Any]]:
+def artifact_rule(path: Path) -> dict[str, Any] | None:
+    if not path.name.startswith('.') and (path.parent.name == 'node_modules' or (path.parent.name.startswith('@') and path.parent.parent.name == 'node_modules')):
+        return ARTIFACT_RULES['node_modules']
+    return ARTIFACT_RULES.get(path.name)
+
+
+def npm_live(candidate, processes, owner_root):
+    install = candidate.get('recovery', {}).get('npm_installation_root')
+    if not install:
+        return False
+    refs = refs_for(Path(install), processes)
+    # A consumer of any package can import another package later. A package-unit
+    # cleanup therefore protects the entire installation, plus owner CWDs.
+    cwd_refs = refs_for(owner_root, processes)['cwd_pids']
+    return bool(refs['cwd_pids'] or refs['open_handle_pids'] or cwd_refs)
+
+
+def artifact_recovery(path: Path, rule: dict[str, Any]) -> dict[str, Any]:
+    from fs_recovery import artifact_recovery as inspect_recovery
+    if mounted_descendants(path):
+        return {"verified": False, "level": "none_or_unknown", "method": rule["rebuild"], "reason": "candidate contains a nested mount"}
+    return inspect_recovery(path, rule)
+
+
+def validate_envelope(manifest, selected, volume, target=None):
+    envelope = manifest["authorization"]["envelope"]
+    actual = filesystem_identity(volume)
+    if actual != envelope.get("filesystem"):
+        raise ValueError("target filesystem does not match frozen authorization")
+    allowed = envelope.get("kinds", [])
+    roots = [Path(value) for value in envelope.get("roots", [])]
+    exclusions = [Path(value) for value in envelope.get("exclusions", [])]
+    if target is not None and envelope.get("target_free_delta_bytes") is not None and target > envelope["target_free_delta_bytes"]:
+        raise ValueError("target exceeds frozen authorization")
+    for candidate in selected:
+        path = Path(candidate["canonical_path"])
+        if candidate["kind"] not in allowed or not any(path != root and is_within(path, root) for root in roots):
+            raise ValueError("candidate outside authorization roots or kinds")
+        if any(is_within(path, item) or is_within(item, path) for item in exclusions):
+            raise ValueError("candidate overlaps authorization exclusion")
+        if (candidate.get("identity", {}).get("device") != actual["device"]
+                or candidate.get("identity", {}).get("filesystem_id") != actual["filesystem_id"]):
+            raise ValueError("candidate is on a different target filesystem")
+        finite_number(candidate.get("storage", {}).get("allocated_bytes"), "allocated bytes")
+    for i, candidate in enumerate(selected):
+        for other in selected[i + 1:]:
+            if candidates_overlap(candidate, other):
+                raise ValueError("selected candidates overlap")
+    return envelope
+
+
+def scan_artifacts(roots: Iterable[Path], max_depth: int, npm_package_units: bool = False, npm_package_names: set[str] | None = None) -> tuple[list[tuple[Path, Path]], dict[str, Any]]:
     found: list[tuple[Path, Path]] = []
     errors: list[dict[str, str]] = []
     excluded_mounts: list[str] = []
@@ -357,6 +445,7 @@ def scan_artifacts(roots: Iterable[Path], max_depth: int) -> tuple[list[tuple[Pa
     for raw_root in roots:
         root = canonical(raw_root)
         root_device = root.stat().st_dev
+        nested_mounts = {Path(item) for item in mounted_descendants(root)}
         stack: list[tuple[Path, int]] = [(root, 0)]
         while stack:
             current, depth = stack.pop()
@@ -371,6 +460,9 @@ def scan_artifacts(roots: Iterable[Path], max_depth: int) -> tuple[list[tuple[Pa
                 if not entry.is_dir(follow_symlinks=False):
                     continue
                 child = Path(entry.path)
+                if child in nested_mounts:
+                    excluded_mounts.append(str(child))
+                    continue
                 try:
                     if entry.stat(follow_symlinks=False).st_dev != root_device:
                         excluded_mounts.append(str(child))
@@ -380,6 +472,28 @@ def scan_artifacts(roots: Iterable[Path], max_depth: int) -> tuple[list[tuple[Pa
                     continue
                 if entry.name in ARTIFACT_RULES:
                     found.append((child, root))
+                    if npm_package_units and entry.name == 'node_modules':
+                        # Inventory exact top-level package/scope directories;
+                        # each still needs lock ownership, content screening,
+                        # recovery and whole-installation liveness qualification.
+                        try:
+                            with os.scandir(child) as packages:
+                                for package in packages:
+                                    if Path(package.path) in nested_mounts:
+                                        excluded_mounts.append(package.path)
+                                        continue
+                                    if not package.name.startswith('.') and (not npm_package_names or package.name in npm_package_names) and package.is_dir(follow_symlinks=False) and package.stat(follow_symlinks=False).st_dev == root_device:
+                                        found.append((Path(package.path), root))
+                                        if package.name.startswith('@'):
+                                            with os.scandir(package.path) as scoped:
+                                                for member in scoped:
+                                                    if Path(member.path) in nested_mounts:
+                                                        excluded_mounts.append(member.path)
+                                                        continue
+                                                    if not member.name.startswith('.') and member.is_dir(follow_symlinks=False) and member.stat(follow_symlinks=False).st_dev == root_device:
+                                                        found.append((Path(member.path), root))
+                        except OSError as exc:
+                            errors.append({'path': str(child), 'error': str(exc)})
                     continue
                 if entry.name in skip_names or entry.is_symlink():
                     continue
@@ -459,6 +573,7 @@ def candidate_base(
         errors.append("candidate is not strictly beneath approved root")
     try:
         unexpected_mounts = mounted_descendants(real)
+        unexpected_mounts = sorted(set(unexpected_mounts + [mount for mount in mounted_descendants(root) if is_within(real, Path(mount))]))
         if unexpected_mounts:
             errors.append("candidate contains a nested mount")
     except RuntimeError as exc:
@@ -554,6 +669,9 @@ def classify_path_candidate(
     elif not lsof_ok:
         candidate["classification"] = CLASS_UNKNOWN
         candidate["reasons"].append("open-handle inventory incomplete")
+    elif candidate.get("recovery", {}).get("verified") is not True:
+        candidate["classification"] = CLASS_UNKNOWN
+        candidate["reasons"].append(candidate.get("recovery", {}).get("reason", "adapter recovery evidence is incomplete"))
     elif tracked is None:
         candidate["classification"] = CLASS_UNKNOWN
         candidate["reasons"].append(tracked_error or "tracked-file check incomplete")
@@ -571,26 +689,28 @@ def classify_path_candidate(
 def audit_artifacts(discovered: list[tuple[Path, Path]], processes: list[dict[str, Any]], lsof_ok: bool, codex_roots: list[dict[str, str]]) -> list[dict[str, Any]]:
     candidates: list[dict[str, Any]] = []
     for path, approved_root in discovered:
-        rule = ARTIFACT_RULES[path.name]
+        rule = artifact_rule(path)
         try:
             candidate = candidate_base(
                 path,
                 approved_root,
                 "generated_artifact",
                 rule["owner"],
-                {"level": "regenerable", "method": rule["rebuild"]},
+                artifact_recovery(path, rule),
                 {"driver": "filesystem", "operation": "delete_exact_tree"},
                 measure_storage=False,
             )
             candidate["preconditions"].extend(("recognized_artifact_marker", "contains_no_tracked_files"))
-            owner_root = git_root(path.parent) or path.parent.resolve(strict=True)
+            install = candidate['recovery'].get('npm_installation_root')
+            owner_parent = Path(install).parent if install else path.parent
+            owner_root = git_root(owner_parent) or owner_parent.resolve(strict=True)
             candidate["owner_root"] = str(owner_root)
             if not project_marker(path, rule):
                 candidate["classification"] = CLASS_UNKNOWN
                 candidate["reasons"].append("recognized basename but project marker is missing")
             else:
                 tracked, err = contains_tracked_files(path)
-                classify_path_candidate(candidate, processes, lsof_ok, codex_roots, tracked=tracked, tracked_error=err, owner_root=owner_root)
+                classify_path_candidate(candidate, processes, lsof_ok, codex_roots, tracked=tracked, tracked_error=err, owner_root=owner_root, owner_active=npm_live(candidate, processes, owner_root))
             candidates.append(candidate)
         except (OSError, RuntimeError) as exc:
             candidates.append(unknown_candidate(path, approved_root, "generated_artifact", rule["owner"], str(exc)))
@@ -603,6 +723,7 @@ def audit_target_artifacts(
     lsof_ok: bool,
     codex_roots: list[dict[str, str]],
     required_allocated_bytes: int,
+    max_candidates: int | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Assess shallow generated artifacts until a safe allocated-byte budget exists."""
     ordered = sorted(
@@ -614,7 +735,12 @@ def audit_target_artifacts(
     )
     candidates: list[dict[str, Any]] = []
     measured_bytes = 0
+    measured_paths = []
     for path, approved_root in ordered:
+        if max_candidates is not None and len(candidates) >= max_candidates:
+            break
+        if any(is_within(path, parent) for parent in measured_paths):
+            continue
         candidate = audit_artifacts([(path, approved_root)], processes, lsof_ok, codex_roots)[0]
         candidates.append(candidate)
         if candidate.get("classification") != CLASS_SAFE:
@@ -629,6 +755,7 @@ def audit_target_artifacts(
             candidate["reasons"].append("storage measurement failed")
             continue
         measured_bytes += int(candidate["storage"]["allocated_bytes"] or 0)
+        measured_paths.append(path)
         if measured_bytes >= required_allocated_bytes:
             break
     return candidates, {
@@ -639,10 +766,24 @@ def audit_target_artifacts(
     }
 
 
+def iter_cache_rules():
+    for rule in KNOWN_CACHES:
+        path = Path(rule["path"]).expanduser()
+        children = []
+        try:
+            if path.is_dir() and not path.is_symlink():
+                children = list(cache_children(path, rule))
+        except (OSError, ValueError, RuntimeError):
+            yield {**rule, "discovery_error": "cache child inventory incomplete; inspect this owner root"}
+            continue
+        yield rule
+        yield from children
+
+
 def audit_caches(processes: list[dict[str, Any]], lsof_ok: bool, codex_roots: list[dict[str, str]]) -> list[dict[str, Any]]:
     candidates: list[dict[str, Any]] = []
     names = process_names(processes)
-    for rule in KNOWN_CACHES:
+    for rule in iter_cache_rules():
         path = Path(rule["path"]).expanduser()
         if not path.exists():
             continue
@@ -654,13 +795,14 @@ def audit_caches(processes: list[dict[str, Any]], lsof_ok: bool, codex_roots: li
                 path.parent,
                 "known_cache",
                 rule["owner"],
-                {"level": "recreated_by_owner", "method": rule["recovery"]},
+                ({"verified": False, "level": "none_or_unknown", "method": rule["recovery"], "reason": rule["discovery_error"]} if rule.get("discovery_error") else cache_recovery(path, rule)),
                 {"driver": "filesystem", "operation": "delete_exact_tree"},
                 measure_storage=False,
             )
             candidate["preconditions"].append("known_cache_allowlist_match")
             active = any(any(token in name for name in names) for token in rule["processes"])
-            classify_path_candidate(candidate, processes, lsof_ok, codex_roots, owner_active=active)
+            tracked, tracked_error = contains_tracked_files(path)
+            classify_path_candidate(candidate, processes, lsof_ok, codex_roots, owner_active=active, tracked=tracked, tracked_error=tracked_error)
             candidates.append(candidate)
         except (OSError, RuntimeError) as exc:
             candidates.append(unknown_candidate(path, path.parent, "known_cache", rule["owner"], str(exc)))
@@ -754,7 +896,7 @@ def audit_worktrees(repo: Path, processes: list[dict[str, Any]], lsof_ok: bool, 
                 candidate["reasons"].append("Git worktree is locked")
                 candidates.append(candidate)
                 continue
-            status_code, status_out, status_err = git_stdout(Path(candidate["canonical_path"]), ["status", "--porcelain=v1", "-z", "--untracked-files=all"])
+            status_code, status_out, status_err = git_stdout(Path(candidate["canonical_path"]), ["status", "--porcelain=v1", "-z", "--untracked-files=all", "--ignored"])
             if status_code != 0:
                 candidate["classification"] = CLASS_UNKNOWN
                 candidate["reasons"].append(status_err or "git status failed")
@@ -779,6 +921,9 @@ def audit_worktrees(repo: Path, processes: list[dict[str, Any]], lsof_ok: bool, 
             elif rep == "unique":
                 candidate["classification"] = CLASS_RETAIN
                 candidate["reasons"].append("clean checkout contains a unique patch relative to base")
+            elif not entry.get("branch") and rep != "exact_ancestor":
+                candidate["classification"] = CLASS_RETAIN
+                candidate["reasons"].append("detached commit history is not retained by protected base")
             elif not lsof_ok:
                 candidate["classification"] = CLASS_UNKNOWN
                 candidate["reasons"].append("open-handle inventory incomplete")
@@ -875,7 +1020,7 @@ def size_candidates(
 ) -> dict[str, Any]:
     """Measure eligible candidates, stopping once a target-plus-headroom budget exists."""
     target_budget = target_budget_bytes(target_bytes, headroom_percent) if target_bytes is not None else None
-    eligible_classes = {CLASS_SAFE} if target_budget is not None else {CLASS_SAFE, CLASS_AFTER}
+    eligible_classes = {CLASS_SAFE} if target_budget is not None else {CLASS_SAFE, CLASS_AFTER, CLASS_UNKNOWN, CLASS_RETAIN}
     eligible = [
         item for item in candidates
         if item.get("classification") in eligible_classes
@@ -958,20 +1103,39 @@ def select_candidates(
 
 def audit(args: argparse.Namespace) -> int:
     started = time.monotonic()
+    if args.target_gib is not None:
+        finite_number(args.target_gib, "target", minimum=0.000001)
+    finite_number(args.headroom_percent, "headroom")
     if args.target_gib is not None and args.target_gib <= 0:
         raise SystemExit("--target-gib must be positive")
     if args.headroom_percent < 0:
         raise SystemExit("--headroom-percent must be non-negative")
     observer = observer_context()
     roots = [canonical(Path(value).expanduser()) for value in args.root]
+    protected = [Path("/"), Path.home(), Path.home()/".ssh", Path.home()/".aws", Path.home()/".gnupg", Path.home()/"Library/Keychains",
+                 Path.home()/"Documents", Path.home()/"Downloads", Path.home()/"Desktop", Path.home()/"Pictures", Path.home()/"Music", Path.home()/"Movies", Path.home()/"Library/Mail", Path.home()/"Library/Messages"]
+    if any(root == item or (item.name in (".ssh", ".aws", ".gnupg", "Keychains", "Mail", "Messages") and is_within(root, item)) for root in roots for item in protected):
+        raise ValueError("discovery requires bounded project roots; protected roots are excluded")
     repos = [canonical(Path(value).expanduser()) for value in args.repo]
     included_kinds = set(args.kind) if args.kind else None
     if args.authorization_mode == "goal_authorized" and not args.authorization_scope:
         raise SystemExit("goal_authorized requires at least one --authorization-scope")
     target = int(args.target_gib * 1024**3) if args.target_gib is not None else None
+    assessment_limit = getattr(args, 'max_artifact_candidates', None)
+    if assessment_limit is not None and (assessment_limit < 1 or target is None or included_kinds != {'generated_artifact'}):
+        raise ValueError('--max-artifact-candidates requires a positive limit, --target-gib and --kind generated_artifact only')
     required_target_budget = target_budget_bytes(target, args.headroom_percent) if target is not None else None
     scan_generated = included_kinds is None or "generated_artifact" in included_kinds
-    discovered, discovery_evidence = scan_artifacts(roots, args.max_depth) if roots and scan_generated else ([], {"scan_complete": True, "errors": [], "excluded_mounts": [], "stay_on_device": True})
+    package_names = set(getattr(args,'npm_package_name',[]) or [])
+    if package_names and not getattr(args,'npm_package_units',False):
+        raise ValueError('--npm-package-name requires --npm-package-units')
+    if any(not name or name.startswith('.') or '/' in name or '\\' in name for name in package_names):
+        raise ValueError('npm package names must be exact top-level package or scope directory names')
+    discovered, discovery_evidence = scan_artifacts(roots, args.max_depth, getattr(args,'npm_package_units',False), package_names) if roots and scan_generated else ([], {"scan_complete": True, "errors": [], "excluded_mounts": [], "stay_on_device": True})
+    anchor = Path(args.volume).expanduser()
+    filesystem = filesystem_identity(anchor)
+    exclusions = [Path(value).expanduser().resolve(strict=False) for value in getattr(args, "exclude", [])]
+    discovered = [(path, root) for path, root in discovered if path.stat().st_dev == filesystem["device"] and not any(is_within(path, value) or is_within(value, path) for value in exclusions)]
     processes, lsof_ok, lsof_error = process_snapshot(set(observer["excluded_pids"]))
     liveness_observed_at = now_utc()
     codex_roots = open_codex_roots(processes)
@@ -990,6 +1154,7 @@ def audit(args: argparse.Namespace) -> int:
             lsof_ok,
             codex_roots,
             int(required_target_budget or 0),
+            max_candidates=assessment_limit,
         )
     elif discovered:
         candidates.extend(audit_artifacts(discovered, processes, lsof_ok, codex_roots))
@@ -999,6 +1164,18 @@ def audit(args: argparse.Namespace) -> int:
         for repo in repos:
             candidates.extend(audit_worktrees(repo, processes, lsof_ok, codex_roots))
     add_overlap(candidates)
+    anchor = Path(args.volume).expanduser()
+    exclusions = [str(Path(value).expanduser().resolve(strict=False)) for value in getattr(args, "exclude", [])]
+    authorized_roots = {str(root) for root in roots}
+    authorized_roots.update(item["boundary"]["approved_root"] for item in candidates if item["kind"] == "git_worktree" and item.get("repository") in {str(repo) for repo in repos})
+    if args.include_known_caches:
+        authorized_roots.update(str(Path(rule["path"]).expanduser().parent.resolve(strict=False)) for rule in KNOWN_CACHES)
+    filesystem = filesystem_identity(anchor)
+    for candidate in candidates:
+        path = Path(candidate["canonical_path"])
+        if candidate.get("identity", {}).get("device") != filesystem["device"] or candidate.get("identity", {}).get("filesystem_id") != filesystem["filesystem_id"] or any(is_within(path, Path(value)) or is_within(Path(value), path) for value in exclusions):
+            candidate["classification"] = CLASS_UNKNOWN
+            candidate["reasons"].append("outside target filesystem or overlaps exclusion")
     planning = size_candidates(
         candidates,
         target_bytes=target,
@@ -1006,12 +1183,14 @@ def audit(args: argparse.Namespace) -> int:
         preferred_kinds=args.prefer_kind,
         included_kinds=included_kinds,
     )
-    anchor = Path(args.volume).expanduser()
+    envelope = {"roots": sorted(authorized_roots), "kinds": sorted(included_kinds or DEFAULT_KIND_ORDER), "exclusions": exclusions,
+                "filesystem": filesystem, "volume": str(canonical(anchor)), "target_free_delta_bytes": target,
+                "risk_ceiling_bytes": sum(int(item.get("storage", {}).get("allocated_bytes") or 0) for item in candidates if item["classification"] == CLASS_SAFE)}
     manifest = {
         "schema": SCHEMA,
         "generated_at": now_utc(),
         "mode": "audit",
-        "authorization": {"mode": args.authorization_mode, "scope": args.authorization_scope},
+        "authorization": {"mode": args.authorization_mode, "scope": args.authorization_scope, "envelope": envelope},
         "scope": {
             "roots": [str(p) for p in roots],
             "repositories": [str(p) for p in repos],
@@ -1035,7 +1214,7 @@ def audit(args: argparse.Namespace) -> int:
     manifest["integrity"] = {"algorithm": "sha256", "digest": manifest_digest(manifest)}
     output = json.dumps(manifest, indent=2, sort_keys=True)
     if args.output:
-        Path(args.output).write_text(output + "\n", encoding="utf-8")
+        atomic_json(Path(args.output), manifest)
         print(
             f"wrote {len(candidates)} candidates to {args.output} in {time.monotonic() - started:.2f}s "
             f"({planning['budget_status']}, {planning['measured_allocated_bytes'] / 1024**3:.2f} GiB measured)"
@@ -1048,19 +1227,28 @@ def audit(args: argparse.Namespace) -> int:
 def age_minutes(timestamp: str) -> float:
     created = dt.datetime.fromisoformat(timestamp)
     if created.tzinfo is None:
-        created = created.replace(tzinfo=dt.timezone.utc)
-    return (dt.datetime.now(dt.timezone.utc) - created).total_seconds() / 60.0
+        raise ValueError("timestamp must include timezone")
+    age = (dt.datetime.now(dt.timezone.utc) - created).total_seconds() / 60.0
+    if age < 0:
+        raise ValueError("future timestamp")
+    return age
 
 
 def load_valid_manifest(path: str, max_age_minutes: float) -> dict[str, Any]:
-    manifest = json.loads(Path(path).read_text(encoding="utf-8"))
-    if manifest.get("schema") != SCHEMA:
-        raise SystemExit("unsupported or missing manifest schema")
+    finite_number(max_age_minutes, "max age", minimum=0.001)
+    manifest = json.loads(Path(path).read_text(encoding="utf-8"), parse_constant=lambda value: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
+    if not isinstance(manifest, dict) or manifest.get("schema") != SCHEMA:
+        raise ValueError("unsupported manifest; regenerate a v3 audit before mutation")
     integrity = manifest.get("integrity", {})
     if integrity.get("algorithm") != "sha256" or integrity.get("digest") != manifest_digest(manifest):
-        raise SystemExit("manifest integrity check failed; rerun audit")
+        raise ValueError("manifest checksum mismatch; rerun audit")
     if age_minutes(manifest["generated_at"]) > max_age_minutes:
-        raise SystemExit("manifest is stale; rerun audit")
+        raise ValueError("manifest is stale; rerun audit")
+    if not isinstance(manifest.get("candidates"), list) or not isinstance(manifest.get("authorization", {}).get("envelope"), dict):
+        raise ValueError("missing structured scope")
+    ids = [item["id"] for item in manifest["candidates"]]
+    if len(ids) != len(set(ids)):
+        raise ValueError("duplicate candidate IDs")
     return manifest
 
 
@@ -1068,12 +1256,17 @@ def select_manifest(args: argparse.Namespace) -> int:
     manifest = load_valid_manifest(args.manifest, args.max_age_minutes)
     planning = manifest.get("planning", {})
     if args.target_gib is not None:
-        target = int(args.target_gib * 1024**3)
+        target = int(finite_number(args.target_gib, "target", minimum=0.000001) * 1024**3)
     else:
         target = planning.get("target_free_delta_bytes")
     if not isinstance(target, int) or target <= 0:
         raise SystemExit("selection requires --target-gib or a positive audit target")
+    bound_target = manifest["authorization"]["envelope"].get("target_free_delta_bytes")
+    if bound_target is not None and target > bound_target:
+        raise ValueError("selection cannot increase authorized target")
     headroom = args.headroom_percent
+    if headroom is not None:
+        finite_number(headroom, "headroom")
     if headroom is None:
         recorded_headroom = planning.get("headroom_percent")
         headroom = float(recorded_headroom) if recorded_headroom is not None else 25.0
@@ -1087,8 +1280,10 @@ def select_manifest(args: argparse.Namespace) -> int:
         preferred_kinds=preferred_kinds,
         included_kinds=included_kinds,
     )
+    validate_envelope(manifest, selected, Path(manifest["authorization"]["envelope"]["volume"]), target)
     selection = {
         "schema": SELECTION_SCHEMA,
+        "filesystem": manifest["authorization"]["envelope"]["filesystem"],
         "generated_at": now_utc(),
         "manifest": {
             "path": str(Path(args.manifest).expanduser().resolve(strict=True)),
@@ -1114,7 +1309,7 @@ def select_manifest(args: argparse.Namespace) -> int:
     selection["integrity"] = {"algorithm": "sha256", "digest": manifest_digest(selection)}
     output = json.dumps(selection, indent=2, sort_keys=True)
     if args.output:
-        Path(args.output).write_text(output + "\n", encoding="utf-8")
+        atomic_json(Path(args.output), selection)
         print(
             f"wrote {len(selected)} exact non-overlapping IDs to {args.output} "
             f"({allocated / 1024**3:.2f}/{required / 1024**3:.2f} GiB allocated budget)"
@@ -1124,49 +1319,10 @@ def select_manifest(args: argparse.Namespace) -> int:
     return 0 if allocated >= required else 1
 
 
-def safe_delete_tree(path: Path, *, progress: Any | None = None, heartbeat_seconds: float = 5.0) -> None:
-    if path.is_symlink():
-        raise RuntimeError("refusing to traverse symlink target")
-    root_device = path.stat().st_dev
-    started = time.monotonic()
-    last_heartbeat = started
-    counts = {"preflight_entries": 0, "removed_entries": 0}
-
-    def observe(phase: str) -> None:
-        nonlocal last_heartbeat
-        counts[f"{phase}_entries"] += 1
-        current = time.monotonic()
-        if progress is not None and current - last_heartbeat >= heartbeat_seconds:
-            progress({"phase": phase, "elapsed_seconds": current - started, **counts})
-            last_heartbeat = current
-
-    def preflight(current: Path) -> None:
-        with os.scandir(current) as entries:
-            for entry in entries:
-                observe("preflight")
-                st = entry.stat(follow_symlinks=False)
-                if st.st_dev != root_device:
-                    raise RuntimeError(f"refusing cross-device traversal at {entry.path}")
-                if stat.S_ISDIR(st.st_mode) and not stat.S_ISLNK(st.st_mode):
-                    preflight(Path(entry.path))
-
-    def remove(current: Path) -> None:
-        with os.scandir(current) as entries:
-            children = list(entries)
-        for entry in children:
-            observe("removed")
-            st = entry.stat(follow_symlinks=False)
-            if st.st_dev != root_device:
-                raise RuntimeError(f"device changed during deletion at {entry.path}")
-            child = Path(entry.path)
-            if stat.S_ISDIR(st.st_mode) and not stat.S_ISLNK(st.st_mode):
-                remove(child)
-            else:
-                child.unlink()
-        current.rmdir()
-
-    preflight(path)
-    remove(path)
+def safe_delete_tree(path: Path, *, progress: Any | None = None, heartbeat_seconds: float = 5.0, expected_identity=None):
+    if mounted_descendants(path):
+        raise RuntimeError("deletion refuses nested mounts")
+    return delete_tree(path, expected_identity=expected_identity, progress=progress, heartbeat_seconds=heartbeat_seconds)
 
 
 def verify_identity(candidate: dict[str, Any]) -> Path:
@@ -1192,6 +1348,8 @@ def verify_boundary(candidate: dict[str, Any], path: Path) -> None:
         raise RuntimeError("approved-root device changed")
     if int(path.stat().st_dev) != root_device:
         raise RuntimeError("candidate crossed approved-root device")
+    if any(is_within(path, Path(mount)) for mount in mounted_descendants(root)):
+        raise RuntimeError('candidate is at or beneath a nested mount in its approved root')
     nested = mounted_descendants(path)
     if nested:
         raise RuntimeError(f"candidate contains nested mounts: {nested}")
@@ -1222,7 +1380,7 @@ def revalidate_worktree(candidate: dict[str, Any], path: Path) -> None:
         raise RuntimeError("worktree HEAD changed")
     if entry.get("branch") != expected_git.get("branch"):
         raise RuntimeError("worktree branch or detached state changed")
-    status_code, status_out, status_err = git_stdout(path, ["status", "--porcelain=v1", "-z", "--untracked-files=all"])
+    status_code, status_out, status_err = git_stdout(path, ["status", "--porcelain=v1", "-z", "--untracked-files=all", "--ignored"])
     if status_code != 0:
         raise RuntimeError(status_err or "git status failed")
     if status_out:
@@ -1231,8 +1389,8 @@ def revalidate_worktree(candidate: dict[str, Any], path: Path) -> None:
     if not isinstance(base, str) or not base:
         raise RuntimeError("worktree has no frozen protected base")
     rep = representation(repo, head, base)
-    if rep not in SAFE_REPRESENTATIONS:
-        raise RuntimeError(f"worktree is no longer represented in base: {rep}")
+    if rep not in SAFE_REPRESENTATIONS or (not entry.get("branch") and rep != "exact_ancestor"):
+        raise RuntimeError(f"worktree history is no longer retained: {rep}")
 
 
 def revalidate_static(candidate: dict[str, Any]) -> Path:
@@ -1242,18 +1400,27 @@ def revalidate_static(candidate: dict[str, Any]) -> Path:
     verify_boundary(candidate, path)
     kind = candidate.get("kind")
     if kind == "generated_artifact":
-        rule = ARTIFACT_RULES.get(path.name)
+        rule = artifact_rule(path)
         if rule is None or not project_marker(path, rule):
             raise RuntimeError("artifact ownership marker changed")
+        recovery = artifact_recovery(path, rule)
+        if not recovery.get("verified") or recovery != candidate.get("recovery"):
+            raise RuntimeError("artifact recovery evidence missing or changed")
         tracked, err = contains_tracked_files(path)
         if tracked is None:
             raise RuntimeError(err or "tracked-file check failed")
         if tracked:
             raise RuntimeError("artifact now contains tracked files")
     elif kind == "known_cache":
-        allowed = {str(Path(item["path"]).expanduser().resolve(strict=False)) for item in KNOWN_CACHES}
-        if str(path) not in allowed:
-            raise RuntimeError("path is not in known-cache allowlist")
+        rule = next((item for item in iter_cache_rules() if Path(item["path"]).expanduser().resolve(strict=False) == path), None)
+        if rule is None:
+            raise RuntimeError("cache owner rule missing")
+        recovery = cache_recovery(path, rule)
+        if not recovery.get("verified") or recovery != candidate.get("recovery"):
+            raise RuntimeError("cache recovery evidence missing or changed")
+        tracked, error = contains_tracked_files(path)
+        if tracked is not False:
+            raise RuntimeError(error or "cache now contains Git-tracked state")
     elif kind == "git_worktree":
         revalidate_worktree(candidate, path)
     else:
@@ -1266,12 +1433,18 @@ def revalidate_liveness(candidate: dict[str, Any], path: Path, processes: list[d
         raise RuntimeError("open-handle inventory incomplete")
     refs = refs_for(path, processes)
     owner_root: Path | None = None
+    if candidate.get("kind") == "known_cache":
+        rule = next((item for item in iter_cache_rules() if Path(item["path"]).expanduser().resolve(strict=False) == path), None)
+        if rule is None or any(token in name for name in process_names(processes) for token in rule["processes"]):
+            raise RuntimeError("cache owner is active or unknown")
     if candidate.get("kind") == "git_worktree":
         owner_root = path
     elif candidate.get("kind") == "generated_artifact" and candidate.get("owner_root"):
         owner_root = Path(candidate["owner_root"])
         if not is_within(path, owner_root):
             raise RuntimeError("generated-artifact owner root changed")
+        if npm_live(candidate, processes, owner_root):
+            raise RuntimeError('dependency environment has a live consumer')
     if refs["cwd_pids"] or refs["open_handle_pids"] or codex_refs(path, codex_roots, owner_root=owner_root):
         raise RuntimeError("candidate acquired a live reference")
 
@@ -1293,6 +1466,10 @@ def load_selection(path: str, manifest_path: str, manifest: dict[str, Any], max_
     ids = selection.get("selected_ids")
     if not isinstance(ids, list) or not ids or not all(isinstance(item, str) for item in ids):
         raise SystemExit("selection contains no exact candidate IDs")
+    if selection.get("status") != "budget_met":
+        raise ValueError("selection has insufficient safe budget")
+    if selection.get("filesystem") != manifest["authorization"]["envelope"]["filesystem"]:
+        raise ValueError("selection filesystem mismatch")
     return selection
 
 
@@ -1302,387 +1479,173 @@ def default_report_path(manifest_path: str) -> Path:
     return source.with_name(f"{source.stem}.apply-{stamp}.json")
 
 
+def execution_report_path(source: Path, manifest: dict[str, Any]) -> Path:
+    return source.with_name(f"{source.name}.execution-{manifest['integrity']['digest'][:20]}.json")
+
+
 def apply_exit_code(report: dict[str, Any], *, report_written: bool = True) -> int:
-    if not report_written:
+    if not report_written or any(item.get("status") in ("partially_removed", "failed_unknown_effect", "in_progress") for item in report.get("results", [])):
         return 1
     target = report.get("approved_budget", {}).get("target_free_delta_bytes")
     if target is not None:
-        return 0 if int(report.get("shortfall_bytes") or 0) == 0 else 1
+        return 0 if report.get("shortfall_bytes") == 0 else 1
     return 0 if all(item.get("status") in ("removed", "not_attempted") for item in report.get("results", [])) else 1
 
 
 def apply_manifest(args: argparse.Namespace) -> int:
     if not args.execute or args.ack != ACK:
-        print(f"refusing mutation: pass --execute --ack {ACK!r}", file=sys.stderr)
-        return 2
-    if not args.id and not args.selection:
-        print("refusing mutation: pass exact --id values or a frozen --selection", file=sys.stderr)
-        return 2
+        raise ValueError("mutation requires explicit execute and acknowledgement")
     manifest = load_valid_manifest(args.manifest, args.max_age_minutes)
-    if args.authorization_source == "goal_authorization" and manifest.get("authorization", {}).get("mode") != "goal_authorized":
-        raise SystemExit("manifest does not contain a goal_authorized scope")
-    selection: dict[str, Any] | None = None
+    if not args.id and not args.selection:
+        raise ValueError("exact candidate IDs or frozen selection required")
+    if args.authorization_source == "goal_authorization" and manifest["authorization"].get("mode") != "goal_authorized":
+        raise ValueError("manifest has no goal authorization")
+    selection = None
     selected_ids = list(args.id or [])
     if args.selection:
         if args.authorization_source != "goal_authorization":
-            raise SystemExit("a generated selection may only execute under a recorded goal authorization")
+            raise ValueError("selection requires goal authorization")
         selection = load_selection(args.selection, args.manifest, manifest, args.max_age_minutes)
-        selected_ids = list(selection["selected_ids"])
-    by_id = {item.get("id"): item for item in manifest.get("candidates", [])}
-    if len(set(selected_ids)) != len(selected_ids) or any(item_id not in by_id for item_id in selected_ids):
-        raise SystemExit("IDs must be unique and present in the manifest")
-    selected = [by_id[item_id] for item_id in selected_ids]
-    covered = {item.get("covered_by") for item in selected if item.get("covered_by")}
-    selected_id_set = {item["id"] for item in selected}
-    if covered & selected_id_set:
-        raise SystemExit("do not select both a worktree and an overlapping artifact")
-    selected_allocated = sum(int(item.get("storage", {}).get("allocated_bytes") or 0) for item in selected)
-    if any(item.get("storage", {}).get("allocated_bytes") is None for item in selected):
-        raise SystemExit("selected candidate has incomplete storage evidence")
-    requested_ceiling = int(args.risk_ceiling_gib * 1024**3) if args.risk_ceiling_gib is not None else selected_allocated
-    if requested_ceiling > selected_allocated:
-        raise SystemExit("risk ceiling cannot exceed the frozen selected-candidate budget")
-    risk_ceiling = requested_ceiling
-    observer = observer_context()
-    anchor = Path(args.volume).expanduser()
+        selected_ids = selection["selected_ids"]
+    by_id = {item["id"]: item for item in manifest["candidates"]}
+    if len(set(selected_ids)) != len(selected_ids) or any(item not in by_id for item in selected_ids):
+        raise ValueError("unknown or duplicate selected IDs")
+    selected = [by_id[item] for item in selected_ids]
+    target = None
+    if args.target_gib is not None:
+        target = int(finite_number(args.target_gib, "target", minimum=0.000001) * 1024**3)
+    if selection:
+        selected_target = finite_number(selection["target_free_delta_bytes"], "selection target", minimum=1)
+        if target is not None and target != selected_target:
+            raise ValueError("target differs from frozen selection")
+        target = selected_target
+    elif args.authorization_source == "goal_authorization" and target is None:
+        target = manifest["authorization"]["envelope"].get("target_free_delta_bytes")
+    anchor = Path(args.volume or manifest["authorization"]["envelope"]["volume"]).expanduser()
+    envelope = validate_envelope(manifest, selected, anchor, target)
+    selected_allocated = sum(item["storage"]["allocated_bytes"] for item in selected)
+    ceiling = min(selected_allocated, finite_number(envelope["risk_ceiling_bytes"], "frozen ceiling"))
+    if args.risk_ceiling_gib is not None:
+        requested = int(finite_number(args.risk_ceiling_gib, "risk ceiling") * 1024**3)
+        if requested > ceiling:
+            raise ValueError("risk ceiling exceeds frozen scope")
+        ceiling = requested
     before = volume_free(anchor)
-    target = int(args.target_gib * 1024**3) if args.target_gib is not None else None
-    if selection is not None:
-        selection_target = int(selection["target_free_delta_bytes"])
-        if target is not None and target != selection_target:
-            raise SystemExit("--target-gib does not match the frozen selection target")
-        target = selection_target
-    results: list[dict[str, Any]] = []
-    consumed_budget = 0
+    observer = observer_context()
+    source = Path(args.manifest).expanduser().resolve(strict=True)
+    journal = execution_report_path(source, manifest)
+    evidence_paths = [source, journal]
+    if args.report_output:
+        output = Path(args.report_output).expanduser().resolve(strict=False)
+        if output == source:
+            raise ValueError("report cannot overwrite its source manifest")
+        if os.path.lexists(output):
+            raise ValueError("report-output already exists; choose a new path")
+        evidence_paths.append(output)
+    if any(is_within(evidence, Path(item["canonical_path"])) for evidence in evidence_paths for item in selected):
+        raise ValueError("operation evidence must be stored outside deletion candidates")
+    report = {
+        "schema": SCHEMA, "mode": "apply", "state": "started", "applied_at": now_utc(),
+        "source_manifest_digest": manifest["integrity"]["digest"], "source_manifest": str(source),
+        "authorization_source": args.authorization_source, "filesystem": envelope["filesystem"],
+        "observer": observer, "volume_before": before, "results": [],
+        "approved_budget": {"selected_ids": selected_ids, "selected_count": len(selected),
+            "selected_allocated_bytes": selected_allocated, "risk_ceiling_bytes": ceiling,
+            "consumed_allocated_budget_bytes": 0, "target_free_delta_bytes": target},
+        "report_path": str(journal), "stopped_reason": "approved_set_exhausted",
+    }
+    # Exclusive durable claim prevents concurrent execution and blind retries, even after a crash.
+    try:
+        fd = os.open(journal, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    except FileExistsError as exc:
+        raise ValueError("execution receipt already exists: inspect and reconcile it, then create a fresh audit; never replay this manifest") from exc
+    with os.fdopen(fd, "w", encoding="utf-8") as handle:
+        json.dump(report, handle, allow_nan=False)
+        handle.flush()
+        os.fsync(handle.fileno())
+    atomic_json(journal, report)
     previous_free = before["free_bytes"]
-    stopped_reason = "approved_set_exhausted"
     for index, candidate in enumerate(selected):
-        ordinal = index + 1
-        item_started = time.monotonic()
-        candidate_budget = int(candidate.get("storage", {}).get("allocated_bytes") or 0)
-        if consumed_budget + candidate_budget > risk_ceiling:
-            stopped_reason = "risk_ceiling_reached"
-            for remaining in selected[index:]:
-                results.append({"id": remaining.get("id"), "path": remaining.get("path"), "status": "not_attempted", "error": "frozen risk ceiling reached"})
+        cost = candidate["storage"]["allocated_bytes"]
+        if report["approved_budget"]["consumed_allocated_budget_bytes"] + cost > ceiling:
+            report["stopped_reason"] = "risk_ceiling_reached"
             break
-        print(f"[{ordinal}/{len(selected)}] revalidating {candidate.get('path')}", file=sys.stderr, flush=True)
+        item = {"id": candidate["id"], "path": candidate["path"], "canonical_path": candidate["canonical_path"],
+                "kind": candidate["kind"], "identity": candidate["identity"], "candidate": candidate,
+                "status": "skipped_before_mutation", "started_at": now_utc(), "removed_entries": 0}
+        report["results"].append(item)
+        dispatched = False
         try:
-            static_started = time.monotonic()
+            # Age, filesystem, boundaries, recovery and owner state are checked for every candidate.
+            if age_minutes(manifest["generated_at"]) > args.max_age_minutes:
+                raise RuntimeError("manifest expired before candidate dispatch")
+            validate_envelope(manifest, [candidate], anchor, target)
             path = revalidate_static(candidate)
-            static_seconds = time.monotonic() - static_started
-            liveness_started = time.monotonic()
-            processes, lsof_ok, _ = process_snapshot(set(observer["excluded_pids"]))
-            codex_roots = open_codex_roots(processes)
-            revalidate_liveness(candidate, path, processes, lsof_ok, codex_roots)
-            liveness_seconds = time.monotonic() - liveness_started
-            remove_started = time.monotonic()
+            processes, complete, error = process_snapshot(set(observer["excluded_pids"]))
+            revalidate_liveness(candidate, path, processes, complete, open_codex_roots(processes))
+            item["status"] = "in_progress"
+            report["approved_budget"]["consumed_allocated_budget_bytes"] += cost
+            atomic_json(journal, report)
+            dispatched = True
             if candidate["kind"] == "git_worktree":
                 proc = run(["git", "-C", candidate["repository"], "worktree", "remove", "--", str(path)], timeout=600)
-                if proc.returncode != 0:
-                    raise RuntimeError(proc.stderr.decode(errors="replace").strip() or "git worktree remove failed")
+                if proc.returncode:
+                    raise RuntimeError("Git worktree removal failed; reconcile owner state")
+                retained_ref = candidate["git"].get("branch")
+                if retained_ref:
+                    code, out, _ = git_stdout(Path(candidate["repository"]), ["rev-parse", retained_ref])
+                    if code or out.decode().strip() != candidate["git"]["head"]:
+                        raise RuntimeError("retained branch verification failed")
             else:
-                def deletion_progress(state: dict[str, Any]) -> None:
-                    print(
-                        f"[{ordinal}/{len(selected)}] deleting phase={state['phase']} "
-                        f"preflight={state['preflight_entries']} removed={state['removed_entries']} "
-                        f"elapsed={state['elapsed_seconds']:.1f}s",
-                        file=sys.stderr,
-                        flush=True,
-                    )
-
-                safe_delete_tree(path, progress=deletion_progress)
-            remove_seconds = time.monotonic() - remove_started
-            if path.exists():
-                raise RuntimeError("target still exists after operation")
-            consumed_budget += candidate_budget
+                def progress(state):
+                    item["removed_entries"] = state["removed_entries"]
+                    print(f"deleting {candidate['id']}: {state['removed_entries']} entries removed", file=sys.stderr, flush=True)
+                effect = safe_delete_tree(path, expected_identity=candidate["identity"], progress=progress)
+                item["removed_entries"] = effect["removed_entries"]
+            if os.path.lexists(path):
+                raise RuntimeError("target still present after removal")
+            item["status"] = "removed"
+        except Exception as exc:
+            if isinstance(exc, DeletionFailure):
+                item["removed_entries"] = exc.removed_entries
+            item["status"] = ("partially_removed" if item["removed_entries"] else "failed_unknown_effect") if dispatched else "skipped_before_mutation"
+            item["error"] = str(exc)
+            if dispatched:
+                report["stopped_reason"] = "reconciliation_required"
+        item["completed_at"] = now_utc()
+        try:
             current = volume_free(anchor)
-            recovered = current["free_bytes"] - before["free_bytes"]
-            candidate_delta = current["free_bytes"] - previous_free
+            item["interval_physical_free_delta_bytes"] = current["free_bytes"] - previous_free
             previous_free = current["free_bytes"]
-            elapsed_seconds = time.monotonic() - item_started
-            results.append({
-                "id": candidate["id"],
-                "path": str(path),
-                "status": "removed",
-                "interval_physical_free_delta_bytes": candidate_delta,
-                "cumulative_physical_free_delta_bytes": recovered,
-                "timings_seconds": {
-                    "static_revalidation": round(static_seconds, 3),
-                    "liveness": round(liveness_seconds, 3),
-                    "remove": round(remove_seconds, 3),
-                    "total": round(elapsed_seconds, 3),
-                },
-            })
-            print(
-                f"[{ordinal}/{len(selected)}] removed in {elapsed_seconds:.2f}s; "
-                f"cumulative physical recovery {recovered / 1024**3:.2f} GiB",
-                file=sys.stderr,
-                flush=True,
-            )
-            if target is not None and recovered >= target:
-                stopped_reason = "target_met"
-                for remaining in selected[index + 1:]:
-                    results.append({"id": remaining.get("id"), "path": remaining.get("path"), "status": "not_attempted", "error": "physical recovery target met"})
-                break
-        except Exception as exc:  # report and preserve remaining candidates
-            elapsed_seconds = time.monotonic() - item_started
-            results.append({"id": candidate.get("id"), "path": candidate.get("path"), "status": "skipped", "error": str(exc), "elapsed_seconds": round(elapsed_seconds, 3)})
-            print(f"[{ordinal}/{len(selected)}] skipped after {elapsed_seconds:.2f}s: {exc}", file=sys.stderr, flush=True)
-    after = volume_free(anchor)
-    physical_delta = after["free_bytes"] - before["free_bytes"]
-    shortfall = max(0, target - max(0, physical_delta)) if target is not None else None
-    report = {
-        "schema": SCHEMA,
-        "applied_at": now_utc(),
-        "authorization_source": args.authorization_source,
-        "observer": observer,
-        "approved_budget": {
-            "selected_ids": selected_ids,
-            "selected_count": len(selected),
-            "selected_allocated_bytes": selected_allocated,
-            "risk_ceiling_bytes": risk_ceiling,
-            "consumed_allocated_budget_bytes": consumed_budget,
-            "target_free_delta_bytes": target,
-        },
-        "volume_before": before,
-        "volume_after": after,
-        "physical_free_delta_bytes": physical_delta,
-        "shortfall_bytes": shortfall,
-        "stopped_reason": stopped_reason,
-        "results": results,
-    }
-    report_path = Path(args.report_output).expanduser() if args.report_output else default_report_path(args.manifest)
-    report["report_path"] = str(report_path)
-    rendered = json.dumps(report, indent=2, sort_keys=True)
-    report_written = True
-    try:
-        report_path.write_text(rendered + "\n", encoding="utf-8")
-        print(f"wrote apply report to {report_path}", file=sys.stderr, flush=True)
-    except OSError as exc:
-        report_written = False
-        print(f"warning: could not persist apply report: {exc}", file=sys.stderr, flush=True)
-    print(rendered)
-    return apply_exit_code(report, report_written=report_written)
+            report["volume_after"] = current
+            report["physical_free_delta_bytes"] = current["free_bytes"] - before["free_bytes"]
+        except Exception as exc:
+            report["measurement_error"] = str(exc)
+            report["stopped_reason"] = "reconciliation_required"
+        atomic_json(journal, report)
+        if report["stopped_reason"] == "reconciliation_required":
+            break
+        if target is not None and report.get("physical_free_delta_bytes", 0) >= target:
+            report["stopped_reason"] = "target_met"
+            break
+    attempted = {item["id"] for item in report["results"]}
+    for candidate in selected:
+        if candidate["id"] not in attempted:
+            report["results"].append({"id": candidate["id"], "path": candidate["path"], "status": "not_attempted"})
+    report["completed_at"] = now_utc()
+    report["state"] = "reconciliation_required" if report["stopped_reason"] == "reconciliation_required" else "complete"
+    report["shortfall_bytes"] = max(0, target - max(0, report.get("physical_free_delta_bytes", 0))) if target is not None else None
+    atomic_json(journal, report)
+    if args.report_output and Path(args.report_output).resolve(strict=False) != journal:
+        atomic_json(Path(args.report_output), report, replace=False)
+    print(json.dumps(report, indent=2, sort_keys=True))
+    return apply_exit_code(report) if report["state"] == "complete" else 1
 
 
 def self_test(_: argparse.Namespace) -> int:
-    with tempfile.TemporaryDirectory(prefix="filesystem-lifecycle-test-") as temp:
-        root = Path(temp)
-        project = root / "project"
-        project.mkdir()
-        (project / "package.json").write_text("{}\n", encoding="utf-8")
-        generated = project / "node_modules"
-        (generated / "pkg").mkdir(parents=True)
-        (generated / "pkg" / "index.js").write_text("module.exports = 1;\n", encoding="utf-8")
-        assert project_marker(generated, ARTIFACT_RULES["node_modules"])
-        discovered, discovery_evidence = scan_artifacts([root], 4)
-        assert discovery_evidence["scan_complete"]
-        assert generated.resolve() in {item.resolve() for item, _ in discovered}
-        ident = path_identity(generated)
-        assert ident["inode"] > 0 and ident["link_count"] > 0 and not ident["is_symlink"]
-        fixture_candidate = candidate_base(
-            generated,
-            root,
-            "generated_artifact",
-            "node-package-manager",
-            {"level": "regenerable", "method": "package install"},
-            {"driver": "filesystem", "operation": "delete_exact_tree"},
-        )
-        verify_boundary(fixture_candidate, generated.resolve())
-        deletion_events: list[dict[str, Any]] = []
-        safe_delete_tree(generated, progress=deletion_events.append, heartbeat_seconds=0.0)
-        assert not generated.exists()
-        assert deletion_events and deletion_events[-1]["removed_entries"] > 0
-        hardlink_a = project / "hardlink-a"
-        hardlink_b = project / "hardlink-b"
-        hardlink_a.write_text("shared\n", encoding="utf-8")
-        os.link(hardlink_a, hardlink_b)
-        assert path_identity(hardlink_a)["link_count"] == 2
-
-        generated_apply = project / "node_modules"
-        (generated_apply / "pkg").mkdir(parents=True)
-        (generated_apply / "pkg" / "index.js").write_text("module.exports = 2;\n", encoding="utf-8")
-        apply_candidate = candidate_base(
-            generated_apply,
-            root,
-            "generated_artifact",
-            "node-package-manager",
-            {"level": "regenerable", "method": "package install"},
-            {"driver": "filesystem", "operation": "delete_exact_tree"},
-        )
-        # Real generated-artifact manifests bind the owning project. This fixture
-        # must do the same when its temp root sits inside an active workspace.
-        apply_candidate["owner_root"] = str(project.resolve())
-        apply_candidate["classification"] = CLASS_SAFE
-        apply_manifest_data = {
-            "schema": SCHEMA,
-            "generated_at": now_utc(),
-            "authorization": {"mode": "goal_authorized", "scope": ["temporary self-test fixture"]},
-            "candidates": [apply_candidate],
-        }
-        apply_manifest_data["integrity"] = {"algorithm": "sha256", "digest": manifest_digest(apply_manifest_data)}
-        manifest_path = root / "manifest.json"
-        manifest_path.write_text(json.dumps(apply_manifest_data), encoding="utf-8")
-        apply_args = argparse.Namespace(
-            execute=True,
-            ack=ACK,
-            id=[apply_candidate["id"]],
-            selection=None,
-            manifest=str(manifest_path),
-            max_age_minutes=30.0,
-            authorization_source="goal_authorization",
-            risk_ceiling_gib=0.0,
-            target_gib=None,
-            volume=str(root),
-            report_output=str(root / "apply-report.json"),
-        )
-        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-            assert apply_manifest(apply_args) == 0
-        assert generated_apply.exists()
-        apply_args.risk_ceiling_gib = None
-        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-            assert apply_manifest(apply_args) == 0
-        assert not generated_apply.exists()
-        safe_a = {
-            "id": "generated:a",
-            "path": "/fixture/worktree/node_modules",
-            "canonical_path": "/fixture/worktree/node_modules",
-            "kind": "generated_artifact",
-            "classification": CLASS_SAFE,
-            "covered_by": "git:w",
-            "boundary": {"approved_root": "/fixture"},
-            "storage": {"allocated_bytes": 8 * 1024**3},
-        }
-        safe_b = {
-            "id": "generated:b",
-            "path": "/fixture/other/node_modules",
-            "canonical_path": "/fixture/other/node_modules",
-            "kind": "generated_artifact",
-            "classification": CLASS_SAFE,
-            "boundary": {"approved_root": "/fixture"},
-            "storage": {"allocated_bytes": 6 * 1024**3},
-        }
-        safe_worktree = {
-            "id": "git:w",
-            "path": "/fixture/worktree",
-            "canonical_path": "/fixture/worktree",
-            "kind": "git_worktree",
-            "classification": CLASS_SAFE,
-            "boundary": {"approved_root": "/fixture"},
-            "storage": {"allocated_bytes": 20 * 1024**3},
-        }
-        selected_fixture, selected_bytes, required_bytes = select_candidates(
-            [safe_worktree, safe_a, safe_b],
-            target_bytes=10 * 1024**3,
-            headroom_percent=20.0,
-            preferred_kinds=["generated_artifact"],
-            included_kinds={"generated_artifact"},
-        )
-        assert [item["id"] for item in selected_fixture] == ["generated:b", "generated:a"]
-        assert selected_bytes == 14 * 1024**3 and required_bytes == 12 * 1024**3
-        success_with_skip = {
-            "approved_budget": {"target_free_delta_bytes": 10},
-            "shortfall_bytes": 0,
-            "results": [{"status": "skipped"}, {"status": "removed"}],
-        }
-        assert apply_exit_code(success_with_skip) == 0
-        success_with_skip["shortfall_bytes"] = 1
-        assert apply_exit_code(success_with_skip) == 1
-        audit_root = root / "target-audit"
-        for name in ("alpha", "beta"):
-            package = audit_root / name
-            (package / "node_modules" / "pkg").mkdir(parents=True)
-            (package / "package.json").write_text("{}\n", encoding="utf-8")
-            (package / "node_modules" / "pkg" / "index.js").write_text("x\n", encoding="utf-8")
-        target_manifest_path = root / "target-manifest.json"
-        target_audit_args = argparse.Namespace(
-            root=[str(audit_root)],
-            repo=[],
-            include_known_caches=False,
-            max_depth=4,
-            authorization_mode="goal_authorized",
-            authorization_scope=["temporary generated artifacts"],
-            target_gib=0.000001,
-            headroom_percent=25.0,
-            prefer_kind=["generated_artifact"],
-            kind=["generated_artifact"],
-            volume=str(root),
-            output=str(target_manifest_path),
-        )
-        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-            assert audit(target_audit_args) == 0
-        target_manifest = load_valid_manifest(str(target_manifest_path), 30.0)
-        assert target_manifest["planning"]["mode"] == "target_limited"
-        assert target_manifest["planning"]["budget_status"] == "budget_met"
-        assert len(target_manifest["planning"]["measured_candidate_ids"]) == 1
-        measured_record = next(
-            item for item in target_manifest["candidates"]
-            if item["id"] in target_manifest["planning"]["measured_candidate_ids"]
-        )
-        assert measured_record["storage"]["allocated_bytes"] > 0
-        assert measured_record["storage"]["logical_bytes"] is None
-        target_selection_path = root / "target-selection.json"
-        target_select_args = argparse.Namespace(
-            manifest=str(target_manifest_path),
-            target_gib=None,
-            headroom_percent=None,
-            prefer_kind=[],
-            kind=[],
-            max_age_minutes=30.0,
-            output=str(target_selection_path),
-        )
-        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-            assert select_manifest(target_select_args) == 0
-        target_selection = json.loads(target_selection_path.read_text(encoding="utf-8"))
-        assert target_selection["status"] == "budget_met"
-        assert target_selection["selected_ids"] == target_manifest["planning"]["measured_candidate_ids"]
-        sample = b"worktree /tmp/a\0HEAD abc\0branch refs/heads/main\0\0worktree /tmp/b\0HEAD def\0detached\0\0"
-        parsed = parse_worktree_porcelain(sample)
-        assert len(parsed) == 2 and parsed[1]["detached"] is True
-        repo = root / "repo"
-        linked = root / "linked"
-        repo.mkdir()
-        assert run(["git", "-C", str(repo), "init", "-b", "main"]).returncode == 0
-        assert run(["git", "-C", str(repo), "config", "user.name", "Filesystem Lifecycle Test"]).returncode == 0
-        assert run(["git", "-C", str(repo), "config", "user.email", "test@example.invalid"]).returncode == 0
-        (repo / "tracked.txt").write_text("test\n", encoding="utf-8")
-        assert run(["git", "-C", str(repo), "add", "tracked.txt"]).returncode == 0
-        assert run(["git", "-C", str(repo), "commit", "-m", "fixture"]).returncode == 0
-        assert run(["git", "-C", str(repo), "worktree", "add", "-b", "completed", str(linked)]).returncode == 0
-        worktrees = audit_worktrees(repo, [], True, [])
-        linked_record = next(item for item in worktrees if item.get("canonical_path") == str(linked.resolve()))
-        assert linked_record["classification"] == CLASS_SAFE
-        assert linked_record["git"]["representation"] == "exact_ancestor"
-        parent_task_roots = [{"session_file": "fixture-parent", "root": str(repo.resolve())}]
-        exact_task_roots = [{"session_file": "fixture-exact", "root": str(linked.resolve())}]
-        assert codex_refs(linked.resolve(), parent_task_roots, owner_root=linked.resolve()) == []
-        assert codex_refs(linked.resolve(), exact_task_roots, owner_root=linked.resolve()) == [str(linked.resolve())]
-        parent_scoped = audit_worktrees(repo, [], True, parent_task_roots)
-        parent_scoped_record = next(item for item in parent_scoped if item.get("canonical_path") == str(linked.resolve()))
-        assert parent_scoped_record["classification"] == CLASS_SAFE
-        exact_scoped = audit_worktrees(repo, [], True, exact_task_roots)
-        exact_scoped_record = next(item for item in exact_scoped if item.get("canonical_path") == str(linked.resolve()))
-        assert exact_scoped_record["classification"] == CLASS_AFTER
-        original_audit_worktrees = audit_worktrees
-        original_storage_evidence = storage_evidence
-        try:
-            globals()["audit_worktrees"] = lambda *_args, **_kwargs: (_ for _ in ()).throw(AssertionError("targeted revalidation called full audit"))
-            globals()["storage_evidence"] = lambda *_args, **_kwargs: (_ for _ in ()).throw(AssertionError("targeted revalidation measured storage"))
-            revalidate_static(linked_record)
-        finally:
-            globals()["audit_worktrees"] = original_audit_worktrees
-            globals()["storage_evidence"] = original_storage_evidence
-        (linked / "unique.txt").write_text("unique\n", encoding="utf-8")
-        assert run(["git", "-C", str(linked), "add", "unique.txt"]).returncode == 0
-        assert run(["git", "-C", str(linked), "commit", "-m", "unique fixture"]).returncode == 0
-        active_process = [{"pid": 999_999, "command": "fixture", "cwd": [str(linked.resolve())], "paths": []}]
-        worktrees = audit_worktrees(repo, active_process, True, [])
-        linked_record = next(item for item in worktrees if item.get("canonical_path") == str(linked.resolve()))
-        assert linked_record["classification"] == CLASS_RETAIN
-        assert linked_record["git"]["representation"] == "unique"
-        assert run(["git", "-C", str(repo), "worktree", "remove", "--", str(linked)]).returncode == 0
-    print("self-test passed")
-    return 0
+    import unittest
+    suite = unittest.defaultTestLoader.discover(str(Path(__file__).resolve().parent.parent / "tests"), pattern="test_*.py")
+    return 0 if unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful() else 1
 
 
 def parser() -> argparse.ArgumentParser:
@@ -1693,6 +1656,9 @@ def parser() -> argparse.ArgumentParser:
     audit_parser.add_argument("--repo", action="append", default=[], help="Git repository whose registered worktrees should be audited")
     audit_parser.add_argument("--include-known-caches", action="store_true", help="include exact allowlisted cache paths")
     audit_parser.add_argument("--max-depth", type=int, default=7)
+    audit_parser.add_argument('--npm-package-units', action='store_true', help='also qualify exact npm package/scope directories when a whole installation must be retained')
+    audit_parser.add_argument('--npm-package-name', action='append', default=[], help='narrow package-unit discovery to this exact top-level package or scope name; repeatable')
+    audit_parser.add_argument('--max-artifact-candidates', type=int, help='bound target-limited generated-artifact qualification; report remaining candidates as deliberately unassessed')
     audit_parser.add_argument("--authorization-mode", choices=("audit_only", "goal_authorized"), default="audit_only")
     audit_parser.add_argument("--authorization-scope", action="append", default=[], help="bounded user-authorized mutation scope; required for goal_authorized")
     audit_parser.add_argument("--target-gib", type=float, help="stop expensive sizing after safe candidates cover this target plus headroom")
@@ -1700,6 +1666,7 @@ def parser() -> argparse.ArgumentParser:
     audit_parser.add_argument("--prefer-kind", action="append", choices=DEFAULT_KIND_ORDER, default=[], help="candidate kind to rank first; repeat to set order")
     audit_parser.add_argument("--kind", action="append", choices=DEFAULT_KIND_ORDER, default=[], help="restrict audit and target sizing to this candidate kind; repeat as needed")
     audit_parser.add_argument("--volume", default="/System/Volumes/Data" if sys.platform == "darwin" else "/")
+    audit_parser.add_argument("--exclude", action="append", default=[], help="exclude exact paths and overlapping candidates")
     audit_parser.add_argument("--output")
     audit_parser.set_defaults(func=audit)
 
@@ -1724,9 +1691,16 @@ def parser() -> argparse.ArgumentParser:
     apply_parser.add_argument("--max-age-minutes", type=float, default=30.0)
     apply_parser.add_argument("--target-gib", type=float)
     apply_parser.add_argument("--risk-ceiling-gib", type=float, help="optional ceiling no greater than selected allocated bytes")
-    apply_parser.add_argument("--volume", default="/System/Volumes/Data" if sys.platform == "darwin" else "/")
-    apply_parser.add_argument("--report-output", help="persistent report path; defaults beside the manifest with a UTC timestamp")
+    apply_parser.add_argument("--volume", help="must match frozen target filesystem; defaults to manifest volume")
+    apply_parser.add_argument("--report-output", help="new optional receipt copy; durable digest-bound execution receipt is always kept beside the manifest")
     apply_parser.set_defaults(func=apply_manifest)
+
+    from fs_diagnostics import register_commands as register_diagnostics
+    from fs_compare import register_commands as register_comparison
+    from fs_observe import register_commands as register_observation
+    register_diagnostics(sub)
+    register_comparison(sub)
+    register_observation(sub)
 
     test_parser = sub.add_parser("self-test", help="exercise parsing, discovery, identity, and deletion in a temporary fixture")
     test_parser.set_defaults(func=self_test)
@@ -1735,7 +1709,11 @@ def parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = parser().parse_args()
-    return int(args.func(args))
+    try:
+        return int(args.func(args))
+    except (ValueError, KeyError, TypeError, OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
+        print(f"refused or incomplete: {exc}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

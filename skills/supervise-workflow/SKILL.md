@@ -36,7 +36,7 @@ Before a long or paid Sol run, or after a Codex CLI/model upgrade, exercise the
 exact model and structured-output surface (this spends a small model call):
 
 ```bash
-"$ENGINE" --assets-dir "$ASSETS_DIR" doctor --backend codex --probe --probe-model gpt-5.6-sol
+"$ENGINE" --assets-dir "$ASSETS_DIR" doctor --backend codex --probe --probe-model gpt-6.1-sol
 ```
 
 Provider/schema failures make doctor fail. PostHog or model-cache stderr is kept

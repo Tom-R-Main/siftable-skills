@@ -2,6 +2,12 @@
 
 Use the manifest as frozen evidence, not deletion authority. Record the authorization envelope separately from classification.
 
+## Version and authority
+
+Mutation uses `filesystem-lifecycle/v3` manifests and `filesystem-lifecycle/selection-v3` selections. Older records are reporting inputs only. Regenerate audit evidence instead of upgrading a deletion record in place.
+
+`authorization.envelope` binds `roots`, `kinds`, `exclusions`, `filesystem` (`device`, `filesystem_id`), `volume`, `target_free_delta_bytes` and `risk_ceiling_bytes`. Keep the human scope alongside it. Checksums detect accidental changes; authorization remains the human instruction recorded by the agent.
+
 ## Candidate record
 
 ```yaml
@@ -18,6 +24,7 @@ evidence:
 identity:
   canonical_path: /absolute/resolved/path
   device: 16777234
+  filesystem_id: 16777234
   inode: 123456
   link_count: 1
   mount_id: device:16777234:/System/Volumes/Data
@@ -119,7 +126,11 @@ Reject a selection when it is stale, edited, empty, references another manifest,
 
 ## Apply report
 
-Persist the final report. Distinguish the free-space change observed during each deletion interval from cumulative net physical recovery since apply began; neither proves exclusive causality when concurrent writers exist. Treat zero target shortfall as successful completion even when a candidate was safely skipped. Treat report-persistence failure as an incomplete operation record.
+Persist the final report. Distinguish the free-space change observed during each deletion interval from cumulative net physical recovery since apply began; neither proves exclusive causality when concurrent writers exist. Harmless pre-mutation skips can coexist with a met target; partial or uncertain mutation cannot. Treat report-persistence failure as an incomplete operation record.
+
+The primary receipt path is returned in `report_path`: a digest-bound `.execution-<digest>.json` file beside the manifest, exclusively claimed before mutation. A fresh audit changes the digest; the prior receipt remains preserved. It binds the source manifest digest and filesystem. Persist candidate intent before dispatch and outcomes afterward. Reserve the full candidate allocation at dispatch and retain it for partial/unknown effects. Results distinguish `in_progress`, `removed`, `skipped_before_mutation`, `partially_removed`, `failed_unknown_effect` and `not_attempted`. Operation state is `started`, `complete` or `reconciliation_required`.
+
+An existing execution receipt prevents replay. Inspect its last durable state and current resource identity, reconcile any uncertain effect, then create fresh audit evidence before a new authorized application. Never delete the receipt to bypass this protection. Recovery of deleted contents is a separate owner operation; it is not accomplished by reverting code.
 
 ## Workspace leases
 

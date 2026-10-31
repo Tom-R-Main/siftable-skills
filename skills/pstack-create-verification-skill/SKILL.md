@@ -14,7 +14,9 @@ Generate reusable instructions for another agent to prove real application behav
 
 ## Discover from the repository
 
-Identify the real user surface, documented run/build commands, toolchain, readiness signals, existing tests and drivers, observable state, and isolation controls. Read configuration schemas or examples for required variable names without exposing secret values. Use [footwork-tools](../footwork-tools/SKILL.md) to choose and establish the actual observation/action driver for the surface, then follow its host skill. Record a working observation and action recipe; a referenced but unavailable tool leaves the verifier a draft. Do not assume Cursor tools or a particular browser backend.
+Identify the real user surface, documented run/build commands, toolchain, readiness signals, existing tests/drivers, observable state, and isolation controls. Read configuration schemas or examples for required variable names without exposing secret values. Use [footwork-tools](../footwork-tools/SKILL.md) to choose and establish the actual observation/action driver for the surface, then follow its host skill. Record a working observation and action recipe; a referenced but unavailable tool leaves the verifier a draft. Do not assume Cursor tools or a particular browser backend.
+
+For recipes that create state or reach storage/services, use the [isolation recipe](references/isolation.md): validate resolved file containment and effective endpoints before effects, and challenge relevant guards with run-owned fixtures.
 
 Distinguish an application defect, missing local prerequisite, and missing harness capability. If the project cannot start, report the concrete blocker; do not silently widen this task into repairing unrelated product code.
 
@@ -24,14 +26,16 @@ Use the repository's existing discoverable skill location. Otherwise use `.agent
 
 Write only grounded commands, with no unresolved placeholders:
 
-- **Launch:** exact build/start command, working directory, readiness check, and isolated ports/data/profile selection. A short-lived CLI may launch anew for each drive.
-- **Doctor:** a cheap read-only check of the intended artifact/version, readiness, and ownership before driving. Repeat after surprising behavior; reset stale state when process health does not imply UI health.
+- **Launch:** exact build/start command, working directory, readiness check, and isolated ports/data/profile selection. For stateful apps, reach a usable state from an empty run-owned data directory, including required migrations and seed data. Ready means a required user operation can proceed; a responding port or database health check is insufficient while initialization is running. Never empty existing user data to exercise this path. A short-lived CLI may launch anew for each drive.
+- **Doctor:** a cheap read-only check of the intended artifact/version, readiness, and ownership before driving. Repeat after surprising behavior; report stale state when process health does not imply UI health. Keep any reset in a separate recovery step with explicit targets and existing authorization.
 - **Drive:** existing harness commands and stable selectors/arguments from the real app. Exercise public user paths, not internal setters or test-only bypasses.
 - **Evidence:** actions plus observed results, relevant side effects, exit status, and artifact identity. Store proof outside scratch directories that cleanup removes. Do not capture credentials or unrelated personal data.
 - **Cleanup:** terminate only processes started by this run, using recorded handles; remove only run-owned scratch state. Preserve proof. Never kill by broad process name or port alone.
 - **Helpers:** executable scripts only when they remove repeated or fragile work, with exact invocations in the skill.
 
 Create `features/README.md` and a small initial set of feature pages grounded in source routes, commands, or menus. Each page records purpose, user entry point(s), prerequisites, driving recipe, observable success/failure, and known coverage gaps. List the mapped entry points so later runs cannot quietly prove only the convenient path.
+
+If seed data lacks a journey's prerequisite, record the blocked or failed setup check and the reason on that feature page. Keep the journey's expected behavior intact and distinguish missing setup from a product defect.
 
 For multi-step flows, map each required criterion to historical-action, current-state, or answer evidence, including the intended resource and any invalidation conditions. Choose readback that proves the requested effect; a delivered input, changed page, or generic confirmation is insufficient for persistence or submission claims. Include a relevant failure/recovery recipe and reconcile uncertain mutations before retry. Reuse deterministic driver checks for these mechanics. The execution standard is [pstack-verify](../pstack-verify/SKILL.md).
 
@@ -40,6 +44,8 @@ For multi-step flows, map each required criterion to historical-action, current-
 Follow the generated instructions yourself: launch, doctor, drive at least one mapped feature through its actual public interface, capture proof, clean up, then confirm proof still exists. On failed attempts, clean up run-owned resources before retrying. Validate added helper scripts and skill frontmatter.
 
 If runtime access is blocked, deliver a clearly labeled draft with the exact unexecuted steps and reason; never claim a tested verifier. One feature executed validates that path, not the entire feature map. Report executed coverage explicitly.
+
+If a local stack, container, or other substitute stands in for the intended target, list setup it supplied that the target will still need. Leave those target setup steps unverified until exercised there; a local pass does not prove fresh-target readiness.
 
 Mention [pstack-maintain-verification-skill](../pstack-maintain-verification-skill/SKILL.md) for future drift checks. Do not schedule maintenance, publish, or open a PR unless requested or already authorized.
 

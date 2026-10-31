@@ -1,4 +1,4 @@
 interface:
   display_name: "Tometo Mode"
-  short_description: "Coordinate substantial engineering work using local"
+  short_description: "Coordinate engineering with specialty skills and verification"
   default_prompt: "Use $tometo-mode for this task, preserving its scope and existing authorization."
