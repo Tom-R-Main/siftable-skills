@@ -186,7 +186,7 @@ def validate_skill(skill: Path, *, run_help: bool = False) -> list[str]:
             continue
         if not path.is_file() or any(part in IGNORED for part in path.parts):
             continue
-        if path.name.endswith(PRIVATE_COLOPHON_SUFFIXES):
+        if path.name.casefold().endswith(PRIVATE_COLOPHON_SUFFIXES):
             errors.append(f"{label(path)}: private Colophon artifacts must stay outside skill packages")
             continue
         try:

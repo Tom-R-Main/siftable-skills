@@ -112,7 +112,8 @@ run "example" {}
 
     def test_colophon_profiles_and_derived_prompts_cannot_ship_in_a_package(self):
         path = self.skill('alpha')
-        for suffix in validate_repo.PRIVATE_COLOPHON_SUFFIXES:
+        for suffix in (*validate_repo.PRIVATE_COLOPHON_SUFFIXES,
+                       *(suffix.upper() for suffix in validate_repo.PRIVATE_COLOPHON_SUFFIXES)):
             with self.subTest(suffix=suffix):
                 private = path / ('local' + suffix)
                 private.write_text('{}')
