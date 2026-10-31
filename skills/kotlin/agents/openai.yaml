@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kotlin"
+  short_description: "Build and verify Kotlin across configured targets"
+  default_prompt: "Use $kotlin to implement and validate this Kotlin change against the repository's actual toolchain, source sets, and build contract."

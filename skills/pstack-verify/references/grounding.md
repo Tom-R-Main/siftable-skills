@@ -47,3 +47,25 @@ No Footwork provider, grant store, probability model, relay, or effect certifica
 ### Concrete hands and eyes
 
 The [footwork-tools route](../../footwork-tools/SKILL.md) adds the source-visible operator CLI (`cli.py`, `session.py`), native AX driver (`native.py`), dedicated-browser driver (`browser_driver.py`), provenance-bearing carries and saved-file checks (`carry.py`), and optional browser capture/transport helpers under `tools/`. Its [context reference](../../footwork-tools/references/contexts.md) separates concrete configured executable access, host-native routes, and untested UI/provider readiness. This tool routing is grounded in the interview's 17:45–19:10 discussion.
+
+## Targeted refresh (2026-10-15)
+
+Added explicit test-boundary catches/misses, sensitivity to broken behavior while tolerating internal refactors, and readback of intentional local code/fixture mutations before trusting a forced failure. Mutation sensitivity remains distinct from reproducing the original defect. See the [tometo refresh](../../tometo-mode/references/provenance.md#targeted-refresh-2026-10-15) for immutable Matt Pocock and pstack source commits and adaptation limits. No new test-approval or release authority is implied.
+
+## Targeted refresh (2026-10-26)
+
+Added optional [advisory checks](advisory-checks.md) for duplication, complexity, and targeted mutation testing, plus preservation of the last independent behavioral check during authorized test pruning. These add no tool installation, required score, refactoring, CI/hook, release, or global machine enforcement authority.
+
+Sources and reviewed limits:
+
+- Matt's [test-pruning record](https://github.com/mattpocock/course-video-manager/blob/279315673b519bf5a85bf76da6f536890b34f524/docs/plans/test-pruning.md#L176-L189) kept two proposed deletions because each was the last guard on a distinct behavior.
+- [ub-mode](https://github.com/unclebob/ub-mode/blob/57a8bdd28e45ed41900ace0bafa2ff76dd9ed70f/SKILL.md) proposes deterministic quality tools. Borrow targeted sensitivity assessment, not mandatory tools, numerical gates, wholesale redesign, exhaustive logs, or automatic commits/pushes.
+- Dryer at `66ff6d21a42c04afcad89c78a80066176d1294b0`: [set-based fingerprints](https://github.com/unclebob/dryer/blob/66ff6d21a42c04afcad89c78a80066176d1294b0/src/dryer/shape.py#L98-L108) are structural similarity, not behavioral equivalence or a removable-line percentage. [Changed selection](https://github.com/unclebob/dryer/blob/66ff6d21a42c04afcad89c78a80066176d1294b0/src/dryer/cli.py#L263-L283) compares changed files only with one another. [Empty scan handling](https://github.com/unclebob/dryer/blob/66ff6d21a42c04afcad89c78a80066176d1294b0/src/dryer/cli.py#L296-L316) leaves prior metrics intact. Bounded Clojure CLI checks reproduced both consequences without installing dependencies.
+- Dryer [reader dispatch](https://github.com/unclebob/dryer/blob/66ff6d21a42c04afcad89c78a80066176d1294b0/src/dryer/clojure_read.py#L336-L359) rejects valid var-quote syntax and drops the following forms. A bounded CLI check reproduced a warning, successful exit, and missed duplicate candidates; the equivalent `(var target)` control found them. [TypeScript template literal handling](https://github.com/unclebob/dryer/blob/66ff6d21a42c04afcad89c78a80066176d1294b0/src/dryer/astnorm.py#L158-L163) discards interpolation structure in static inspection. The cross-language suite and that TypeScript path were not executed. Recheck these caveats for another version rather than assuming they persist.
+- Mutator at `a5a0cb803b66e0cdb8bf471b3b08af701d424a41`: [generic failure classification](https://github.com/unclebob/mutator/blob/a5a0cb803b66e0cdb8bf471b3b08af701d424a41/src/mutator/workers.py#L296-L324) does not separate behavioral kills from invalid or infrastructure failures. [Cache selection](https://github.com/unclebob/mutator/blob/a5a0cb803b66e0cdb8bf471b3b08af701d424a41/src/mutator/engine.py#L61-L98) preserves kills based on function text, not the whole relevant test artifact. [Linked worker files](https://github.com/unclebob/mutator/blob/a5a0cb803b66e0cdb8bf471b3b08af701d424a41/src/mutator/workers.py#L122-L131) and inherited environment do not establish effect isolation. These are source findings; mutator was not installed or executed.
+
+The mode's [October 26 refresh](../../tometo-mode/references/provenance.md#targeted-refresh-2026-10-26) records the remaining source and workflow updates. Formal checking remains optional; statechart remains deferred.
+
+## Frontend integration (2026-10-26)
+
+The optional [break-ui](../../break-ui/SKILL.md) and [emil-design-eng](../../emil-design-eng/SKILL.md) routes add realistic schema-backed data/layout cases and relevant motion interruption/input checks. Their provenance records upstream commit `2d228630ba1446365f614a108cb8252f1feda202` and corrections. They preserve the task's audit/fix mode, actual data and public boundaries, run-owned fixtures, and evidence limits; no required all-surface matrix or new runtime is implied.

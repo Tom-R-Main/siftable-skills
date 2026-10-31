@@ -16,9 +16,15 @@ Close the implementation loop by observing the result, not by accepting the impl
 
 Translate the user's promise into observable success conditions before driving. Identify the actual entry point, required input variants, persistence or other side effects, and nearby behavior the change could break. Derive expected results from the request, established behavior, or an independent reference, not the implementation under test. Do not invent product requirements to test.
 
+For consequential checks, state the public boundary tested, the defect classes it catches, and the integration behavior it leaves unverified. A useful behavioral test should fail when the promised behavior breaks and survive an internal refactor that preserves it. Select the boundary from the risk and existing harness; routine test selection does not need a new user approval.
+
 For a multi-step or consequential flow, keep a compact requirement ledger: criterion, kind, evidence source/step, result, and limitations. Distinguish **historical action** (a submission happened), **current state** (the intended saved value still holds), and **answer** (a reported fact has a source). Preserve observed historical events within the same run; recheck current state after edits, navigation, restarts, or other invalidation; ground each new answer in evidence for that answer. An unclassified requirement needs a fresh check rather than silently becoming historical. Overall completion requires every required criterion; confidence or a generic success screen cannot fill an evidence gap.
 
 Read the repository's verification instructions and mapped feature paths. Prefer its existing `verify-<app>` skill and harness. If a repeatable driver is missing and creating one is useful to the authorized work, use [pstack-create-verification-skill](../pstack-create-verification-skill/SKILL.md). A one-off check does not need a new framework. If the map or harness has drifted, use [pstack-maintain-verification-skill](../pstack-maintain-verification-skill/SKILL.md) for bounded corrections. A generated but unexecuted verifier is a draft.
+
+For UI promises involving representative content, container layout, localization, or edge states, use [break-ui](../break-ui/SKILL.md) to select relevant stress cases at the actual data boundary. For changed motion, use [emil-design-eng](../emil-design-eng/SKILL.md#verify-the-interaction) for relevant interruption/input checks. Neither route substitutes for this workflow or adds a mandatory full matrix.
+
+For a requested duplication, complexity, or test-strength assessment, or a consequential test-sensitivity gap, read the optional [advisory checks](references/advisory-checks.md). Dryer remains an advisory candidate finder; ordinary verification does not require metrics or mutation tools.
 
 Make the artifact identifiable: record the checkout/commit plus relevant local changes, or the saved file/build/version for a non-Git artifact. Verify the version actually running when the runtime can expose it. A Git SHA alone does not identify an uncommitted patch or prove which build a server is serving.
 
@@ -28,6 +34,8 @@ Make the artifact identifiable: record the checkout/commit plus relevant local c
 2. Run required project checks and drive the promised behavior through the real public interface. For UI work, start at the user's entry point; for a CLI, run the command; for a service or library, call its public boundary; for a generated artifact, open/read the saved output. Verify side effects as well as visible output. A convenient deep link is incomplete when another required entry point is untested.
 3. Challenge the change with the smallest useful set of relevant cases: bad or empty input, repeat actions, reload/readback, interrupted operations, recovery, and nearby regressions. Select cases from the actual mechanism and consequence; do not turn this list into a mandatory matrix for unrelated work. Compare against the base version when it can distinguish a new regression from existing behavior; record when the feature is new or the baseline is unavailable.
 4. Prefer deterministic assertions and repository drivers for mechanical checks. Keep agent judgment for selecting scenarios, interpreting evidence, and investigating surprises. A useful test can fail for a plausible defect and compares an observable result with an independently chosen expectation. Mock call counts, fixture-only assertions, or restating implementation constants do not prove the user's outcome. Use mocks at established external boundaries and state what remains unverified there.
+
+During authorized test pruning or consolidation, map each important behavior to a surviving independent check. Preserve its last meaningful check unless coverage is explicitly replaced or the behavior intentionally retired. This does not require adding tests for routine low-impact edits.
 
 Manual adversarial exploration means using the app to look for mistakes. Call it exploration unless an actual fuzzing harness ran; do not claim formal verification or exhaustive coverage from clicking around. For substantial or difficult changes, a focused independent verifier may add confidence when delegation is permitted. Give it the promise, artifact identity, source paths, and permitted effects; let it derive checks rather than handing it the implementer's verdict. Use inherited model settings and report separate contexts as such. Do not create a fixed verifier swarm for routine work.
 
@@ -44,6 +52,8 @@ Keep the short action/observation trajectory needed to support the ledger. Compl
 ## Fix and recheck
 
 Preserve a concrete failing observation before changing anything. Separate a product defect, a missing prerequisite, and a broken observation method. Recheck instance health after surprising behavior. If the same probe fails twice without new information, repair the probe or change the hypothesis rather than repeating it.
+
+When an authorized local experiment forces a failure with a code or fixture mutation, compare it with the captured pre-experiment state to prove the intended change landed. Check that it fails for the intended reason, restore only the experiment's changes, and recheck the final artifact. Keep probe sensitivity distinct from reproduction of the original defect.
 
 Fix product code only when the current task authorizes implementation/remediation. Verification-only requests report findings; harness maintenance stays inside its owned files. Never weaken the expected behavior or a required gate to manufacture a pass. Use a meaningful regression test or replayable reproduction for a demonstrated defect when that adds durable protection.
 

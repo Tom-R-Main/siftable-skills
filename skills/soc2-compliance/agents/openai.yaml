@@ -1,0 +1,4 @@
+interface:
+  display_name: "SOC 2 Compliance"
+  short_description: "Plan, assess, and evidence SOC 2 readiness"
+  default_prompt: "Use $soc2-compliance to run structured SOC 2 discovery, assess the evidence, and produce a source-grounded remediation plan."

@@ -1,0 +1,10 @@
+{
+  "schema": "filesystem-lifecycle/catalog-v1",
+  "entries": [
+    {"id":"node-dependencies","platforms":["darwin","linux"],"basename":"node_modules","owner_resolver":"project-marker","markers":["package.json"],"owner":"node-package-manager","purpose":"Installed project dependencies","required_probes":["metadata","project-marker"],"recovery_method":"Reinstall using the project's package manager and lockfile; availability is unverified","supported_actions":["inventory"],"prevention":"Compare repeated installs before recommending shared package storage"},
+    {"id":"cargo-output","platforms":["darwin","linux"],"basename":"target","owner_resolver":"project-marker","markers":["Cargo.toml"],"owner":"cargo","purpose":"Possible Rust build output","required_probes":["metadata","project-marker"],"recovery_method":"Rebuild with the project toolchain after verifying inputs","supported_actions":["inventory"]},
+    {"id":"python-environment","platforms":["darwin","linux"],"basename":".venv","owner_resolver":"project-marker","markers":["pyproject.toml","requirements.txt","uv.lock"],"owner":"python","purpose":"Possible project Python environment","required_probes":["metadata","project-marker"],"recovery_method":"Recreate from verified environment specifications","supported_actions":["inventory"]},
+    {"id":"zig-output","platforms":["darwin","linux"],"basename":".zig-cache","owner_resolver":"project-marker","markers":["build.zig"],"owner":"zig","purpose":"Possible Zig build cache","required_probes":["metadata","project-marker"],"recovery_method":"Rebuild after verifying the toolchain and inputs","supported_actions":["inventory"]},
+    {"id":"mac-app","platforms":["darwin"],"suffix":".app","owner_resolver":"bundle-metadata","owner":"unknown","purpose":"Application bundle; retained user software","required_probes":["metadata","bundle-id"],"recovery_method":"Unknown; application inventory is not removal authority","supported_actions":["inventory"]}
+  ]
+}

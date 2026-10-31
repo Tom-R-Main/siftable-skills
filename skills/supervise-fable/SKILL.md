@@ -17,7 +17,7 @@ and ask whether to proceed with a named alternative.
 
 Keep Fable on the supervisory side of the trust boundary. In the current native
 harness, Fable may plan, review, or do both; it is not an implementation backend.
-Use Codex GPT-5.6 Sol for general implementation and remediation, or gated Kimi
+Use Codex GPT-6.1 Sol for general implementation and remediation, or gated Kimi
 K3 for reference-driven UI under the canonical design requirements. The invoking
 host remains the trusted monitor and final judge.
 

@@ -19,7 +19,7 @@ Classify the checked-out HEAD against a protected base with deterministic Git op
 - `patch_equivalent`: `git cherry <base> <head>` returns no unique `+` patch.
 - `unique`: none of the above was proved.
 
-Accept only the first three for automatic `safe_now`. Treat failed commands or uncertain equivalence as `unknown`; treat a proved unique patch as `retain`. Ancestry alone misses squash merges, while cleanliness alone says nothing about unique commits.
+For branch-backed checkouts, accept only the first three for automatic `safe_now`. A detached HEAD additionally requires exact ancestry in the protected base so unique commit history remains reachable. Treat failed commands or uncertain equivalence as `unknown`; treat a proved unique patch as `retain`. Ancestry alone misses squash merges, while cleanliness alone says nothing about unique commits.
 
 ## Safe retirement test
 
@@ -29,7 +29,7 @@ Require all of the following:
 2. Existing, canonical, non-symlink path beneath the frozen boundary.
 3. Not locked and no nested mount or cross-device traversal.
 4. No external CWD, open handle, owner session, or current Codex task root.
-5. Empty `git status --porcelain=v1 -z --untracked-files=all`.
+5. Empty `git status --porcelain=v1 -z --untracked-files=all --ignored`. Ignored state is not automatically disposable; qualify generated subtrees independently before retiring the checkout.
 6. Recoverable HEAD and deterministic representation evidence.
 7. Unchanged path, identity, HEAD, status, liveness, and representation immediately before removal.
 

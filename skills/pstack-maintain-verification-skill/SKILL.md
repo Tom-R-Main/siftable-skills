@@ -16,6 +16,8 @@ Limit edits to that skill's directory and its owned harness. An audit-only reque
 
 Apply [pstack-verify](../pstack-verify/SKILL.md) to the live recipes: distinguish delivery from the requested effect, check resource-bound readbacks, and invalidate current-state evidence after subsequent edits or navigation. Check relevant failure/recovery paths when the mapped feature promises them. Historical events and answer provenance need their own evidence; a generic final screen cannot replace either. Reconcile an uncertain mutation before retry, without repeating effects just to obtain proof.
 
+Before a mutable live recipe, audit its [isolation controls](../pstack-create-verification-skill/references/isolation.md) against current configuration and effects. Recheck resolved paths and effective endpoints, including defaults and new writers/connections; a new checkout is insufficient. Challenge changed guards with run-owned fixtures before trusting them.
+
 1. Reconcile the index with feature files and current public entry points. Inspect relevant source changes for omitted features; require a concrete source path before calling one missing.
 2. Trace each mapped feature to source and derive a concise live recipe. For a large map, bounded read-only source reviewers may work independently when permitted; only the coordinator drives shared app state.
 3. Follow the skill's launch model and doctor checks. Exercise every mapped feature at least once, track entry-point/sub-feature gaps, and preserve evidence. Do not call a pass clean merely because source looks consistent.

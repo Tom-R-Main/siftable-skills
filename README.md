@@ -1,58 +1,131 @@
 # Siftable Skills
 
-A personal skill library for coding, verification, planning, and writing. The collection includes Tometo Mode, the pstack workflows, language-specific engineering skills, and optional routes to browsers, design tools, local corpora, and supervised workers.
+Siftable Skills gives a coding agent methods it can reuse: how to investigate a regression, review an interface, learn from another repository, or verify a change on the real application. There are 58 skills for engineering, design, planning, and writing.
 
-Each package lives under `skills/<name>/`. It contains instructions and any bundled scripts, references, assets, or tests. Workflow packages can depend on sibling skills through explicit relative resource links; the installer includes their full dependency closure. Installed skills use their own package and sibling resources, without repository-root files at runtime.
+Start with **Tometo Mode** if you want the agent to coordinate the work. It reads the project, selects the relevant skills, and carries an authorized change through verification. Use an individual skill when the job is narrower.
 
-## Install from a reviewed checkout
+Each skill is a folder with a `SKILL.md` entrypoint and any references or helpers it needs. The installer follows links between sibling skills, so selecting a workflow brings its dependencies with it. You can install the library outside your application repository.
 
-Use Python 3's standard-library installer after obtaining a reviewed local checkout:
+## Start here
+
+Use Python 3 and a reviewed checkout of this repository. Set the destination to a directory your agent discovers; `$HOME/.agents/skills` is one common choice.
 
 ```bash
-# Preview all skills without changing files.
-python3 scripts/install_skills.py --destination "$HOME/.agents/skills"
-
-# Install all skills and verify the resulting files.
-python3 scripts/install_skills.py --destination "$HOME/.agents/skills" --apply
-
-# Select a workflow and its declared dependencies.
+# Preview Tometo Mode and its dependencies.
 python3 scripts/install_skills.py --destination "$HOME/.agents/skills" \
-  --skill tometo-mode --skill zig --apply
+  --skill tometo-mode
 
-# Replace only unchanged packages previously managed by this installer.
-python3 scripts/install_skills.py --destination "$HOME/.agents/skills" --apply --update
+# Apply the same selection.
+python3 scripts/install_skills.py --destination "$HOME/.agents/skills" \
+  --skill tometo-mode --apply
 ```
 
-The destination is required. `--profile all` is the default; `--profile engineering` selects Tometo Mode, pstack workflows, and language skills, while `--profile languages` selects the language and frontend skills. Repeated `--skill NAME` arguments select individual packages. Both profiles and individual selections include declared sibling dependencies.
+Start a fresh agent task and ask:
 
-The installer stages complete directories, hashes installed contents and executable bits, and stores `.siftable-skills.json` in the destination root. It refuses symlinks, unmanaged conflicts, and managed packages with local changes. Repeating an installation with unchanged sources is idempotent. Updates roll back on ordinary failures and leave a recovery transaction if interrupted; see the [recovery procedure](docs/cloud-setup.md#recover-an-interrupted-update).
+```text
+Use $tometo-mode to implement this feature and verify it through the real user path.
+```
 
-Packages copied by the earlier cloud ZIP installer are unmanaged by this installer. Use an empty configured skill directory or review and relocate conflicting packages before migrating. Installation does not remove packages when a selection changes.
+Check that the agent reads the skill. Files on disk establish installation; discovery depends on your agent and its configuration.
 
-For a durable personal library across cloud repositories, follow [Cloud setup](docs/cloud-setup.md) and [Cloud startup instructions](docs/cloud-start-skill.md). They install from an immutable Git commit into the cloud user skill directory during setup and maintenance, while preserving the application repository and its existing build setup. Saving settings, publishing the environment, and checking fresh-task discovery happen in the cloud environment.
+For the whole collection, omit `--skill tometo-mode`. For a smaller selection, use `--profile engineering`, `--profile languages`, or repeat `--skill NAME`. The engineering profile includes Tometo, verification, language skills, and Linux. The languages profile includes Kotlin and the existing language and frontend skills. Every selection includes its declared dependencies.
 
-## Included skills
+## What Tometo does
+
+Tometo gives substantial work a consistent shape: understand the promise, inspect the code, choose the right method, implement within scope, and check the result at the boundary the user will use. A passing unit test supports a narrower claim than a verified user journey. The final report should make that difference clear.
+
+The main routes are:
+
+| Need | Skill |
+| --- | --- |
+| Find the cause of a regression | [pstack-investigate](skills/pstack-investigate/SKILL.md) |
+| Decide interfaces and ownership | [pstack-architect](skills/pstack-architect/SKILL.md) |
+| Review a diff | [pstack-interrogate](skills/pstack-interrogate/SKILL.md) |
+| Exercise changed behavior | [pstack-verify](skills/pstack-verify/SKILL.md) |
+| Make a verification recipe reusable | [pstack-create-verification-skill](skills/pstack-create-verification-skill/SKILL.md) |
+| Learn a mechanism from another codebase | [repo-learn](skills/repo-learn/SKILL.md) |
+| Improve interactions or challenge a layout | [emil-design-eng](skills/emil-design-eng/SKILL.md) and [break-ui](skills/break-ui/SKILL.md) |
+
+The [Tometo entrypoint](skills/tometo-mode/SKILL.md) also routes task framing, catch-up reports, relevant language guidance, and optional formal or recurring-work checks. Those references load when the task needs them. A small fix can stay small.
+
+You can ask for a narrower procedure directly:
+
+```text
+Use $rust to diagnose this lifetime issue with the repository's pinned toolchain.
+Use $break-ui to stress-test this component with plausible worst-case data.
+Use $repo-learn to compare recovery mechanisms before we choose one for this project.
+```
+
+The [skill guide](docs/skill-guide.md) explains how to choose, combine, document, and maintain skills, including a repo-learn example.
+
+## Installation and updates
+
+The installer reads a local checkout and uses Python's standard library. It stages complete packages, checks their contents and executable bits, and records hashes in `.siftable-skills.json` in the destination.
+
+To refresh an installation, repeat its selection from your reviewed checkout:
+
+```bash
+python3 scripts/install_skills.py --destination "$HOME/.agents/skills" \
+  --skill tometo-mode --apply --update
+```
+
+Updates replace only unchanged packages this installer already manages. It refuses unmanaged conflicts, local modifications, and symlink paths. Repeating the same installation is idempotent. Changing a selection leaves previously installed skills in place.
+
+If an update is interrupted, preserve the transaction and follow the [recovery procedure](docs/cloud-setup.md#recover-an-interrupted-update). Packages installed by the earlier ZIP method are unmanaged; review them or choose an empty destination before migrating.
+
+For cloud agents, follow [Cloud setup](docs/cloud-setup.md) and [Cloud startup instructions](docs/cloud-start-skill.md). Pin a reviewed commit in both setup and maintenance, then test discovery in a fresh task. Updating this repository does not change an existing cloud environment's pin.
+
+## Tools and permissions
+
+Skills provide procedures and bundled helpers. Compilers, browsers, native apps, MCP servers, provider CLIs, worker engines, and credentials come from your environment.
+
+Browser and native-app work needs an available observation and action tool. Supervised workflows need a compatible, separately configured engine. Corpus retrieval needs an authorized backend and source collection. PDF, transcription, and Sentry workflows use the available document or service route. Each skill explains its requirements and reports missing capabilities.
+
+The task still determines what the agent may do. Installing a skill grants no authority to deploy, delete data, send messages, publish, or spend money. Verification should name the artifact checked and the behavior observed; an unavailable integration remains unverified.
+
+## Maintain the library
+
+```bash
+python3 scripts/validate_repo.py
+python3 scripts/run_tests.py
+```
+
+Validation checks package metadata, resource links, symlinks, personal paths, excluded personal workflows, and likely secrets. Tests cover helpers, installer conflicts and recovery, offline cloud setup, and clean installations with only the declared dependencies. Filesystem mutation tests use disposable fixtures. Live provider, browser, cloud, and native-app behavior needs its own checks.
+
+See [the authoring guide](docs/skill-guide.md#document-or-update-a-skill) before changing a package. Keep the procedure in the skill, conditional detail in references, and provenance in [skill-sources.json](skill-sources.json). The current refresh preserves reviewed public adapters and tested helpers where local sources contain private data or depend on a particular runtime.
+
+Personal and project-specific workflows, material sourced through personal-workflow collections, private corpora, credentials, local binaries, and repository overlays are excluded. Source and license attribution stays with the packages.
+
+## All skills
 
 <!-- skill-inventory:start -->
-45 skill packages are included.
+58 skill packages are included.
 
 | Skill | Scope |
 | --- | --- |
 | [`autoplan`](skills/autoplan/SKILL.md) | Compatibility route to Tometo Mode |
+| [`aws-secrets-manager`](skills/aws-secrets-manager/SKILL.md) | Opaque runtime secret integration and metadata-only diagnosis |
+| [`break-ui`](skills/break-ui/SKILL.md) | Schema-backed UI data, layout, and edge-state stress testing |
 | [`c-systems-programming`](skills/c-systems-programming/SKILL.md) | C file I/O, processes, signals, and operating-system interfaces |
 | [`cloud-environment-runtime`](skills/cloud-environment-runtime/SKILL.md) | Cloud execution, network, credential, and persistence context |
 | [`css`](skills/css/SKILL.md) | CSS, Tailwind, cascade, layouts, and computed styles |
+| [`emil-design-eng`](skills/emil-design-eng/SKILL.md) | Frontend interaction, motion, accessibility, and performance |
 | [`filesystem-lifecycle`](skills/filesystem-lifecycle/SKILL.md) | Evidence-based storage audits and guarded filesystem cleanup |
 | [`footwork-tools`](skills/footwork-tools/SKILL.md) | Observation and action routes for browsers, apps, services, and artifacts |
 | [`generating-design-references`](skills/generating-design-references/SKILL.md) | Design-reference generation through an approved image tool |
 | [`gh-fix-ci`](skills/gh-fix-ci/SKILL.md) | GitHub Actions failure investigation and bounded remediation |
+| [`gis-spatial-analysis`](skills/gis-spatial-analysis/SKILL.md) | Deterministic GIS, QGIS, cartography, and web-map workflows |
 | [`go`](skills/go/SKILL.md) | Go implementation, review, modules, toolchains, and validation |
 | [`grok-guide`](skills/grok-guide/SKILL.md) | Explicit Grok planning, replanning, and completion-audit integration |
 | [`human-writing`](skills/human-writing/SKILL.md) | Public prose with factual, source, voice, and text-hygiene checks |
 | [`investigate`](skills/investigate/SKILL.md) | Compatibility route to pstack investigation |
+| [`kotlin`](skills/kotlin/SKILL.md) | Kotlin APIs, coroutines, Gradle, Android, and multiplatform work |
+| [`linux`](skills/linux/SKILL.md) | Kernel, userspace, services, and desktop integration |
 | [`mermaid`](skills/mermaid/SKILL.md) | Mermaid diagram rendering through the selected available route |
+| [`neo-bauhaus-editorial-ui`](skills/neo-bauhaus-editorial-ui/SKILL.md) | Editorial visual hierarchy, tokens, and interaction affordances |
 | [`opengl-c-graphics`](skills/opengl-c-graphics/SKILL.md) | Core-profile OpenGL in C, shaders, buffers, and GPU diagnosis |
 | [`paper-design`](skills/paper-design/SKILL.md) | Paper design inspection, editing, export, and handoff |
+| [`pdf`](skills/pdf/SKILL.md) | PDF extraction, creation, manipulation, rendering, and verification |
 | [`pgvector-postgres`](skills/pgvector-postgres/SKILL.md) | PostgreSQL vector search, plans, recall, indexes, and migrations |
 | [`plan`](skills/plan/SKILL.md) | Evidence-grounded plans and visual sequencing |
 | [`plan-eng-review`](skills/plan-eng-review/SKILL.md) | Compatibility route to pstack architecture review |
@@ -65,12 +138,16 @@ For a durable personal library across cloud repositories, follow [Cloud setup](d
 | [`pstack-maintain-verification-skill`](skills/pstack-maintain-verification-skill/SKILL.md) | Verification harness audits against source and live behavior |
 | [`pstack-verify`](skills/pstack-verify/SKILL.md) | Verification on real apps, CLIs, services, or artifacts |
 | [`react-best-practices`](skills/react-best-practices/SKILL.md) | React and Next.js rendering, hooks, bundles, and measured performance |
+| [`repo-learn`](skills/repo-learn/SKILL.md) | Source-grounded engineering patterns and explicit evidence stores |
 | [`review`](skills/review/SKILL.md) | Compatibility route to pstack independent review |
 | [`rust`](skills/rust/SKILL.md) | Rust ownership, errors, async, unsafe/FFI, toolchains, and Cargo gates |
+| [`screenshot`](skills/screenshot/SKILL.md) | Scoped desktop, app, window, and region capture |
 | [`search-local-corpus`](skills/search-local-corpus/SKILL.md) | Backend-neutral retrieval with source locators and citations |
 | [`searching-design-corpus`](skills/searching-design-corpus/SKILL.md) | Specialized design and systems corpus retrieval through an adapter |
 | [`semantic-density`](skills/semantic-density/SKILL.md) | Precise internal notes, prompts, and model-facing instructions |
+| [`sentry`](skills/sentry/SKILL.md) | Read-only issue and event investigation through configured access |
 | [`sharp-edit`](skills/sharp-edit/SKILL.md) | Concise business writing with preserved facts, certainty, and voice |
+| [`soc2-compliance`](skills/soc2-compliance/SKILL.md) | SOC 2 scope, controls, evidence, readiness, and gap assessment |
 | [`strategic-decision-mapping`](skills/strategic-decision-mapping/SKILL.md) | Actors, incentives, moves, countermoves, and next decisions |
 | [`supervise`](skills/supervise/SKILL.md) | Compatibility route to supervised coding |
 | [`supervise-fable`](skills/supervise-fable/SKILL.md) | Fable planning/review with isolated implementation workers |
@@ -81,53 +158,11 @@ For a durable personal library across cloud repositories, follow [Cloud setup](d
 | [`terraform-gcp`](skills/terraform-gcp/SKILL.md) | Google Cloud Terraform/OpenTofu, IAM, state, services, and verification |
 | [`thinking-scientific-method`](skills/thinking-scientific-method/SKILL.md) | Falsifiable hypotheses, predictions, tests, and revision |
 | [`tometo-mode`](skills/tometo-mode/SKILL.md) | Coordinated engineering with specialty skills and executable verification |
+| [`transcribe`](skills/transcribe/SKILL.md) | Audio/video transcription with timestamps and optional speaker labels |
 | [`typescript`](skills/typescript/SKILL.md) | TypeScript types, compiler behavior, modules, and build/test gates |
 | [`zig`](skills/zig/SKILL.md) | Version-aware Zig APIs, allocation, I/O, FFI, and measured optimization |
 <!-- skill-inventory:end -->
 
-## Use a skill
-
-Explicit invocation asks the agent to read and apply a particular procedure:
-
-```text
-Use $tometo-mode to implement this feature and verify it on the real application.
-Use $zig to diagnose this allocator boundary using the repository's pinned toolchain.
-Use $typescript to review this narrowing error and run the relevant compiler gates.
-Use $rust to review this async lifetime issue and verify the bounded fix.
-```
-
-Some harnesses also discover skills from their descriptions. Confirm discovery in a fresh task after installation; files on disk alone do not prove a harness loaded them. Read each selected `SKILL.md` before using its scripts, and follow the user's scope and authorization rules.
-
-## Optional integrations
-
-Installation supplies skill files and bundled helpers. It does not provision compilers, browser engines, native applications, provider CLIs, MCP servers, credentials, corpus contents, or worker engines.
-
-| Route | What must be available separately |
-| --- | --- |
-| Tometo Mode and pstack | The selected repository's build/runtime tools and an observation surface for real verification; delegation requires an available authorized worker tool |
-| Language skills | The repository's selected compiler, package manager, libraries, and build contract |
-| Footwork and Playwright | A configured browser/CLI/service observation surface; native Mac routes require a Mac |
-| Paper and design references | The relevant MCP or approved image-generation capability |
-| Grok and supervised workers | A user-configured provider/worker engine that implements the documented request contracts; bundled adapters do not supply an engine |
-| Corpus retrieval | A user-configured retrieval backend and permitted corpus; private data is not bundled |
-| Terraform GCP | Terraform/OpenTofu and separately configured authorized Google Cloud access |
-| Cloud environment runtime | An actual configured cloud task and its supported network/credential tools |
-
-When an integration is absent, the skills require the agent to identify the missing capability and continue work supported by the current environment. Skills never grant deployment, deletion, secret access, messaging, or publication authority.
-
-`search-local-corpus` exposes a backend-neutral JSON interface. `searching-design-corpus` retains the specialized design-corpus route behind its documented adapter. See their bundled contracts before supplying a backend.
-
-## Validate changes
-
-```bash
-python3 scripts/validate_repo.py
-python3 scripts/run_tests.py
-```
-
-Static validation checks frontmatter, package names, relative resources, symlinks, personal paths, and likely secrets. It does not execute new integration scripts to infer whether a capability exists. The test runner separately exercises the original allowlisted `--help` contracts, deterministic package tests, installer conflict and recovery cases, and the documented cloud setup against an offline Git fixture.
-
-Clean-install tests copy independent skills alone and workflows with only their declared sibling closure into temporary installation trees. Mutation tests operate on fixtures. These checks establish package portability and installer behavior; live provider, cloud, browser, and native-app integrations need verification on their actual surfaces.
-
 ## Source and license
 
-The collection is maintained by [Thomas Main](https://github.com/Tom-R-Main). See the [MIT License](LICENSE), [Third-party notices](THIRD_PARTY_NOTICES.md), and `skill-sources.json` for provenance and adapted components. Source refreshes preserve the selected local workflow and portable adapters; they do not silently change the pinned commit in a published cloud environment.
+Maintained by [Thomas Main](https://github.com/Tom-R-Main). See the [MIT License](LICENSE), [third-party notices](THIRD_PARTY_NOTICES.md), and [source records](skill-sources.json) for the origin and terms of adapted material.

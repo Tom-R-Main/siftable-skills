@@ -7,12 +7,14 @@ import argparse
 import datetime as dt
 import json
 import os
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "fs_lifecycle.py"
+sys.path.insert(0, str(SCRIPT.parent))
 SPEC = importlib.util.spec_from_file_location("fs_lifecycle", SCRIPT)
 assert SPEC and SPEC.loader
 FS = importlib.util.module_from_spec(SPEC)
@@ -42,13 +44,13 @@ class FilesystemLifecycleTests(unittest.TestCase):
             root,
             "generated_artifact",
             "node-package-manager",
-            {"level": "regenerable", "method": "package install"},
+            {"verified": True, "level": "regenerable", "method": "fixture recovery"},
             {"driver": "filesystem", "operation": "delete_exact_tree"},
         )
 
     def test_process_cwd_and_open_handle_defer_cleanup(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
+            root = Path(temp).resolve()
             target = root / "node_modules"
             target.mkdir()
             candidate = self.candidate(root, target)
@@ -60,7 +62,7 @@ class FilesystemLifecycleTests(unittest.TestCase):
 
     def test_open_handle_with_external_cwd_still_defers_cleanup(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
+            root = Path(temp).resolve()
             target = root / "node_modules"
             target.mkdir()
             candidate = self.candidate(root, target)
@@ -72,7 +74,7 @@ class FilesystemLifecycleTests(unittest.TestCase):
 
     def test_incomplete_scan_never_becomes_safe(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
+            root = Path(temp).resolve()
             target = root / "unknown"
             candidate = FS.unknown_candidate(target, root, "generated_artifact", "unknown", "permission denied")
             FS.classify_path_candidate(candidate, [], True, [])
@@ -80,7 +82,7 @@ class FilesystemLifecycleTests(unittest.TestCase):
 
     def test_changed_inode_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
+            root = Path(temp).resolve()
             target = root / "node_modules"
             target.mkdir()
             candidate = self.candidate(root, target)
@@ -92,18 +94,18 @@ class FilesystemLifecycleTests(unittest.TestCase):
 
     def test_symlink_target_is_never_traversed(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
+            root = Path(temp).resolve()
             real = root / "real"
             real.mkdir()
             link = root / "link"
             link.symlink_to(real, target_is_directory=True)
-            with self.assertRaisesRegex(RuntimeError, "symlink"):
+            with self.assertRaisesRegex(RuntimeError, "symlink|real directory"):
                 FS.safe_delete_tree(link)
             self.assertTrue(real.exists())
 
     def test_hardlink_accounting_records_shared_inode(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
+            root = Path(temp).resolve()
             first = root / "first"
             second = root / "second"
             first.write_text("shared", encoding="utf-8")
@@ -113,7 +115,7 @@ class FilesystemLifecycleTests(unittest.TestCase):
 
     def test_nested_artifact_is_covered_by_safe_worktree(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
+            root = Path(temp).resolve()
             worktree = root / "worktree"
             artifact = worktree / "node_modules"
             artifact.mkdir(parents=True)
@@ -133,7 +135,7 @@ class FilesystemLifecycleTests(unittest.TestCase):
 
     def test_stale_manifest_is_rejected_before_mutation(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
+            root = Path(temp).resolve()
             manifest = {
                 "schema": FS.SCHEMA,
                 "generated_at": (dt.datetime.now(dt.timezone.utc) - dt.timedelta(hours=2)).isoformat(),
@@ -154,12 +156,12 @@ class FilesystemLifecycleTests(unittest.TestCase):
                 target_gib=None,
                 volume=str(root),
             )
-            with self.assertRaisesRegex(SystemExit, "manifest is stale"):
+            with self.assertRaisesRegex(ValueError, "manifest is stale"):
                 FS.apply_manifest(args)
 
     def test_dirty_and_unique_worktrees_are_retained(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
+            root = Path(temp).resolve()
             repo = root / "repo"
             linked = root / "linked"
             repo.mkdir()

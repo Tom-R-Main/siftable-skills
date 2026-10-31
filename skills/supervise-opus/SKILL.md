@@ -1,6 +1,6 @@
 ---
 name: supervise-opus
-description: Trusted Claude Opus 5 xhigh planning and independent review workflow with Codex GPT-5.6 Sol as the default implementation worker, optional Kimi K3 for reference-driven UI, isolated worktrees, monitor-run verification, bounded remediation, and final human judgment. Use when the user invokes $supervise-opus or asks for a high-confidence implementation workflow or fresh review of an existing committed diff.
+description: Trusted Claude Opus 5 xhigh planning and independent review workflow with Codex GPT-6.1 Sol as the default implementation worker, optional Kimi K3 for reference-driven UI, isolated worktrees, monitor-run verification, bounded remediation, and final human judgment. Use when the user invokes $supervise-opus or asks for a high-confidence implementation workflow or fresh review of an existing committed diff.
 ---
 
 # Supervise Opus
@@ -11,7 +11,7 @@ completely. Treat the immutable task contract as the only authority.
 Default large or ambiguous work to `planned-fresh-context-review`:
 
 1. a fresh read-only `claude-opus-5` planner at `xhigh` effort;
-2. Codex GPT-5.6 Sol implementing in one isolated worktree;
+2. Codex GPT-6.1 Sol implementing in one isolated worktree;
 3. monitor-run scope, deterministic, and visual verification;
 4. a separate fresh read-only `claude-opus-5` reviewer at `xhigh` effort,
    consuming the sanitized evidence packet;

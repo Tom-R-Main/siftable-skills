@@ -18,6 +18,8 @@ Establish the intended behavior from the request, relevant requirements, and act
 
 Read [the review rubric](references/review-rubric.md). Review standards and requirement conformance as separate passes so neither gets mistaken for the other. Use repository/domain rules where they affect correctness.
 
+Discover the standards that apply to changed paths: ancestor and nested `AGENTS.md` instructions, `CODING_STANDARDS.md`, `CONTRIBUTING.md`, and relevant domain guidance or ADRs. Record the applicable source paths and give each reviewer the same list alongside the intent and rubric. Distinguish documented requirements from judgment calls, and leave mechanically enforced formatting to tooling.
+
 ## Independent scrutiny
 
 If the authoring agent is performing this review and delegation is permitted, use a fresh reviewer with the requested scope, intended behavior, relevant repository instructions, and the rubric. This skill requests that bounded independent review; it does not require an implementation worker. If the caller already supplied an independent review context, use it directly.

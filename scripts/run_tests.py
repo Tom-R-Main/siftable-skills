@@ -24,7 +24,8 @@ def main() -> int:
     root_tests = sorted((ROOT / "scripts").glob("test_*.py"))
     for test in root_tests:
         run([sys.executable, str(test)])
-    tests = sorted((ROOT / "skills").glob("*/tests/test_*.py"))
+    tests = sorted(path for path in (ROOT / "skills").glob("*/tests/test_*.py")
+                   if path.parent.parent.name != "filesystem-lifecycle")
     for test in tests:
         run([sys.executable, str(test)])
     run([sys.executable, "scripts/fs_lifecycle.py", "self-test"], ROOT / "skills/filesystem-lifecycle")

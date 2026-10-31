@@ -90,6 +90,26 @@ run "example" {}
         with patch.object(validate_repo.subprocess, 'run', side_effect=AssertionError('unexpected execution')):
             self.assertEqual(validate_repo.validate_skill(path, run_help=True), [])
 
+    def test_private_paths_and_excluded_workflows_are_rejected(self):
+        path = self.skill('alpha')
+        examples = (
+            '/Users/example/projects/private/',
+            '/home/example/projects/private/',
+            r'C:\Users\example\projects\private',
+            '/Volumes/Example Disk/reference/',
+            'Use the Flirt workflow.',
+            'Load relationship-conversations for this task.',
+        )
+        for content in examples:
+            with self.subTest(content=content):
+                (path / 'references').mkdir(exist_ok=True)
+                (path / 'references' / 'private.md').write_text(content)
+                self.assertTrue(any('contains ' in error for error in validate_repo.validate_skill(path)))
+
+    def test_platform_paths_and_generic_runtime_configuration_are_portable(self):
+        path = self.skill('alpha', '/System/Volumes/Data\n$HOME/.agents/skills\n$PROJECT_ROOT\n')
+        self.assertEqual(validate_repo.validate_skill(path), [])
+
     def test_invalid_plain_scalar_and_duplicate_fields_are_rejected(self):
         path = self.skill('alpha', fields='license: MIT\nlicense: MIT\n')
         self.assertTrue(any('duplicate top-level' in error for error in validate_repo.validate_skill(path)))
