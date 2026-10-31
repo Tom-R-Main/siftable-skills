@@ -400,14 +400,19 @@ def protected_spans(text):
     for match in re.finditer(r"(?<!\\)\]\(", text):
         if not available(*match.span()):
             continue
-        start, cursor, depth, angle = match.end() - 1, match.end(), 1, False
+        start, cursor, depth, angle, quote = match.end() - 1, match.end(), 1, False, None
         while cursor < len(text) and depth:
             if text[cursor] == "\\":
                 cursor += 2; continue
-            if text[cursor] == "<": angle = True
-            elif text[cursor] == ">": angle = False
-            elif text[cursor] == "(" and not angle: depth += 1
-            elif text[cursor] == ")" and not angle: depth -= 1
+            if quote:
+                if text[cursor] == quote: quote = None
+            elif angle:
+                if text[cursor] == ">": angle = False
+            elif text[cursor] == "<": angle = True
+            elif text[cursor] in "\"'" and cursor > start + 1 and text[cursor - 1].isspace():
+                quote = text[cursor]
+            elif text[cursor] == "(": depth += 1
+            elif text[cursor] == ")": depth -= 1
             cursor += 1
         if not depth:
             protect_destination(start, cursor, "link_destination")

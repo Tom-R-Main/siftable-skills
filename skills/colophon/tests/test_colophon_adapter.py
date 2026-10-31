@@ -286,6 +286,7 @@ class AdapterTests(unittest.TestCase):
         source = self.project / "README.md"
         candidate = self.project / "candidate.md"
         text = ('Original [docs](docs/setup.md "Use `setup` first") and `[literal](safe.md)`.\n'
+                '[open](docs/open.md "Start with `setup(` here")\n'
                 '[ref]: docs/reference.md "Use `helper` first"\nUse [ref].\n'
                 '<a href="docs/`tag`.md">Link</a>\n')
         source.write_text(text)
@@ -293,7 +294,8 @@ class AdapterTests(unittest.TestCase):
         code, result = self.cli("check-candidate", source, candidate, runtime=False, registry=False)
         self.assertEqual((code, result["status"]), (0, "preserved"))
         for old, new in (("docs/setup.md", "https://other.invalid"), ("[literal]", "[changed]"),
-                         ("docs/reference.md", "https://other.invalid"), ("docs/`tag`.md", "other/`tag`.md")):
+                         ("docs/reference.md", "https://other.invalid"), ("docs/`tag`.md", "other/`tag`.md"),
+                         ("docs/open.md", "https://other.invalid")):
             candidate.write_text(text.replace(old, new))
             code, result = self.cli("check-candidate", source, candidate, runtime=False, registry=False)
             self.assertEqual((code, result["status"]), (1, "rejected"))
