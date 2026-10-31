@@ -40,6 +40,14 @@
       "package_files": 1
     },
     {
+      "name": "colophon",
+      "prepared_on": "2026-10-31",
+      "refresh": "Original portable adapter for the canonical Colophon native local profile registry, receipt-verified offline prompt exports, and read-only Markdown candidate preservation checks. No author profiles, corpus, prompt passages, runtime, or writing-provider client bundled.",
+      "source_kind": "original-public-adapter",
+      "package_files": 6,
+      "runtime_contract": "Native VoiceProfile registry list/resolve and voice prompt --receipt; separately configured runtime required."
+    },
+    {
       "name": "css",
       "prepared_on": "2026-10-31",
       "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
@@ -106,7 +114,7 @@
     {
       "name": "human-writing",
       "prepared_on": "2026-10-31",
-      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
+      "refresh": "Preserved tested public writing workflow and helpers; added optional Colophon local-profile routing with private prompt export and independent factual/Markdown review.",
       "package_files": 11,
       "local_entrypoint_sha256": "f49b0038dbfc43b15dfc354098683fcb76089b547b82b41dd348a67c996c17f6",
       "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"

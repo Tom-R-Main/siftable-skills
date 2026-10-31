@@ -1,6 +1,6 @@
 # Siftable Skills
 
-Siftable Skills gives a coding agent methods it can reuse: how to investigate a regression, review an interface, learn from another repository, or verify a change on the real application. There are 58 skills for engineering, design, planning, and writing.
+Siftable Skills gives a coding agent methods it can reuse: how to investigate a regression, review an interface, learn from another repository, or verify a change on the real application. There are 59 skills for engineering, design, planning, and writing.
 
 Start with **Tometo Mode** if you want the agent to coordinate the work. It reads the project, selects the relevant skills, and carries an authorized change through verification. Use an individual skill when the job is narrower.
 
@@ -83,6 +83,23 @@ Browser and native-app work needs an available observation and action tool. Supe
 
 The task still determines what the agent may do. Installing a skill grants no authority to deploy, delete data, send messages, publish, or spend money. Verification should name the artifact checked and the behavior observed; an unavailable integration remains unverified.
 
+## Use a local Colophon profile
+
+The [Colophon skill](skills/colophon/SKILL.md) connects to a separately installed Colophon runtime. Colophon owns the local registry and validates profiles; the adapter checks exported prompt receipts and Markdown candidates. The writing agent then uses the private guidance with the document's supported facts.
+
+Set `COLOPHON_BIN` when the runtime is not on `PATH`. Create a private registry using the [generic example](skills/colophon/assets/profiles.example.json), with aliases pointing to profiles you configured locally. Registry lookup uses an explicit `--registry`, then `COLOPHON_PROFILES_FILE`, then the standard Colophon configuration directory. From a reviewed checkout:
+
+```bash
+python3 skills/colophon/scripts/colophon_adapter.py doctor
+python3 skills/colophon/scripts/colophon_adapter.py profiles
+python3 skills/colophon/scripts/colophon_adapter.py prompt my-voice \
+  --output "$PRIVATE_PROMPT" --mode numeric --task rewrite
+python3 skills/colophon/scripts/colophon_adapter.py \
+  check-candidate README.md README.candidate.md
+```
+
+Choose an authorized private output path before exporting. Author profiles, source works, annotations, and guidance containing excerpts stay external to Git or untracked and ignored. This repository ships no author library. Export does not call a writing model, and a structural pass does not establish factual or literary quality. See the [runtime contract](skills/colophon/references/runtime-contract.md) for setup, privacy, receipts, and verification limits.
+
 ## Maintain the library
 
 ```bash
@@ -99,7 +116,7 @@ Personal and project-specific workflows, material sourced through personal-workf
 ## All skills
 
 <!-- skill-inventory:start -->
-58 skill packages are included.
+59 skill packages are included.
 
 | Skill | Scope |
 | --- | --- |
@@ -108,6 +125,7 @@ Personal and project-specific workflows, material sourced through personal-workf
 | [`break-ui`](skills/break-ui/SKILL.md) | Schema-backed UI data, layout, and edge-state stress testing |
 | [`c-systems-programming`](skills/c-systems-programming/SKILL.md) | C file I/O, processes, signals, and operating-system interfaces |
 | [`cloud-environment-runtime`](skills/cloud-environment-runtime/SKILL.md) | Cloud execution, network, credential, and persistence context |
+| [`colophon`](skills/colophon/SKILL.md) | Local voice-profile discovery, verified prompt export, and Markdown candidate checks |
 | [`css`](skills/css/SKILL.md) | CSS, Tailwind, cascade, layouts, and computed styles |
 | [`emil-design-eng`](skills/emil-design-eng/SKILL.md) | Frontend interaction, motion, accessibility, and performance |
 | [`filesystem-lifecycle`](skills/filesystem-lifecycle/SKILL.md) | Evidence-based storage audits and guarded filesystem cleanup |

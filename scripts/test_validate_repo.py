@@ -110,6 +110,19 @@ run "example" {}
         path = self.skill('alpha', '/System/Volumes/Data\n$HOME/.agents/skills\n$PROJECT_ROOT\n')
         self.assertEqual(validate_repo.validate_skill(path), [])
 
+    def test_colophon_profiles_and_derived_prompts_cannot_ship_in_a_package(self):
+        path = self.skill('alpha')
+        for suffix in (*validate_repo.PRIVATE_COLOPHON_SUFFIXES,
+                       *(suffix.upper() for suffix in validate_repo.PRIVATE_COLOPHON_SUFFIXES)):
+            with self.subTest(suffix=suffix):
+                private = path / ('local' + suffix)
+                private.write_text('{}')
+                self.assertTrue(any('private Colophon artifacts' in error
+                                    for error in validate_repo.validate_skill(path)))
+                private.unlink()
+        (path / 'profiles.example.json').write_text('{"schema_version":1,"profiles":{}}')
+        self.assertEqual(validate_repo.validate_skill(path), [])
+
     def test_invalid_plain_scalar_and_duplicate_fields_are_rejected(self):
         path = self.skill('alpha', fields='license: MIT\nlicense: MIT\n')
         self.assertTrue(any('duplicate top-level' in error for error in validate_repo.validate_skill(path)))

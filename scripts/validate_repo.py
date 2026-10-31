@@ -46,8 +46,10 @@ HELP_CONTRACTS = {
     "search-local-corpus/scripts/query_local_corpus.py", "strategic-decision-mapping/scripts/analyze_game.py",
     "typescript/scripts/drive.sh", "typescript/scripts/ts-gates.sh", "zig/scripts/zig-gates.sh",
     "screenshot/scripts/take_screenshot.py",
+    "colophon/scripts/colophon_adapter.py",
 }
 IGNORED = {"__pycache__", ".DS_Store", ".pytest_cache"}
+PRIVATE_COLOPHON_SUFFIXES = (".voice.json", ".profile.json", ".analysis.json", ".colophon.json", ".prompt.txt", ".prompt.md")
 
 
 def label(path: Path) -> str:
@@ -183,6 +185,9 @@ def validate_skill(skill: Path, *, run_help: bool = False) -> list[str]:
             errors.append(f"{label(path)}: symlinks are not allowed")
             continue
         if not path.is_file() or any(part in IGNORED for part in path.parts):
+            continue
+        if path.name.casefold().endswith(PRIVATE_COLOPHON_SUFFIXES):
+            errors.append(f"{label(path)}: private Colophon artifacts must stay outside skill packages")
             continue
         try:
             text = path.read_text(encoding="utf-8")

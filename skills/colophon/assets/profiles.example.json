@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "profiles": {
+    "my-voice": {
+      "path": "~/private-colophon/writer.voice.json"
+    }
+  }
+}
