@@ -285,12 +285,15 @@ class AdapterTests(unittest.TestCase):
     def test_link_title_backticks_cannot_hide_destination_changes(self):
         source = self.project / "README.md"
         candidate = self.project / "candidate.md"
-        text = 'Original [docs](docs/setup.md "Use `setup` first") and `[literal](safe.md)`.\n'
+        text = ('Original [docs](docs/setup.md "Use `setup` first") and `[literal](safe.md)`.\n'
+                '[ref]: docs/reference.md "Use `helper` first"\nUse [ref].\n'
+                '<a href="docs/`tag`.md">Link</a>\n')
         source.write_text(text)
         candidate.write_text(text.replace('Original', 'Revised'))
         code, result = self.cli("check-candidate", source, candidate, runtime=False, registry=False)
         self.assertEqual((code, result["status"]), (0, "preserved"))
-        for old, new in (("docs/setup.md", "https://other.invalid"), ("[literal]", "[changed]")):
+        for old, new in (("docs/setup.md", "https://other.invalid"), ("[literal]", "[changed]"),
+                         ("docs/reference.md", "https://other.invalid"), ("docs/`tag`.md", "other/`tag`.md")):
             candidate.write_text(text.replace(old, new))
             code, result = self.cli("check-candidate", source, candidate, runtime=False, registry=False)
             self.assertEqual((code, result["status"]), (1, "rejected"))

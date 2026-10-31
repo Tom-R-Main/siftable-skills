@@ -378,6 +378,17 @@ def protected_spans(text):
     def available(start, end):
         return not any(start < right and end > left for left, right, _ in spans)
 
+    def protect_destination(start, end, kind):
+        nonlocal spans
+        overlaps = [(left, right, existing) for left, right, existing in spans
+                    if start < right and end > left]
+        # A destination/title owns its contained backticks. Outer code spans
+        # still own link literals and must never be weakened by this scan.
+        if all(existing == "inline_code" and start <= left and right <= end
+               for left, right, existing in overlaps):
+            spans = [span for span in spans if span not in overlaps]
+            spans.append((start, end, kind))
+
     for match in re.finditer(r"(?m)^(?: {4}|\t)[^\n]*(?:\n(?:(?: {4}|\t)[^\n]*|[ \t]*))*", text):
         if available(*match.span()):
             spans.append((*match.span(), "indented_code"))
@@ -385,8 +396,7 @@ def protected_spans(text):
         if available(*match.span()):
             spans.append((*match.span(), "inline_code"))
     for match in re.finditer(r"(?m)^ {0,3}\[[^\]\n]+\]:[^\n]*(?:\n[ \t]+[^\n]*)*", text):
-        if available(*match.span()):
-            spans.append((*match.span(), "reference_definition"))
+        protect_destination(*match.span(), "reference_definition")
     for match in re.finditer(r"(?<!\\)\]\(", text):
         if not available(*match.span()):
             continue
@@ -400,26 +410,18 @@ def protected_spans(text):
             elif text[cursor] == ")" and not angle: depth -= 1
             cursor += 1
         if not depth:
-            overlaps = [(left, right, kind) for left, right, kind in spans
-                        if start < right and cursor > left]
-            # Backticks in a link title belong to the complete destination,
-            # while a link literal inside an outer code span stays code.
-            if all(kind == "inline_code" and start <= left and right <= cursor
-                   for left, right, kind in overlaps):
-                spans = [span for span in spans if span not in overlaps]
-                spans.append((start, cursor, "link_destination"))
+            protect_destination(start, cursor, "link_destination")
     for pattern, kind in ((r"!?\[[^\]\n]*\](\[[^\]\n]*\])", "reference_link"),
                           (r"<(?:https?://|mailto:)[^>\n]+>", "autolink"),
                           (r"(?i)\b(?:href|src)\s*=\s*([\"'])(.*?)\1", "html_destination")):
         for match in re.finditer(pattern, text):
             region = (match.span(1) if match[1] != "[]" else match.span()) if kind == "reference_link" else match.span()
-            if available(*region):
-                spans.append((*region, kind))
+            protect_destination(*region, kind)
     labels = {re.sub(r"\s+", " ", match[1]).strip().casefold()
               for match in re.finditer(r"(?m)^ {0,3}\[([^\]\n]+)\]:", text)}
     for match in re.finditer(r"!?\[([^\]\n]+)\](?![\[(])", text):
-        if re.sub(r"\s+", " ", match[1]).strip().casefold() in labels and available(*match.span()):
-            spans.append((*match.span(), "shortcut_reference"))
+        if re.sub(r"\s+", " ", match[1]).strip().casefold() in labels:
+            protect_destination(*match.span(), "shortcut_reference")
     return [(kind, text[left:right]) for left, right, kind in sorted(spans)]
 
 
