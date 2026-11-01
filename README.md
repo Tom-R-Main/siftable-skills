@@ -182,4 +182,4 @@ Personal and project-specific workflows, material sourced through personal-workf
 
 ## Source and license
 
-Maintained by [Thomas Main](https://github.com/Tom-R-Main). See the [MIT License](LICENSE), [third-party notices](THIRD_PARTY_NOTICES.md), and [source records](skill-sources.json) for the origin and terms of adapted material.
+Maintained by [Thomas Main](https://github.com/Tom-R-Main). See the [MIT License](LICENSE), [third-party notices](THIRD_PARTY_NOTICES.md), and [source records](skill-sources.json) for the origin and terms of adapted material. As the name Tometo mode suggests, the basic way it works is heavily based on Poteto mode by Lauren Tan and her skills work.
