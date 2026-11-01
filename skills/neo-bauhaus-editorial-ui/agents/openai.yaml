@@ -1,6 +1,0 @@
-interface:
-  display_name: "Neo-Bauhaus Editorial UI"
-  short_description: "Redesign flat UIs into bold, layered editorial systems"
-  icon_small: "./assets/neo-bauhaus-small.svg"
-  icon_large: "./assets/neo-bauhaus.svg"
-  default_prompt: "Audit this interface, define a Neo-Bauhaus direction, implement token-first UI improvements, and validate with Playwright."

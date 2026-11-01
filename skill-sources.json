@@ -148,13 +148,6 @@
       "local_entrypoint_sha256": "c5ecdce2247e9ae11077dd4aba693dc9adb5744caeb75fb65cfecceab75c1e6f"
     },
     {
-      "name": "neo-bauhaus-editorial-ui",
-      "prepared_on": "2026-10-31",
-      "refresh": "Portable editorial design direction with project-neutral journeys and configurable primitives; applied only when requested or fitting the design brief.",
-      "package_files": 4,
-      "local_entrypoint_sha256": "bf80591810dfc746e898578ae36eb32ef778399b1357e51d881dcbc32b57b4c9"
-    },
-    {
       "name": "opengl-c-graphics",
       "prepared_on": "2026-10-31",
       "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",

@@ -1,6 +1,6 @@
 # Siftable Skills
 
-Siftable Skills gives a coding agent methods it can reuse: how to investigate a regression, review an interface, learn from another repository, or verify a change on the real application. There are 59 skills for engineering, design, planning, and writing.
+Siftable Skills gives a coding agent methods it can reuse: how to investigate a regression, review an interface, learn from another repository, or verify a change on the real application. There are 58 skills for engineering, design, planning, and writing.
 
 Start with **Tometo Mode** if you want the agent to coordinate the work. It reads the project, selects the relevant skills, and carries an authorized change through verification. Use an individual skill when the job is narrower.
 
@@ -116,7 +116,7 @@ Personal and project-specific workflows, material sourced through personal-workf
 ## All skills
 
 <!-- skill-inventory:start -->
-59 skill packages are included.
+58 skill packages are included.
 
 | Skill | Scope |
 | --- | --- |
@@ -140,7 +140,6 @@ Personal and project-specific workflows, material sourced through personal-workf
 | [`kotlin`](skills/kotlin/SKILL.md) | Kotlin APIs, coroutines, Gradle, Android, and multiplatform work |
 | [`linux`](skills/linux/SKILL.md) | Kernel, userspace, services, and desktop integration |
 | [`mermaid`](skills/mermaid/SKILL.md) | Mermaid diagram rendering through the selected available route |
-| [`neo-bauhaus-editorial-ui`](skills/neo-bauhaus-editorial-ui/SKILL.md) | Editorial visual hierarchy, tokens, and interaction affordances |
 | [`opengl-c-graphics`](skills/opengl-c-graphics/SKILL.md) | Core-profile OpenGL in C, shaders, buffers, and GPU diagnosis |
 | [`paper-design`](skills/paper-design/SKILL.md) | Paper design inspection, editing, export, and handoff |
 | [`pdf`](skills/pdf/SKILL.md) | PDF extraction, creation, manipulation, rendering, and verification |
