@@ -1,0 +1,4 @@
+interface:
+  display_name: "C++"
+  short_description: "Build, review, debug, and verify C++ systems"
+  default_prompt: "Use $cpp to make and verify a focused C++ change using this repository's build, ownership, and ABI contracts."

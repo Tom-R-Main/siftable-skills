@@ -14,6 +14,10 @@ Resolve `TYPESCRIPT_SKILL_DIR` to the directory containing this `SKILL.md`.
 Run its scripts from the **target package root** (the directory with `package.json`
 or `tsconfig.json`).
 
+## Language selection and runtime cost
+
+Use TypeScript where its browser, component, SDK, or platform integration serves the system. During an authorized stack decision, compare performance-sensitive compute and storage paths with suitable native alternatives using the relevant specialty skills; developer familiarity and less handwritten code are not sufficient reasons to choose the runtime. Include deployment, correctness, memory, latency, and serialization/FFI costs in the comparison. Preserve the existing stack for scoped implementation work unless changing that boundary is part of the task.
+
 ## First moves (detect the toolchain before editing)
 
 ```sh

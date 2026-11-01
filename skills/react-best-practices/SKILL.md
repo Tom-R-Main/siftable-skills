@@ -9,6 +9,10 @@ description: Implement, review, and optimize React and Next.js applications with
 
 Use this skill to make React and Next.js code faster without weakening TypeScript guarantees. It adapts the Vercel React best-practices corpus into a Codex workflow and assumes performance changes must be validated with the project's own compiler, lint, tests, build, and, when relevant, browser/runtime evidence.
 
+## Framework choice and compute boundaries
+
+React and TypeScript can be the right choice for UI behavior, accessible components, framework integration, and a useful component ecosystem. For an authorized architecture decision, weigh those benefits against bundle, hydration, rendering, memory, and boundary costs. Use the available language skills to evaluate compute-heavy work in a native or WASM component when the workload warrants it; measure loading, marshaling, and consumer behavior before claiming a benefit. Familiarity or shorter manual implementation time alone should not decide the system architecture. An implementation request in an existing React app retains its selected stack and scope.
+
 ## Workflow
 
 1. Detect the local stack before editing: package manager, scripts, framework, React/Next version, `tsconfig`, router model, bundler, lint rules, test setup, and nearby component idioms.

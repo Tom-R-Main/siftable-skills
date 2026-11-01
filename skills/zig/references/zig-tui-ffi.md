@@ -1,10 +1,10 @@
 # Zig for terminal/TUI kernels and FFI
 
-Use Zig when the hot path is small, deterministic, byte-oriented, and easy to measure. Keep orchestration in the host language when it depends on provider SDKs, auth, JSON streams, UI state, or rapid product iteration.
+Evaluate Zig for resource-sensitive kernels or a broader native implementation when its ownership, layout, and execution model fit the workload. Host-language orchestration can earn its place through concrete SDK, UI/component, platform, or interoperability benefits. Choose the boundary from end-to-end performance and correctness evidence; manual iteration speed alone should not decide it, and Zig need not be limited to small plugins.
 
-## Recommended split
+## Candidate responsibilities
 
-Zig owns:
+Potential Zig responsibilities include:
 
 - filesystem traversal and byte scanning;
 - native literal/regex-like search kernels;
@@ -13,14 +13,15 @@ Zig owns:
 - parsers with bounded memory and deterministic diagnostics;
 - C ABI libraries loaded by Bun/Node/Rust/Python/etc.
 
-TypeScript/host owns:
+Potential host-language responsibilities, where existing integration benefits justify them, include:
 
 - model/provider SDKs;
 - auth and OAuth storage;
 - HTTP streaming and retries;
 - JSON schema/tool-call marshalling;
-- TUI state machines and command routing;
-- product-level feature iteration.
+- TUI state machines and command routing.
+
+Compare a native core, a host implementation, and a split only when those alternatives could change the result. Account for calls, copying, allocations, marshaling, startup, and error/lifecycle ownership across the boundary. Available agents and language skills make native options candidates for evaluation; they do not prove a performance advantage or remove maintenance and safety obligations.
 
 ## C ABI boundary
 
@@ -89,4 +90,8 @@ The fastest byte scanner still loses if it scans too much or returns too much.
 
 ## Inspiration patterns
 
-OpenTUI and Ghostty both validate the same architectural direction: a fast native core with a host-friendly API boundary, optimized render/parser loops, and careful terminal semantics. Copy the pattern, not necessarily the internals: define a narrow native kernel, keep it easy to test, and add benchmark gates before broadening the Zig surface.
+Use OpenTUI and Ghostty as source candidates when researching native terminal designs; inspect the relevant mechanisms in their actual sources. Keep the boundary testable and use representative end-to-end measurements to decide whether a narrow kernel, a broader Zig surface, or a host implementation fits best.
+
+## Policy adaptation (2026-11-01)
+
+The responsibility split is a candidate design rather than a fixed language assignment. This user-directed change replaces manual iteration speed as the deciding factor with system performance, correctness, and concrete integration benefits; it adds no runtime benchmark result or migration authority.

@@ -1,8 +1,16 @@
 {
   "format": 1,
-  "prepared_on": "2026-10-31",
+  "prepared_on": "2026-11-01",
   "policy": "Refresh records identify compared source entrypoints, not runtime readiness. Public packages preserve portable adapters, tested helpers, license boundaries and original replacements where local sources are private, restricted or runtime-specific. Personal workflows and material sourced through them are excluded. Never bulk-overwrite this library from installed trees.",
   "skills": [
+    {
+      "name": "architecture-selection",
+      "prepared_on": "2026-11-01",
+      "refresh": "Original decision workflow developed locally before portable publication. Distills workload, placement, ownership, checkable invariants, boundary costs and behavioral oracles; unverified quantitative claims and blanket technology rules from supplied research were not imported. Primary mechanism references and conditional Tometo/Architect routes; no performance result claimed. Reference-corpus validation adds decision-history provenance, executable configuration/target enforcement, workload skew, and complete measurement-boundary checks.",
+      "source_kind": "original-public-workflow",
+      "package_files": 7,
+      "local_entrypoint_sha256": "998f23005132e97f12d21414cc38ad149ce2bb5f2e6d47ef0a8a63be018745e2"
+    },
     {
       "name": "autoplan",
       "prepared_on": "2026-10-31",
@@ -46,6 +54,14 @@
       "source_kind": "original-public-adapter",
       "package_files": 6,
       "runtime_contract": "Native VoiceProfile registry list/resolve and voice prompt --receipt; separately configured runtime required."
+    },
+    {
+      "name": "cpp",
+      "prepared_on": "2026-11-01",
+      "refresh": "Original C++ workflow grounded in C systems/Zig/Rust/Go guidance, reference inventory and eleven catalogs, and source-pinned mechanisms. Installed validation against Godot, qBittorrent, TensorFlow and Bitcoin added required-completion lifetime checks and independent canonical wire-format rejection oracles. Component, model and source-only evidence remain distinct; private receipts stay outside the portable package.",
+      "source_kind": "original-source-grounded-workflow",
+      "package_files": 11,
+      "local_entrypoint_sha256": "8c873c399a5aa5bf97a74af3406ca2ec04dd3e0572bd694df73668e319e1ecc9"
     },
     {
       "name": "css",
@@ -179,10 +195,11 @@
     },
     {
       "name": "plan",
-      "prepared_on": "2026-10-31",
+      "prepared_on": "2026-11-01",
       "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 2,
-      "local_entrypoint_sha256": "dbe7726fc09d7fd19a2881330c13df68e85213ea73306c65424af82b4e56a3b6"
+      "local_entrypoint_sha256": "dbe7726fc09d7fd19a2881330c13df68e85213ea73306c65424af82b4e56a3b6",
+      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Conditional software planning compares language/runtime options against resource goals and concrete ecosystem value before implementation sequencing."
     },
     {
       "name": "plan-eng-review",
@@ -208,10 +225,11 @@
     },
     {
       "name": "pstack-architect",
-      "prepared_on": "2026-10-31",
-      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
-      "package_files": 5,
-      "local_entrypoint_sha256": "89c1000de91354b18ad73ac567e5377040ca11d23b5f000bbec1f285c9f99567"
+      "prepared_on": "2026-11-01",
+      "refresh": "Retained the portable interface/ownership planner and upstream attribution. Added local and public architecture-selection routing; the prior technology-selection path now forwards to the maintained decision skill. No new upstream sync or performance result.",
+      "package_files": 6,
+      "local_entrypoint_sha256": "4defe40a16a5fb887fabd87f2731e8e4c93a24e5bd2e6aa3c919a318f138bd84",
+      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Added user-directed performance and technology-selection guidance: agent-assisted low-level options, whole-system measurements, concrete ecosystem value, decision evidence and migration scope. Follow-up: locally authored selection routing and relevant entrypoint policy changes were selectively ported on 2026-11-01."
     },
     {
       "name": "pstack-create-verification-skill",
@@ -222,10 +240,11 @@
     },
     {
       "name": "pstack-interrogate",
-      "prepared_on": "2026-10-31",
+      "prepared_on": "2026-11-01",
       "refresh": "Current repository standards discovery and independent review contract; preserves portable scope and evidence rubric.",
       "package_files": 6,
-      "local_entrypoint_sha256": "1b535f5adcd7033059d51c0e0d2cfa0ebd663d08939a133ea58e5e7f5b163e4c"
+      "local_entrypoint_sha256": "1b535f5adcd7033059d51c0e0d2cfa0ebd663d08939a133ea58e5e7f5b163e4c",
+      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Added conditional review lenses for architecture/language choice and representative end-to-end resource evidence."
     },
     {
       "name": "pstack-investigate",
@@ -243,17 +262,19 @@
     },
     {
       "name": "pstack-verify",
-      "prepared_on": "2026-10-31",
+      "prepared_on": "2026-11-01",
       "refresh": "Current public-boundary verification, frontend stress/motion routes and optional advisory sensitivity checks; preserves public grounding.",
       "package_files": 6,
-      "local_entrypoint_sha256": "26a55a83993bc93afeba303d3d04da597e7b45edefa252f1df1950869cd360a0"
+      "local_entrypoint_sha256": "26a55a83993bc93afeba303d3d04da597e7b45edefa252f1df1950869cd360a0",
+      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Added comparable performance/resource acceptance with correctness and actual-consumer boundary costs."
     },
     {
       "name": "react-best-practices",
-      "prepared_on": "2026-10-31",
+      "prepared_on": "2026-11-01",
       "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 7,
-      "local_entrypoint_sha256": "6e1369a5a1e6cd5ae40d7a4cb196fc148b4f1ec3e43c58ebd30540c72e5f8f46"
+      "local_entrypoint_sha256": "6e1369a5a1e6cd5ae40d7a4cb196fc148b4f1ec3e43c58ebd30540c72e5f8f46",
+      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Clarified component/accessibility ecosystem value and measured compute boundaries without a convenience-based runtime default."
     },
     {
       "name": "repo-learn",
@@ -366,10 +387,19 @@
     },
     {
       "name": "supervise-workflow",
-      "prepared_on": "2026-10-31",
+      "prepared_on": "2026-11-01",
       "refresh": "Updated current source worker model selection; retained externally provisioned engine/assets contract and excluded local binaries, backups and private repository overlays.",
       "package_files": 11,
-      "local_entrypoint_sha256": "8b1139dbdd794f877f4604cc92ce6bdf3ce5934eea53024016a627f9f56079ac"
+      "local_entrypoint_sha256": "8b1139dbdd794f877f4604cc92ce6bdf3ce5934eea53024016a627f9f56079ac",
+      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Trusted monitors carry architecture rationale, workload, budgets and resource acceptance into supported worker-contract fields."
+    },
+    {
+      "name": "swift",
+      "prepared_on": "2026-11-01",
+      "refresh": "Original Swift workflow grounded in Kotlin/Go/Rust/TypeScript/Zig skills, a 29-repository Swift inventory, pinned production-source traces, and selected community-skill comparisons. Separates compiler/tools/language/isolation contracts, native ownership, Apple UI/persistence and real artifact verification. Private authoring evidence remains outside the portable package.",
+      "source_kind": "original-source-grounded-workflow",
+      "package_files": 12,
+      "local_entrypoint_sha256": "663c3143b5d0b8cb02542c6bb627d819a6ecc0906711ecaeeaa7f241009661b3"
     },
     {
       "name": "teach",
@@ -394,10 +424,11 @@
     },
     {
       "name": "tometo-mode",
-      "prepared_on": "2026-10-31",
-      "refresh": "Complete current portable workflow: task framing, catch-up, formal/recurring controls, repository learning, frontend routes and route-checker tests; removed personal response rules, fixed vault/CLI, host/guard assumptions and implicit state-change authority.",
+      "prepared_on": "2026-11-01",
+      "refresh": "Retained portable Tometo workflow and declared language/platform dependencies. Added local and public architecture-selection routing before implementation skills for material stack choices; clean installation includes the new decision skill. Host-specific adapters remain distinct.",
       "package_files": 11,
-      "local_entrypoint_sha256": "5292ce3b1e722f27b0a01e62a4485900475e673f95533a6e0edd10981630eaf8"
+      "local_entrypoint_sha256": "2fea28ec26a9824bc41c53541cd21a1be66b61a3aa6ec8182b31fbc58e61828f",
+      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Coordinates performance-first technology selection through architecture and task framing while preserving concrete ecosystem benefits and bounded existing-stack work. Follow-up: locally authored selection routing and relevant entrypoint policy changes were selectively ported on 2026-11-01."
     },
     {
       "name": "transcribe",
@@ -409,19 +440,29 @@
     },
     {
       "name": "typescript",
-      "prepared_on": "2026-10-31",
+      "prepared_on": "2026-11-01",
       "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 11,
       "local_entrypoint_sha256": "cf57684f6d5ef7e790c6edc017da6fea0d9c7ffad0fa35a0011fe0cdfa6cd25a",
-      "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
+      "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef",
+      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Clarified workload/platform-based language selection and native alternatives for performance-sensitive work within authorized scope."
+    },
+    {
+      "name": "wasm",
+      "prepared_on": "2026-11-01",
+      "refresh": "Portable WebAssembly workflow and browser, WASI/component, artifact-verification and source references from the maintained local skill. Private evidence stores and host installation paths are excluded; historical authoring checks remain distinct from current distribution or target-runtime verification.",
+      "source_kind": "portable-public-workflow",
+      "local_entrypoint_sha256": "6bdb3766ff14a03265daabe95a5f3ebafbeca8aeecb7a738cf2619d72d7fa943",
+      "package_files": 6
     },
     {
       "name": "zig",
-      "prepared_on": "2026-10-31",
-      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
+      "prepared_on": "2026-11-01",
+      "refresh": "Selectively updated local and public entrypoints to admit whole Zig applications, credit concrete host benefits, and measure intended production safety modes. Preserved toolchain/FFI guidance and aligned the local terminal reference with the existing portable architecture policy. No new toolchain or performance qualification.",
       "package_files": 12,
-      "local_entrypoint_sha256": "e2df7a9f888a4042061840c127478acf0aee89d49d68bdae77027c6f433e1b38",
-      "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
+      "local_entrypoint_sha256": "526678a4fffe78313faab96f15b813f90795d3dbf07bd19d9c39bc5c4689f078",
+      "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef",
+      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Replaced the fixed native-kernel/host-product split and manual iteration rationale with measured candidate boundaries and concrete integration benefits. Follow-up: locally authored selection routing and relevant entrypoint policy changes were selectively ported on 2026-11-01."
     }
   ],
   "excluded_sources": {

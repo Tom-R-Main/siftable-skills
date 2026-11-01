@@ -1,0 +1,4 @@
+interface:
+  display_name: "Architecture Selection"
+  short_description: "Choose stacks by workload, contracts, and evidence"
+  default_prompt: "Use $architecture-selection to choose an execution design and stack for this workload, compare the strongest alternatives, and identify the check that could reverse the decision."

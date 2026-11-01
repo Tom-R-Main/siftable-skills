@@ -33,15 +33,13 @@ Write Zig as explicit systems code whose invariants are visible at call sites.
 - Contain volatile pre-1.0 standard-library APIs behind small local adapters instead of leaking version-specific `std.Io`, build, or container details through otherwise stable library boundaries.
 - For parsers, queues, caches, and decoded payloads, choose explicit resource bounds and capacity behavior where input or retained work can grow. Distinguish a per-allocation limit from a total memory budget.
 - Keep programmer invariants separate from external-input validation. Test fallible mutations for both resource cleanup and state rollback; leak-free failure can still leave corrupt counters or published state.
-- In 0.17, use `.debug`, `.safe`, `.fast`, and `.small` (`std.lang.Optimize`). The last two disable runtime safety checks; prove correctness in debug or safe before benchmarking.
+- In 0.17, use `.debug`, `.safe`, `.fast`, and `.small` (`std.lang.Optimize`). The last two disable runtime safety checks; establish correctness evidence in debug or safe before interpreting benchmark results.
 
 ## Zig Versus Host Code
 
-For agent, CLI, and TUI products, keep Zig narrow until measurement proves a broader native core is worth it.
+Treat a whole Zig application, a native core, and a host-loaded kernel as candidate designs. Select from workload, explicit ownership, platform/SDK benefits, complete-path costs, and verification support; do not assign orchestration to TypeScript by default. Use [architecture selection](../architecture-selection/SKILL.md) when that choice is open. Existing host integration may justify a narrow kernel without defining the architecture of every new system.
 
-- Put in Zig: filesystem traversal, byte scanning, parsers, native search kernels, terminal render buffers, ANSI/stringification kernels, compact deterministic algorithms, and host-loaded C ABI libraries.
-- Keep in TypeScript or the host layer: model/provider SDKs, auth, HTTP streaming, JSON-heavy orchestration, UI state, command routing, and fast product iteration.
-- Cross FFI with small C ABI functions, pointer-plus-length pairs, validated inputs, and explicit destroy/free exports for Zig-allocated results.
+For an FFI design, use small C ABI functions, pointer-plus-length pairs, validated inputs, and explicit destroy/free exports for Zig-allocated results. Include conversion, retention, scheduling, and distribution costs in the comparison.
 
 ## Validation Gates
 
@@ -72,7 +70,7 @@ Supported environment knobs:
 - `ZIG_BUILD_ARGS="..."` for extra build args.
 - `ZIG_TEST_ARGS="..."` for extra test args.
 
-Only claim speedups with before/after numbers from `-O fast` / `-Doptimize=fast` or the repo's benchmark lane, plus correctness evidence from debug or safe. Older compiler pins use their own mode spellings.
+Only claim speedups with comparable before/after measurements in the intended production configuration, including optimized safety-enabled mode when that is what ships, plus correctness evidence from debug or safe. Keep benchmark mode and safety settings explicit. Older compiler pins use their own mode spellings.
 
 ## Open References As Needed
 

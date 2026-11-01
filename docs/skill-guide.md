@@ -12,6 +12,12 @@ For changed behavior, [pstack-verify](../skills/pstack-verify/SKILL.md) starts f
 
 Load optional references for a concrete reason. Formal checks address a selected invariant; recurring-work controls address triggers, deduplication, handoffs, and recovery. Neither is a prerequisite for an ordinary feature change.
 
+## Choose languages and frameworks for the system
+
+When technology choice is open, prioritize runtime performance and resource efficiency within the system's correctness, security, and operational requirements. Use the language and framework skills to make strong low-level options practical for the agent. Developer familiarity, less boilerplate, and historical manual implementation speed should not decide the stack by default.
+
+Compare concrete benefits and costs: latency, throughput, memory, startup, deployment constraints, and data movement across runtime boundaries. React and TypeScript can earn their place through components, accessibility, browser integration, and a useful ecosystem; that choice need not determine the compute layer. Use the architecture skill's [technology-selection guidance](../skills/pstack-architect/references/technology-selection.md) for material decisions, and distinguish measured results from hypotheses. Existing-stack work stays within scope; this preference does not authorize a migration.
+
 ## Use locally configured writing guidance
 
 For a requested Colophon workflow, use [colophon](../skills/colophon/SKILL.md) to discover an alias from the native private registry and export receipt-verified guidance. The calling agent uses its already authorized writing tool to draft a separate candidate. Keep profiles and exported source passages outside public changes, including when they live under an ignored local directory.

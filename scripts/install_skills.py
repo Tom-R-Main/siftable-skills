@@ -20,10 +20,10 @@ TRANSACTION = '.siftable-skills-transaction'
 NAME = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*\Z')
 PROFILES = {
     'all': None,
-    'engineering': ('tometo-mode', 'pstack-architect', 'pstack-investigate', 'pstack-interrogate', 'pstack-verify',
+    'engineering': ('tometo-mode', 'architecture-selection', 'pstack-architect', 'pstack-investigate', 'pstack-interrogate', 'pstack-verify',
                     'pstack-create-verification-skill', 'pstack-maintain-verification-skill', 'zig', 'typescript',
-                    'rust', 'go', 'kotlin', 'linux', 'c-systems-programming', 'react-best-practices', 'css'),
-    'languages': ('zig', 'typescript', 'rust', 'go', 'kotlin', 'c-systems-programming', 'react-best-practices', 'css'),
+                    'rust', 'go', 'kotlin', 'swift', 'cpp', 'linux', 'c-systems-programming', 'react-best-practices', 'css', 'wasm'),
+    'languages': ('zig', 'typescript', 'rust', 'go', 'kotlin', 'swift', 'cpp', 'c-systems-programming', 'react-best-practices', 'css', 'wasm'),
 }
 
 

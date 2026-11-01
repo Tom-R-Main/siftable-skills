@@ -17,3 +17,8 @@ node_modules/
 *.colophon.json
 *.prompt.txt
 *.prompt.md
+
+# Local reference research, execution artifacts and installation backups.
+/.architecture-research/
+/.cpp-research/
+/.swift-research/

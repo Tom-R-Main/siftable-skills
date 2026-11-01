@@ -60,3 +60,15 @@ Added [emil-design-eng](../../emil-design-eng/SKILL.md) and [break-ui](../../bre
 ## Portable refresh (2026-10-31)
 
 Adapted the maintained local skill into this distributable package, retaining task framing, complete catch-ups, optional formal and recurring controls, source maintenance, staged-content integrity, and frontend routes. Local account, vault/CLI, home-directory, shared-host link, machine-policy history, and fixed response-format assumptions were generalized. This refresh uses inspected local source files; the dated upstream records above are provenance, not a claim of a new network sync or live integration check. The route checker is bundled and accepts configured roots without host-specific defaults.
+
+## Portable dependency completion (2026-11-01)
+
+Restored the maintained source's [WebAssembly route](../../wasm/SKILL.md), including its portable implementation references and source map. Language and platform routes now link their bundled packages explicitly so selecting Tometo installs its workflow and language dependencies without relying on a pre-existing host catalog. This is a local source comparison and packaging correction, not a new upstream sync or qualification of external compilers, browser drivers, or providers.
+
+## User-directed architecture policy (2026-11-01)
+
+Added the user's performance-first architecture and technology-selection policy to coordination, task framing, and the architecture route. [The architecture reference](../../pstack-architect/references/technology-selection.md) owns the detailed comparison and measurement method. Lower-level efficiency receives priority over historical manual implementation convenience while concrete ecosystem benefits, correctness, reliability, maintenance, and scoped migration costs remain part of the decision. This is a repository policy adaptation; it is not attributed to the pinned upstream or the compared local entrypoint and does not assert an unmeasured performance advantage.
+
+## Architecture selection follow-up (2026-11-01)
+
+The user-requested selection framework was authored in the local skill installation and then selectively ported into this library as [architecture-selection](../../architecture-selection/SKILL.md). It owns workload/placement comparisons, defect-class reasoning, boundary and migration costs, evidence limits, and a decision record. Tometo routes material stack choices through it before implementation skills; Architect consumes that choice when sketching interfaces. The previous technology-selection reference remains a forwarding route. Host-specific adapters and prior scope/authorization rules are preserved. This is original policy work, not a new upstream revision or a measured language ranking.

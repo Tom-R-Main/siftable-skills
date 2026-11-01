@@ -1,0 +1,4 @@
+interface:
+  display_name: "WebAssembly"
+  short_description: "Build and verify browser, WASI, and component integrations"
+  default_prompt: "Use $wasm to implement and validate this WebAssembly integration for its target runtime."

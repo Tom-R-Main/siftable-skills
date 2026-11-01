@@ -69,3 +69,7 @@ The mode's [October 26 refresh](../../tometo-mode/references/provenance.md#targe
 ## Frontend integration (2026-10-26)
 
 The optional [break-ui](../../break-ui/SKILL.md) and [emil-design-eng](../../emil-design-eng/SKILL.md) routes add realistic schema-backed data/layout cases and relevant motion interruption/input checks. Their provenance records upstream commit `2d228630ba1446365f614a108cb8252f1feda202` and corrections. They preserve the task's audit/fix mode, actual data and public boundaries, run-owned fixtures, and evidence limits; no required all-surface matrix or new runtime is implied.
+
+## User-directed performance acceptance (2026-11-01)
+
+Added comparable workload/resource acceptance for performance and technology-selection promises, including consumer/boundary costs and correctness checks. This implements the library's system-efficiency policy; it does not claim a new benchmark result, universal language ranking, or upstream refresh. Actual target execution remains required for runtime claims.

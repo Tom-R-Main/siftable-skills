@@ -32,6 +32,8 @@ verify command, an optional read-only preflight command, an early checkpoint
 command, generated-file policy, and whether visual verification is required. Do
 not launch an unjudgeable task. When `doctor` reports a missing worker, report the capability gap. Installation, authentication, provider changes, and paid probes require existing user authorization; do not automatically execute its `fixes` suggestions. Rerun doctor after authorized provisioning.
 
+For architecture or performance work, carry the chosen language/framework rationale, representative workload, resource budgets, and comparable acceptance checks into the contract's existing objective, acceptance criteria, and verification fields. Favor the best supported system outcome over familiarity or manual development speed; retain concrete component, SDK, and platform benefits. Summarize the relevant domain constraints in the worker contract because workers cannot read skill definitions. The monitor verifies correctness and end-to-end resource effects, including boundary costs; use only fields supported by the configured engine.
+
 Before a long or paid Sol run, or after a Codex CLI/model upgrade, exercise the
 exact model and structured-output surface (this spends a small model call):
 

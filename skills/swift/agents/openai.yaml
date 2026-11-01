@@ -1,0 +1,4 @@
+interface:
+  display_name: "Swift"
+  short_description: "Build and verify Swift across configured targets"
+  default_prompt: "Use $swift to implement and validate this Swift change against the repository's actual toolchain, isolation settings, and build contract."

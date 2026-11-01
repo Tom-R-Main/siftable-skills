@@ -1,6 +1,6 @@
 ---
 name: pstack-architect
-description: "Design or review interfaces, data ownership, and module boundaries against actual callers. Use for substantial architecture changes, engineering plan reviews, or refactors requiring ordered verification and recovery."
+description: "Design or review interfaces, data ownership, language and framework choices, and module boundaries against actual callers. Use for substantial architecture changes, engineering plan reviews, or refactors requiring ordered verification and recovery."
 license: MIT
 metadata:
   upstream: cursor/plugins/pstack
@@ -19,6 +19,8 @@ Trace current callers, data structures, ownership, failure paths, and constraint
 Write the caller's intended usage first, then derive the smallest types, signatures, state transitions, and module boundaries that support it. Keep sketches in the plan or scratch space for design-only work. Do not introduce unimplemented stubs into the product merely to demonstrate planning.
 
 When alternatives could materially change the design, compare structurally different options. Prototype empirical uncertainties in isolated task-owned space if authorized. Use independent design exploration only when its benefit justifies the cost and delegation is permitted. Do not require several models or alternatives for an obvious local change.
+
+For a material language, framework, runtime, dependency, or execution-boundary choice, use [architecture selection](../architecture-selection/SKILL.md) before deriving interfaces. Carry its chosen execution design, resource goals, boundary contracts, and unresolved acceptance checks into this plan. Keep ordinary interface work in the established stack unless the task actually opens that choice.
 
 Prefer structures that make invalid states difficult to represent, concentrate validation at real boundaries, and remove accidental shared state. Preserve legitimate compatibility, security checks, and migration safety; simplicity does not justify breaking callers or deleting a guard without proving its invariant.
 

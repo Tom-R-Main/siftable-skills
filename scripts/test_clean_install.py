@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import shutil
 import subprocess
@@ -17,10 +18,59 @@ from validate_repo import skill_dependencies
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def check_tometo_cli(env: dict[str, str]) -> None:
+    """Exercise the documented entry point without a pre-existing skill catalog."""
+    required = {
+        "tometo-mode", "architecture-selection", "footwork-tools", "pstack-investigate", "pstack-architect",
+        "pstack-interrogate", "pstack-verify", "pstack-create-verification-skill",
+        "pstack-maintain-verification-skill", "typescript", "react-best-practices",
+        "css", "rust", "go", "zig", "kotlin", "swift", "cpp", "linux", "c-systems-programming", "wasm",
+    }
+    with tempfile.TemporaryDirectory(prefix=".tometo-install-", dir=ROOT) as temp:
+        destination = Path(temp).resolve() / "skills"
+        command = [sys.executable, str(ROOT / "scripts/install_skills.py"),
+                   "--destination", str(destination), "--skill", "tometo-mode"]
+
+        def run(arguments: list[str], cwd: Path = ROOT) -> subprocess.CompletedProcess:
+            result = subprocess.run(arguments, cwd=cwd, env=env, text=True, capture_output=True)
+            if result.returncode:
+                raise RuntimeError(f"{' '.join(arguments)} failed:\n{result.stdout}{result.stderr}")
+            return result
+
+        run(command)
+        if destination.exists():
+            raise RuntimeError("Tometo preview mutated the destination")
+        run([*command, "--apply"])
+        installed = {path.name for path in destination.iterdir() if path.is_dir()}
+        if missing := required - installed:
+            raise RuntimeError(f"Tometo starter omitted required workflow/language skills: {sorted(missing)}")
+        manifest_path = destination / ".siftable-skills.json"
+        manifest = manifest_path.read_bytes()
+        if set(json.loads(manifest)["skills"]) != installed:
+            raise RuntimeError("Tometo installation manifest disagrees with installed packages")
+        run([sys.executable, "scripts/check-routes.py"], cwd=destination / "tometo-mode")
+        checker = [sys.executable, str(destination / "tometo-mode/scripts/check-routes.py"),
+                   "--skills-root", str(destination)]
+        for name in sorted(installed):
+            checker.extend(["--skill", name])
+        run(checker)
+        run([sys.executable, str(ROOT / "scripts/validate_repo.py"),
+             "--skills-root", str(destination)])
+        run([*command, "--apply"])
+        if manifest_path.read_bytes() != manifest:
+            raise RuntimeError("Repeating the documented Tometo install changed its manifest")
+        (destination / "wasm/SKILL.md").unlink()
+        broken = subprocess.run(checker, cwd=ROOT, env=env, text=True, capture_output=True)
+        if broken.returncode == 0 or "wasm/SKILL.md" not in broken.stderr:
+            raise RuntimeError("Installed route checks failed to detect a missing WASM entrypoint")
+    print("Tometo CLI preview, clean installation, installed routes and repeat installation passed")
+
+
 def main() -> int:
     skills = sorted(path for path in (ROOT / "skills").iterdir() if path.is_dir())
     env = os.environ.copy()
     env["PYTHONDONTWRITEBYTECODE"] = "1"
+    check_tometo_cli(env)
     independent = 0
     for source in skills:
         closure = select_skills(ROOT / "skills", [source.name])

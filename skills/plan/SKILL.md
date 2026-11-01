@@ -113,6 +113,8 @@ flowchart TD
 
 ## Workflow
 
+For a software plan with an unresolved language, framework, or runtime choice, resolve that decision before sequencing implementation. Compare credible alternatives against performance and resource objectives, correctness, platform constraints, and concrete ecosystem benefits. Use specialist skills to assess low-level options; do not default to the stack that historically required the least manual development. Identify a representative experiment for material unknowns and record the rationale and acceptance criteria. Preserve existing-stack and migration boundaries. Personal scheduling plans do not need this assessment.
+
 1. Restate the objective and classify it (week / project / implementation /
    queue / mixed).
 2. Ground in relevant available lanes with read-only reads; note missing capabilities.
