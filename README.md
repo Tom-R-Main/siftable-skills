@@ -6,6 +6,8 @@ Start with **Tometo Mode** if you want the agent to coordinate the work. It read
 
 Each skill is a folder with a `SKILL.md` entrypoint and any references or helpers it needs. The installer follows links between sibling skills, so selecting a workflow brings its dependencies with it. You can install the library outside your application repository.
 
+I believe that while frontier models are extremely capable, they often still revert to the mean of development practices rather than the very best. That's why I use language and framework specific skills to eke out performance gains wherever the agents work.
+
 ## Start here
 
 Use Python 3 and a reviewed checkout of this repository. Set the destination to a directory your agent discovers; `$HOME/.agents/skills` is one common choice.
