@@ -16,7 +16,9 @@ Load optional references for a concrete reason. Formal checks address a selected
 
 When technology choice is open, prioritize runtime performance and resource efficiency within the system's correctness, security, and operational requirements. Use the language and framework skills to make strong low-level options practical for the agent. Developer familiarity, less boilerplate, and historical manual implementation speed should not decide the stack by default.
 
-Compare concrete benefits and costs: latency, throughput, memory, startup, deployment constraints, and data movement across runtime boundaries. React and TypeScript can earn their place through components, accessibility, browser integration, and a useful ecosystem; that choice need not determine the compute layer. Use the architecture skill's [technology-selection guidance](../skills/pstack-architect/references/technology-selection.md) for material decisions, and distinguish measured results from hypotheses. Existing-stack work stays within scope; this preference does not authorize a migration.
+Compare concrete benefits and costs: latency, throughput, memory, startup, deployment constraints, and data movement across runtime boundaries. React and TypeScript can earn their place through components, accessibility, browser integration, and a useful ecosystem; that choice need not determine the compute layer. Use [architecture selection](../skills/architecture-selection/SKILL.md) for open new-deployable choices and material stack changes, and distinguish measured results from hypotheses. Existing-stack work stays within scope; this preference does not authorize a migration.
+
+For skill maintenance, the selector includes a [repeatable design-evaluation procedure](../skills/architecture-selection/evals/procedure.md) with separated prompts and reviewer expectations. These manual agent exercises supplement installation checks; they do not run as deterministic runtime tests or establish measured gains.
 
 ## Use locally configured writing guidance
 

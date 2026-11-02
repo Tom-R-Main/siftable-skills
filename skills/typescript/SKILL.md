@@ -16,6 +16,8 @@ or `tsconfig.json`).
 
 ## Language selection and runtime cost
 
+For a new deployable whose stack is open, a language/runtime new to the repository, or a material stack change, use [architecture selection](../architecture-selection/SKILL.md). Consult specialist skills for feasibility, then continue this workflow in the selected stack. Routine packages and features in an established architecture do not reopen selection.
+
 Use TypeScript where its browser, component, SDK, or platform integration serves the system. During an authorized stack decision, compare performance-sensitive compute and storage paths with suitable native alternatives using the relevant specialty skills; developer familiarity and less handwritten code are not sufficient reasons to choose the runtime. Include deployment, correctness, memory, latency, and serialization/FFI costs in the comparison. Preserve the existing stack for scoped implementation work unless changing that boundary is part of the task.
 
 ## First moves (detect the toolchain before editing)

@@ -74,6 +74,8 @@ def main() -> int:
     independent = 0
     for source in skills:
         closure = select_skills(ROOT / "skills", [source.name])
+        if source.name in {"plan", "typescript", "react-best-practices"} and "architecture-selection" not in closure:
+            raise RuntimeError(f"Standalone {source.name} installation omitted architecture selection")
         if not skill_dependencies(source, ROOT / "skills"):
             if closure != [source.name]:
                 raise RuntimeError(f"independent skill unexpectedly depends on others: {source.name}")
