@@ -6,10 +6,10 @@
     {
       "name": "architecture-selection",
       "prepared_on": "2026-11-01",
-      "refresh": "Original decision workflow developed locally before portable publication. Distills workload, placement, ownership, checkable invariants, boundary costs and behavioral oracles; unverified quantitative claims and blanket technology rules from supplied research were not imported. Primary mechanism references and conditional Tometo/Architect routes; no performance result claimed. Reference-corpus validation adds decision-history provenance, executable configuration/target enforcement, workload skew, and complete measurement-boundary checks.",
+      "refresh": "Original decision workflow developed locally before portable publication. Distills workload, placement, ownership, checkable invariants, boundary costs and behavioral oracles; unverified quantitative claims and blanket technology rules from supplied research were not imported. Primary mechanism references and conditional Tometo/Architect routes; no performance result claimed. Reference-corpus validation adds decision-history provenance, executable configuration/target enforcement, workload skew, and complete measurement-boundary checks. Follow-up adds greenfield discovery, lightweight decisions, feasibility consultation and a ten-case paired evaluation corpus with separate prompts/rubric/procedure.",
       "source_kind": "original-public-workflow",
-      "package_files": 7,
-      "local_entrypoint_sha256": "998f23005132e97f12d21414cc38ad149ce2bb5f2e6d47ef0a8a63be018745e2"
+      "package_files": 10,
+      "local_entrypoint_sha256": "18d6a9867fadbf648c532138346caff52ea4d3912f874f678d0c43565bdc7806"
     },
     {
       "name": "autoplan",
@@ -199,7 +199,7 @@
       "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 2,
       "local_entrypoint_sha256": "dbe7726fc09d7fd19a2881330c13df68e85213ea73306c65424af82b4e56a3b6",
-      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Conditional software planning compares language/runtime options against resource goals and concrete ecosystem value before implementation sequencing."
+      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Conditional software planning compares language/runtime options against resource goals and concrete ecosystem value before implementation sequencing. Conditional selector routing now includes new deployables and language/runtime introductions while preserving routine established-stack work."
     },
     {
       "name": "plan-eng-review",
@@ -274,7 +274,7 @@
       "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
       "package_files": 7,
       "local_entrypoint_sha256": "6e1369a5a1e6cd5ae40d7a4cb196fc148b4f1ec3e43c58ebd30540c72e5f8f46",
-      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Clarified component/accessibility ecosystem value and measured compute boundaries without a convenience-based runtime default."
+      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Clarified component/accessibility ecosystem value and measured compute boundaries without a convenience-based runtime default. Conditional selector routing now includes new deployables and language/runtime introductions while preserving routine established-stack work."
     },
     {
       "name": "repo-learn",
@@ -427,8 +427,8 @@
       "prepared_on": "2026-11-01",
       "refresh": "Retained portable Tometo workflow and declared language/platform dependencies. Added local and public architecture-selection routing before implementation skills for material stack choices; clean installation includes the new decision skill. Host-specific adapters remain distinct.",
       "package_files": 11,
-      "local_entrypoint_sha256": "2fea28ec26a9824bc41c53541cd21a1be66b61a3aa6ec8182b31fbc58e61828f",
-      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Coordinates performance-first technology selection through architecture and task framing while preserving concrete ecosystem benefits and bounded existing-stack work. Follow-up: locally authored selection routing and relevant entrypoint policy changes were selectively ported on 2026-11-01."
+      "local_entrypoint_sha256": "be27d690bb1488fa2b3b08619e39fd32801412b307cde3ee816d305a33c0d661",
+      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Coordinates performance-first technology selection through architecture and task framing while preserving concrete ecosystem benefits and bounded existing-stack work. Follow-up: locally authored selection routing and relevant entrypoint policy changes were selectively ported on 2026-11-01. Conditional selector routing now includes new deployables and language/runtime introductions while preserving routine established-stack work."
     },
     {
       "name": "transcribe",
@@ -445,7 +445,7 @@
       "package_files": 11,
       "local_entrypoint_sha256": "cf57684f6d5ef7e790c6edc017da6fea0d9c7ffad0fa35a0011fe0cdfa6cd25a",
       "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef",
-      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Clarified workload/platform-based language selection and native alternatives for performance-sensitive work within authorized scope."
+      "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Clarified workload/platform-based language selection and native alternatives for performance-sensitive work within authorized scope. Conditional selector routing now includes new deployables and language/runtime introductions while preserving routine established-stack work."
     },
     {
       "name": "wasm",

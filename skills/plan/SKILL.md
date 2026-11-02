@@ -113,7 +113,9 @@ flowchart TD
 
 ## Workflow
 
-For a software plan with an unresolved language, framework, or runtime choice, resolve that decision before sequencing implementation. Compare credible alternatives against performance and resource objectives, correctness, platform constraints, and concrete ecosystem benefits. Use specialist skills to assess low-level options; do not default to the stack that historically required the least manual development. Identify a representative experiment for material unknowns and record the rationale and acceptance criteria. Preserve existing-stack and migration boundaries. Personal scheduling plans do not need this assessment.
+For a new deployable whose stack is open, a language/runtime new to the repository, or a material stack change, use [architecture selection](../architecture-selection/SKILL.md). Consult specialist skills for feasibility, then continue this workflow in the selected stack. Routine packages and features in an established architecture do not reopen selection.
+
+Carry the selected execution design, resource goals, unresolved experiment, and acceptance criteria into implementation sequencing. Personal scheduling plans do not need architecture selection.
 
 1. Restate the objective and classify it (week / project / implementation /
    queue / mixed).

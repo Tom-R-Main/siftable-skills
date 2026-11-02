@@ -1,0 +1,45 @@
+{
+  "format": 1,
+  "cases": [
+    {
+      "id": "01",
+      "request": "Design a new local engine that indexes large document collections. CPU per indexed byte and peak memory are primary objectives. It must run on Linux and macOS and handle untrusted files. No host application or language is selected. Give a provisional design, strongest alternative, and decisive next check."
+    },
+    {
+      "id": "02",
+      "request": "An established TypeScript/React application needs one extra search filter in its existing results panel. Existing APIs and component patterns already support it. Plan this bounded change and its verification."
+    },
+    {
+      "id": "03",
+      "request": "Our Python application spends most processing time in large existing GPU tensor operations. We want lower end-to-end latency and are considering translating the Python controller to Rust. No profile separating dispatch, synchronization, transfer and kernel time is available. Recommend the next step."
+    },
+    {
+      "id": "04",
+      "request": "Design browser document comparison for confidential large files. The product must work offline and files must never leave the device, including failures. It needs accessible controls and responsive typing. No language or UI framework is selected. Compare plausible execution designs."
+    },
+    {
+      "id": "05",
+      "request": "Design a new numerical application around a mature C++ geometry library. Preserving its numerical behavior across x86-64 and arm64 is mandatory; minimize CPU and peak memory. Compare a whole C++ application with Rust plus a library boundary. No comparative measurements exist."
+    },
+    {
+      "id": "06",
+      "request": "We want to replace a broad dependency with a small owned implementation. A prototype passes happy-path unit tests and is smaller. It parses externally supplied files. What should decide whether we adopt it, and what evidence is missing?"
+    },
+    {
+      "id": "07",
+      "request": "Design browser document comparison for large files with accessible controls and responsive typing. Unlike an offline edition, this product permits authenticated server processing and upload of documents; offline operation is not required. No latency or operating-cost budget is known. Compare plausible execution designs."
+    },
+    {
+      "id": "08",
+      "request": "Add an extension mechanism for code written, reviewed and deployed by our own team. Extensions share the host release cycle and there is no independent crash-isolation or privilege requirement. The host is an established Rust application. What execution boundary would you investigate first and what would reverse it?"
+    },
+    {
+      "id": "09",
+      "request": "Add an extension mechanism for arbitrary third-party code uploaded by mutually untrusted tenants. Extensions must have restricted authority and must not exhaust resources or crash unrelated tenant work. The host is an established Rust application. What execution boundary would you investigate first and what would reverse it?"
+    },
+    {
+      "id": "10",
+      "request": "Create a new deployable command-line tool for batch-transforming local files on Linux and macOS. Users should install a standalone executable. Some inputs are malformed or very large. No implementation language or runtime has been chosen. Propose the first implementation path and the check that could reverse it."
+    }
+  ]
+}

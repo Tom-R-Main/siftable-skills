@@ -17,3 +17,5 @@ Separate explicit maintainer rationale, contributor claims, reviewer concerns, r
 For each lesson, name the mechanism, enabling constraints, cost transferred elsewhere, counterexample, and cheapest target check. Verify the actual feature/configuration and target-specific branches: a common API may enforce different limits on native and Wasm targets; initialization success may still leave runtime capabilities unusable. Specify the required degradation/fallback behavior and how the user observes it.
 
 When evaluating the skill itself, distinguish source-informed review from a held-out prediction. A stronger retrospective gives an evaluator the original problem/constraints before revealing the chosen design and outcome, then examines whether its questions and checks would expose the actual tradeoff. Matching the historical winner is not the success criterion. Do not claim predictive accuracy from reading the answer first.
+
+For repeatable skill maintenance, use the [evaluation procedure](../evals/procedure.md), supplying only the case inputs to the answering contexts. The rubric belongs to the reviewer.

@@ -1,11 +1,13 @@
 ---
 name: architecture-selection
-description: Choose or reassess programming languages, frameworks, runtimes, dependencies, and execution boundaries using workload constraints and checkable evidence. Use for consequential stack decisions or migration proposals, not ordinary implementation in an established stack.
+description: Choose or reassess programming languages, frameworks, runtimes, dependencies, and execution boundaries using workload constraints and checkable evidence. Use before implicitly selecting a stack for a new deployable or introducing a language or runtime, and for material stack changes or migration proposals. Ordinary implementation and new packages within an established stack keep its choices.
 ---
 
 # Architecture selection
 
-Produce a defensible choice and the test that could overturn it. Select the execution design before loading implementation skills. Respect explicit user choices, repository contracts, and the task's design/review/implementation scope; a recommendation grants no rewrite or deployment authority.
+Produce a defensible choice and the test that could overturn it. Consult language and domain skills as needed to establish candidate feasibility; select the execution design before beginning implementation. Respect explicit user choices, repository contracts, and the task's design/review/implementation scope; a recommendation grants no rewrite or deployment authority.
+
+For a small choice, give the chosen option, strongest alternative, decisive reason, and reversal condition in one short paragraph. Use a fuller comparison only when uncertainty or consequences warrant it. A new deployable needs this check even if its language initially seems obvious; a new package using an established architecture does not automatically reopen it.
 
 ## Establish the decision
 

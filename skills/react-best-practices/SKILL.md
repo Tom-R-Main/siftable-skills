@@ -11,6 +11,8 @@ Use this skill to make React and Next.js code faster without weakening TypeScrip
 
 ## Framework choice and compute boundaries
 
+For a new deployable whose stack is open, a language/runtime new to the repository, or a material stack change, use [architecture selection](../architecture-selection/SKILL.md). Consult specialist skills for feasibility, then continue this workflow in the selected stack. Routine packages and features in an established architecture do not reopen selection.
+
 React and TypeScript can be the right choice for UI behavior, accessible components, framework integration, and a useful component ecosystem. For an authorized architecture decision, weigh those benefits against bundle, hydration, rendering, memory, and boundary costs. Use the available language skills to evaluate compute-heavy work in a native or WASM component when the workload warrants it; measure loading, marshaling, and consumer behavior before claiming a benefit. Familiarity or shorter manual implementation time alone should not decide the system architecture. An implementation request in an existing React app retains its selected stack and scope.
 
 ## Workflow

@@ -36,7 +36,7 @@ For substantial work, use the [task-framing preflight](references/sharpen-task.m
 
 Explore the code before asking. Reserve questions for product or preference calls no experiment can settle, and ask them one at a time. Ground planning in the repository, Git history, relevant authorized work records, and runtime. When uncertainty is material, state a hypothesis, predict the observation, run the smallest test, and preserve the disconfirming result. For consequential product surfaces, use available design tools or reviewable mockups before implementation when useful. A configured corpus or research connector can strengthen evidence; unavailable Paper, corpus, or Consensus integrations are optional capability gaps, never a reason to invent access.
 
-For material language, framework, runtime, dependency, or execution-boundary choices, use [architecture selection](../architecture-selection/SKILL.md) before selecting implementation skills. Compare complete execution paths and checkable invariants, with native applications as first-class candidates. Preserve established stacks for bounded work; a selection phase adds no approval gate or migration authority.
+Before choosing a stack for a new deployable, introducing a language/runtime, or making material framework, dependency, or execution-boundary choices, use [architecture selection](../architecture-selection/SKILL.md) before selecting implementation skills. Compare complete execution paths and checkable invariants, with native applications as first-class candidates. Preserve established stacks for bounded work; a selection phase adds no approval gate or migration authority.
 
 ## Subagents
 
@@ -82,7 +82,7 @@ Paths below are relative to this skill directory; follow the referenced skill's 
 | User asks for a catch-up or what changed during a long run | Read [catch-up](references/catch-up.md); summarize read-only with existing evidence. |
 | Learn reusable engineering patterns from reference repositories, compare mechanisms, or retrieve prior source-grounded lessons | [repo-learn](../repo-learn/SKILL.md). Start with the target problem and existing pattern library; trace and challenge source mechanisms, then return here for target implementation and verification. |
 | Bug, regression, uncertain runtime behavior | [pstack-investigate](../pstack-investigate/SKILL.md). For an explicit experiment or performance hypothesis, reuse [thinking-scientific-method](../thinking-scientific-method/SKILL.md). |
-| Material language, framework, runtime, dependency, or placement choice | [architecture-selection](../architecture-selection/SKILL.md), then interface planning and the chosen implementation skills. |
+| New deployable with an open stack, new language/runtime, or material technology/placement choice | [architecture-selection](../architecture-selection/SKILL.md), then interface planning and the chosen implementation skills. |
 | Significant interface, data ownership, or module design; engineering plan review | [pstack-architect](../pstack-architect/SKILL.md). |
 | Code or diff review | [pstack-interrogate](../pstack-interrogate/SKILL.md). |
 | Agent needs hands and eyes; native/browser driving or context handoff | [footwork-tools](../footwork-tools/SKILL.md). Select an available driver, observe the target, act within scope, and read back the result. |
