@@ -30,9 +30,11 @@ Each reviewer owns read-only inspection of the reviewed files, may run authorize
 
 ## Judge the evidence
 
-Trace each material finding through callers and types; run a small reproducer when useful. Deduplicate findings and explain disagreements. Agreement helps prioritize inspection; it is not proof. A lone reproducible issue outranks unsupported consensus.
+Trace each material finding through callers, types, and existing protections against the intended behavior. Prefer a small run against the actual implementation; report its exact command, expected result, and observed failure, and rerun a delegated reproducer before accepting it. When execution is unavailable or inappropriate, a static finding can still stand on a concrete reachable trigger and causal path; label it as static reasoning and state the execution gap. Keep unresolved suspicions distinct from established defects. Deduplicate findings and explain disagreements. Agreement helps prioritize inspection; it is not proof. A lone reproducible issue outranks unsupported consensus.
 
 Separate blocking findings, worthwhile non-blocking changes, and dismissed claims. Do not invent a numerical quality score or reject code solely for an arbitrary file-length threshold. Keep speculative redesign out of the blocking list unless it causes a concrete scoped defect or demonstrable maintenance problem.
+
+Stop discretionary review rounds when they add no new evidence. Reopen a settled finding for changed code, a new failure, or a newly established assumption; preserve repository-required final review gates. A compatibility exception or awkward structure alone does not justify changing established behavior.
 
 Before delivering, verify that the reviewed files/artifact still match the recorded scope. If it changed, reassess the changed paths and their effects before carrying the verdict forward. A clean review means no actionable findings within the checked scope, not proof that all runtime behavior works.
 

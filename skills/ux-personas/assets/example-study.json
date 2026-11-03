@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "id": "document-export",
+  "product": "Example document workspace",
+  "target": {"revision": "example-not-a-live-result"},
+  "max_steps": 12,
+  "personas": [
+    {
+      "id": "first-time-editor",
+      "name": "First-time editor",
+      "goals": ["Download a document to share with a colleague"],
+      "knowledge": ["Uses office documents; has never used this application"],
+      "constraints": {"max_steps": 8, "input_mode": "pointer", "viewport": "1280x800"},
+      "evidence": [],
+      "assumptions": ["Hypothetical novice archetype for exploration; not inferred from actual users", "Will abandon after eight attempted interactions"],
+      "prior_experience": []
+    },
+    {
+      "id": "keyboard-editor",
+      "name": "Returning keyboard editor",
+      "goals": ["Export the current document using the keyboard"],
+      "knowledge": ["Familiar with document export and common keyboard navigation"],
+      "constraints": {"max_steps": 12, "input_mode": "keyboard-only", "viewport": "1280x800"},
+      "evidence": [],
+      "assumptions": ["Hypothetical returning-user archetype; keyboard navigation does not simulate a screen reader"],
+      "prior_experience": ["Previously found export through the document toolbar; this is an explicit hypothetical memory"]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "download-document",
+      "goal": "Download the existing Welcome document as a PDF",
+      "start_url": "http://127.0.0.1:3000/",
+      "success_criteria": ["The downloaded file is a readable PDF containing the Welcome document"],
+      "initial_state": "Independent test account with one Welcome document; no open dialogs; downloads empty. Requires an actual target app and fixture setup before running."
+    }
+  ]
+}

@@ -16,6 +16,16 @@ Execute the recipe and challenge its sensitivity with a representative defect in
 
 Replay a reported counterexample through actual code when possible. A model step that cannot happen indicates a modeling error; a reachable violation is a product finding. Do not weaken the property to make it pass. Product fixes require implementation scope. If execution is unavailable, deliver a draft with the blocked step.
 
+## Connect the result to the implementation
+
+Establish separately that the property expresses the intended promise, the checker settles it within the stated scope, and the current implementation corresponds to the checked description. Deriving a model from existing code does not establish that the intended promise is correct.
+
+Exercise the actual boundary with an independently chosen expectation and a discriminating control. For interrupted multi-stage writes, inspect the canonical state after failure, retry the same operation, and verify both recovery and conflicting-input refusal. Distinguish committed business effects from legitimate repeated attempt logs. Check recovery only under stated conditions such as a retry and a writable destination.
+
+Record relevant source, test, configuration, and tool identities alongside the correspondence mapping. A changed fingerprint is a staleness tripwire requiring reassessment; updating it does not certify semantic correspondence. Deliberately change implementation code while leaving the model unchanged. The workflow must detect the stale correspondence or catch the defect through an implementation-connected check. Preserve a passing standalone model as evidence about that model, even when the implementation check fails. One caught mutation or sampled trace does not establish general refinement.
+
+For a new checker, compare the relevant healthy and deliberately failing models with an established checker where practical. Inspect semantic outcomes and counterexamples; process exit alone can represent an unsupported feature, invalid configuration, or runner failure. Agreement on these cases qualifies only the exercised features. Keep optional runtimes out of the default installation unless their value and maintenance cost justify adoption.
+
 ## Maintain an existing check
 
 Locate its coverage map, assumptions, bounds, command, and last confirmed source identity. Run the existing recipe once and preserve the baseline, without treating its pass as proof of current correspondence.

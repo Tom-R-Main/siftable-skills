@@ -2,6 +2,8 @@
 
 Original skills and portable adaptations are maintained by Thomas Main.
 
+`ux-personas` contains original harness and adapter code. It interoperates with Microsoft's MIT-licensed [TinyTroupe](https://github.com/microsoft/TinyTroupe), installed separately; no TinyTroupe implementation is vendored. Its [source decisions](skills/ux-personas/references/provenance.md) distinguish inspected APIs from other project inspirations. Those projects' source code and research datasets are not redistributed.
+
 `skills/human-writing/scripts/postprocess_output.py` adapts the deterministic Unicode-cleaning layer from [`guillaumemeyer/watermarks-remover`](https://github.com/guillaumemeyer/watermarks-remover), version 0.3.1, under the MIT License. The pinned upstream notice and license are preserved at [`skills/human-writing/references/watermarks-remover-license.txt`](skills/human-writing/references/watermarks-remover-license.txt).
 
 The Tometo and pstack workflow adaptations derive from Lauren Tan's MIT-licensed
