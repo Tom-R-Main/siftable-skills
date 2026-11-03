@@ -47,6 +47,8 @@ HELP_CONTRACTS = {
     "typescript/scripts/drive.sh", "typescript/scripts/ts-gates.sh", "zig/scripts/zig-gates.sh",
     "screenshot/scripts/take_screenshot.py",
     "colophon/scripts/colophon_adapter.py",
+    "ux-personas/scripts/persona_harness.py", "ux-personas/scripts/tinytroupe_backend.py",
+    "ux-personas/scripts/run_feedback.py",
 }
 IGNORED = {"__pycache__", ".DS_Store", ".pytest_cache"}
 PRIVATE_COLOPHON_SUFFIXES = (".voice.json", ".profile.json", ".analysis.json", ".colophon.json", ".prompt.txt", ".prompt.md")

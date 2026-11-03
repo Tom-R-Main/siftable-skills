@@ -87,6 +87,7 @@ Paths below are relative to this skill directory; follow the referenced skill's 
 | Code or diff review | [pstack-interrogate](../pstack-interrogate/SKILL.md). |
 | Agent needs hands and eyes; native/browser driving or context handoff | [footwork-tools](../footwork-tools/SKILL.md). Select an available driver, observe the target, act within scope, and read back the result. |
 | Changed behavior needs proof; implementation is ready to check | [pstack-verify](../pstack-verify/SKILL.md). Drive the real surface, challenge relevant cases, fix/recheck within scope, and retain evidence. |
+| Different audiences may experience a product or journey differently; synthetic UX testing or persona feedback requested | [ux-personas](../ux-personas/SKILL.md). Ground a cohort, run bounded persona-by-journey sessions through available drivers, and compare evidence across revisions. Load conditionally; synthetic judgments do not establish human usability or replace behavioral verification. |
 | App has no reproducible verification instructions | [pstack-create-verification-skill](../pstack-create-verification-skill/SKILL.md). Generate only when useful to the authorized project task. |
 | Verification map or harness has drifted | [pstack-maintain-verification-skill](../pstack-maintain-verification-skill/SKILL.md). |
 | Optional duplication, complexity, or test-strength assessment | Read [advisory code checks](../pstack-verify/references/advisory-checks.md) only for a relevant assessment. Dryer is optional and advisory; scores do not authorize refactoring. |

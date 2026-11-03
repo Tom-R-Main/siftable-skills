@@ -424,10 +424,10 @@
     },
     {
       "name": "tometo-mode",
-      "prepared_on": "2026-11-01",
-      "refresh": "Retained portable Tometo workflow and declared language/platform dependencies. Added local and public architecture-selection routing before implementation skills for material stack choices; clean installation includes the new decision skill. Host-specific adapters remain distinct.",
+      "prepared_on": "2026-11-03",
+      "refresh": "Retained portable Tometo workflow and declared language/platform dependencies. Added local and public architecture-selection routing before implementation skills for material stack choices; clean installation includes the new decision skill. Host-specific adapters remain distinct. Added conditional UX persona evaluation routing with declared installation dependency; synthetic findings remain distinct from behavioral verification.",
       "package_files": 11,
-      "local_entrypoint_sha256": "be27d690bb1488fa2b3b08619e39fd32801412b307cde3ee816d305a33c0d661",
+      "local_entrypoint_sha256": "a36c5b9293771984508ce8e93a75e35c9309826eb541757a43c7af4c9a5759cd",
       "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Coordinates performance-first technology selection through architecture and task framing while preserving concrete ecosystem benefits and bounded existing-stack work. Follow-up: locally authored selection routing and relevant entrypoint policy changes were selectively ported on 2026-11-01. Conditional selector routing now includes new deployables and language/runtime introductions while preserving routine established-stack work."
     },
     {
@@ -446,6 +446,15 @@
       "local_entrypoint_sha256": "cf57684f6d5ef7e790c6edc017da6fea0d9c7ffad0fa35a0011fe0cdfa6cd25a",
       "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef",
       "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Clarified workload/platform-based language selection and native alternatives for performance-sensitive work within authorized scope. Conditional selector routing now includes new deployables and language/runtime introductions while preserving routine established-stack work."
+    },
+    {
+      "name": "ux-personas",
+      "prepared_on": "2026-11-03",
+      "source_kind": "original-code-backed-workflow",
+      "refresh": "Original stdlib persona/journey evidence harness with isolated TinyTroupe adapter and registered Codex CLI client. Actual TinyTroupe source pinned to 7ce8be378a37ee73f9745d6781452712318afa04 (0.8.1), no source vendored. Headless gpt-6.1-sol/high feedback qualified with already installed Codex 0.166.0 via ChatGPT login; initial rejection came from PATH-shadowed0.147 below the source-catalog minimum0.153. Explicit --codex-bin/CODEX_CLI_BIN selection and stale-client checks preserve model identity. Codex SDK/T3 source grounding and synthetic feedback remain distinct from browser UX and human validation. Default CLI selection now discovers newest compatible stable executable on PATH; pins remain authoritative. Configured local installation uses a standard-library runtime launcher. Installed package and fresh Tometo routing were exercised with two actual no-override6.1/high feedback sessions.",
+      "package_files": 13,
+      "local_entrypoint_sha256": "12cd8eceadc934e2322d818ab9094f262a167b77f8de677f47768794aeaebbad",
+      "upstream_api_commit": "7ce8be378a37ee73f9745d6781452712318afa04"
     },
     {
       "name": "wasm",

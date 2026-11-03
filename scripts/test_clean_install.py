@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def check_tometo_cli(env: dict[str, str]) -> None:
     """Exercise the documented entry point without a pre-existing skill catalog."""
     required = {
-        "tometo-mode", "architecture-selection", "footwork-tools", "pstack-investigate", "pstack-architect",
+        "tometo-mode", "architecture-selection", "ux-personas", "footwork-tools", "pstack-investigate", "pstack-architect",
         "pstack-interrogate", "pstack-verify", "pstack-create-verification-skill",
         "pstack-maintain-verification-skill", "typescript", "react-best-practices",
         "css", "rust", "go", "zig", "kotlin", "swift", "cpp", "linux", "c-systems-programming", "wasm",
@@ -56,6 +56,14 @@ def check_tometo_cli(env: dict[str, str]) -> None:
         run(checker)
         run([sys.executable, str(ROOT / "scripts/validate_repo.py"),
              "--skills-root", str(destination)])
+        persona_skill = destination / "ux-personas"
+        study = persona_skill / "assets/example-study.json"
+        run([sys.executable, str(persona_skill / "scripts/persona_harness.py"),
+             "validate", str(study)])
+        run([sys.executable, str(persona_skill / "scripts/persona_harness.py"),
+             "plan", str(study), "--output", str(Path(temp) / "persona-run")])
+        run([sys.executable, str(persona_skill / "scripts/persona_harness.py"),
+             "report", str(Path(temp) / "persona-run"), "--output", str(Path(temp) / "persona-report")])
         run([*command, "--apply"])
         if manifest_path.read_bytes() != manifest:
             raise RuntimeError("Repeating the documented Tometo install changed its manifest")

@@ -1,0 +1,4 @@
+interface:
+  display_name: "UX Personas"
+  short_description: "Evidence-grounded personas and UX journey comparisons"
+  default_prompt: "Use $ux-personas to evaluate this product with distinct personas, traceable journey evidence, and explicit simulation limits."

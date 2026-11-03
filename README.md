@@ -1,6 +1,6 @@
 # Siftable Skills
 
-Siftable Skills is a collection of 62 skills for engineering, design, planning, and writing. **[Tometo Mode](skills/tometo-mode/SKILL.md) is the main entry point:** it reads the project, selects the relevant skills, and carries an authorized change through verification.
+Siftable Skills is a collection of 63 skills for engineering, design, planning, and writing. **[Tometo Mode](skills/tometo-mode/SKILL.md) is the main entry point:** it reads the project, selects the relevant skills, and carries an authorized change through verification.
 
 Use Tometo to coordinate substantial engineering work, or invoke an individual skill for a narrower job such as investigating a regression, reviewing an interface, or editing prose.
 
@@ -48,6 +48,7 @@ The main routes are:
 | Make a verification recipe reusable | [pstack-create-verification-skill](skills/pstack-create-verification-skill/SKILL.md) |
 | Learn a mechanism from another codebase | [repo-learn](skills/repo-learn/SKILL.md) |
 | Improve interactions or challenge a layout | [emil-design-eng](skills/emil-design-eng/SKILL.md) and [break-ui](skills/break-ui/SKILL.md) |
+| Evaluate journeys with distinct synthetic users | [ux-personas](skills/ux-personas/SKILL.md), with a Python evidence harness and optional TinyTroupe backend |
 | Build and check language-specific changes | The matching language skill, selected from the project's files and toolchain |
 | Integrate WebAssembly with a browser, WASI, or another host | [wasm](skills/wasm/SKILL.md) plus the source-language skill |
 
@@ -168,6 +169,7 @@ Personal and project-specific workflows, material sourced through personal-workf
 | [`tometo-mode`](skills/tometo-mode/SKILL.md) | Coordinated engineering with specialty skills and executable verification |
 | [`transcribe`](skills/transcribe/SKILL.md) | Audio/video transcription with timestamps and optional speaker labels |
 | [`typescript`](skills/typescript/SKILL.md) | TypeScript types, compiler behavior, modules, and build/test gates |
+| [`ux-personas`](skills/ux-personas/SKILL.md) | Persistent personas, bounded UX journey sessions, evidence reports, and revision comparisons |
 | [`wasm`](skills/wasm/SKILL.md) | WebAssembly artifacts, browser bindings, WASI components, and host verification |
 | [`zig`](skills/zig/SKILL.md) | Version-aware Zig APIs, allocation, I/O, FFI, and measured optimization |
 <!-- skill-inventory:end -->

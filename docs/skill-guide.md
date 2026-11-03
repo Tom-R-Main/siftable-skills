@@ -20,6 +20,12 @@ Compare concrete benefits and costs: latency, throughput, memory, startup, deplo
 
 For skill maintenance, the selector includes a [repeatable design-evaluation procedure](../skills/architecture-selection/evals/procedure.md) with separated prompts and reviewer expectations. These manual agent exercises supplement installation checks; they do not run as deterministic runtime tests or establish measured gains.
 
+## Evaluate with UX personas
+
+[UX Personas](../skills/ux-personas/SKILL.md) adds a code-backed study and evidence ledger to Tometo. Its standard-library Python CLI validates persistent persona definitions, creates isolated session packets for a persona-by-journey matrix, records artifact-backed observations separately from simulated judgments, and compares equivalent cohorts across product revisions. The host agent operates the browser; the harness does not install a driver or launch autonomous browser agents.
+
+The optional TinyTroupe adapter exports native persona specifications and can run headless feedback with an explicitly enabled, separately installed model runtime. Jupyter is not required as a user interface. Keep synthetic insights, mock adapter tests, and observed interface behavior distinct. See the skill for commands and the checked-in example study.
+
 ## Use locally configured writing guidance
 
 For a requested Colophon workflow, use [colophon](../skills/colophon/SKILL.md) to discover an alias from the native private registry and export receipt-verified guidance. The calling agent uses its already authorized writing tool to draft a separate candidate. Keep profiles and exported source passages outside public changes, including when they live under an ignored local directory.
