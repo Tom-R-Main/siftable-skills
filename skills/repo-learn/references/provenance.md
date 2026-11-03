@@ -15,3 +15,9 @@ Created 2026-10-30 as a repository-learning route for tometo-mode. This is origi
 | ghidra | 4718f50d9941b9d7b7ebd1febc2982f055560a73 | Bounded staged analysis and partial completion; binary lane only when needed. |
 
 The attached research synthesis was treated as source material. Primary abstracts qualify its claims: CodeCompass tested a particular repository/task distribution; Codebase-Memory reports reduced token use alongside lower aggregate answer quality (83% versus 92%). Graph navigation is therefore a conditional tool choice, not an assumption of universally better comprehension. See https://arxiv.org/abs/2602.20048 and https://arxiv.org/abs/2603.27277. Prometheus's revised title and abstract emphasize working memory: https://arxiv.org/abs/2507.19942.
+
+## Empirical verification refinement (2026-11-03)
+
+Recovery verification (2026-11-03): added real-CLI post-commit projection failure, identical repair, conflicting retry preservation, and simultaneous identical submission tests. Three isolated behavioral mutants were caught; harmless control passed. Production helper unchanged.
+
+Tests independently read canonical SQLite and search rows, exercise filesystem projection obstruction, and preserve the original record across repair and refusal. Concurrent process submission covers one bounded scheduling exercise, not exhaustive interleavings or crash durability.

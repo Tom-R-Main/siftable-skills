@@ -240,8 +240,8 @@
     },
     {
       "name": "pstack-interrogate",
-      "prepared_on": "2026-11-01",
-      "refresh": "Current repository standards discovery and independent review contract; preserves portable scope and evidence rubric.",
+      "prepared_on": "2026-11-03",
+      "refresh": "Current repository standards discovery and independent review contract; preserves portable scope and evidence rubric. Empirical review refinement (2026-11-03): prefer owner-rerun implementation reproducers, retain grounded static findings when execution is inappropriate, distinguish suspicions, and stop discretionary rounds without new evidence. Preserves compatibility intent and required review gates.",
       "package_files": 6,
       "local_entrypoint_sha256": "1b535f5adcd7033059d51c0e0d2cfa0ebd663d08939a133ea58e5e7f5b163e4c",
       "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Added conditional review lenses for architecture/language choice and representative end-to-end resource evidence."
@@ -278,8 +278,8 @@
     },
     {
       "name": "repo-learn",
-      "prepared_on": "2026-10-31",
-      "refresh": "Current repository-learning workflow and standard-library evidence/card CLI with end-to-end tests. Excludes private corpus wrappers, configuration, seed stores and session history; requires an explicit authorized store.",
+      "prepared_on": "2026-11-03",
+      "refresh": "Current repository-learning workflow and standard-library evidence/card CLI with end-to-end tests. Excludes private corpus wrappers, configuration, seed stores and session history; requires an explicit authorized store. Recovery verification (2026-11-03): added real-CLI post-commit projection failure, identical repair, conflicting retry preservation, and simultaneous identical submission tests. Three isolated behavioral mutants were caught; harmless control passed. Production helper unchanged.",
       "package_files": 6,
       "local_entrypoint_sha256": "54688bb07bbdb0c5bbf30562bcf9c42fad7c18b6617b5df98336a1b947691faf"
     },
@@ -425,7 +425,7 @@
     {
       "name": "tometo-mode",
       "prepared_on": "2026-11-03",
-      "refresh": "Retained portable Tometo workflow and declared language/platform dependencies. Added local and public architecture-selection routing before implementation skills for material stack choices; clean installation includes the new decision skill. Host-specific adapters remain distinct. Added conditional UX persona evaluation routing with declared installation dependency; synthetic findings remain distinct from behavioral verification.",
+      "refresh": "Retained portable Tometo workflow and declared language/platform dependencies. Added local and public architecture-selection routing before implementation skills for material stack choices; clean installation includes the new decision skill. Host-specific adapters remain distinct. Added conditional UX persona evaluation routing with declared installation dependency; synthetic findings remain distinct from behavioral verification. Empirical verification refinement (2026-11-03): default to implementation-connected checks, focus discretionary review on a named uncertainty, stop rounds without new evidence, and distinguish model validity from current-code correspondence. Local CLI recovery and deliberate-defect pilot plus bounded tla-ts/TLC experiment informed the guidance; no universal efficiency or refinement claim.",
       "package_files": 11,
       "local_entrypoint_sha256": "a36c5b9293771984508ce8e93a75e35c9309826eb541757a43c7af4c9a5759cd",
       "public_policy": "User-directed architecture policy (2026-11-01), authored in this distribution; no new upstream or installed-source sync. Coordinates performance-first technology selection through architecture and task framing while preserving concrete ecosystem benefits and bounded existing-stack work. Follow-up: locally authored selection routing and relevant entrypoint policy changes were selectively ported on 2026-11-01. Conditional selector routing now includes new deployables and language/runtime introductions while preserving routine established-stack work."
