@@ -292,10 +292,10 @@
     },
     {
       "name": "rust",
-      "prepared_on": "2026-10-31",
-      "refresh": "Compared current installed source and retained reviewed portable public guidance, adapters, licenses and tested helpers. No additional reusable source delta selected.",
-      "package_files": 11,
-      "local_entrypoint_sha256": "61df39f5b3495853aa40614901581d6935e167c92a311120f89d0e3c79036631",
+      "prepared_on": "2026-11-05",
+      "refresh": "Reviewed user-provided Rust talks against local rust-lang/rust, Rust MCP SDK, Wasmtime and Polars sources plus official documentation. Added stable guard/raw projection examples and compiler controls, experimental-design boundaries, foreign aliasing and instrumentation limits, migration measurement and selected version-gated 1.99 guidance. Corrected resolver, bool validity and FFI unwinding claims; existing gate behavior unchanged. See references/source-review.md for commits and evidence limits.",
+      "package_files": 14,
+      "local_entrypoint_sha256": "b60ae469ff4a88ead30bdd0aded2de1e6fe8c5d766ad555f1e868e17186125f3",
       "public_baseline": "c4a1ca8b6560b32bca7247a6ec127edd9d8e7eef"
     },
     {

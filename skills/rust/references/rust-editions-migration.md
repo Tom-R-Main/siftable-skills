@@ -17,12 +17,16 @@ confirm version-gated claims against the toolchain your project pins.
   which toolchain actually built the code you are changing.
 - **`package.rust-version` (MSRV)** is a promise to callers and, under
   resolver 3, an input to dependency resolution. Changing it is an API change.
-- **`edition = "2024"` implies `resolver = "3"`** in a package. Resolver 3 is
+- **An edition-2024 root package defaults to resolver 3** unless the workspace
+  explicitly selects another resolver; member editions do not override the
+  workspace's selection. Resolver 3 is
   Rust-version aware: it prefers dependency versions compatible with your
   `rust-version` (`resolver.incompatible-rust-versions = "fallback"`). The
   setting is honored only for the top-level workspace and ignored inside
-  dependencies. **Virtual workspaces must set `resolver = "3"` explicitly** —
-  the edition of member crates does not imply it.
+  dependencies. **Virtual workspaces do not infer a resolver from member
+  editions.** Without an explicit selection they default to resolver 1. Preserve
+  an existing explicit value (including resolver 2); adopting resolver 3 is a
+  separate dependency-policy decision, not a required edition upgrade.
 - **Stable rustfmt silently ignores nightly-only options** (`imports_granularity`,
   `group_imports`, `ignore`, ...) with a warning. If a repo's `rustfmt.toml`
   uses them, only the toolchain the repo formats with produces meaningful diffs.
@@ -38,8 +42,10 @@ confirm version-gated claims against the toolchain your project pins.
    update` if the project's lockfile policy allows).
 2. `cargo fix --edition` on the current edition. It applies compatibility
    lints automatically and prints what it cannot fix.
-3. Set `edition = "2024"` (and `resolver` for a virtual workspace) in
-   `Cargo.toml`.
+3. Set `edition = "2024"` in `Cargo.toml`. Inspect workspace resolver selection
+   separately; preserve an explicit resolver unless changing dependency policy
+   is part of the approved migration. Virtual workspaces cannot infer one from
+   member editions.
 4. Build and run the full test suite; resolve leftover warnings by hand.
 5. `cargo fmt` — as a separate commit.
 6. Optionally `cargo fix --edition-idioms` for the new edition's idioms.
@@ -86,8 +92,13 @@ page per item under `rust-2024/`.
 - Resolver 3 (see above).
 - Removed duplicate spellings: `[project]` → `[package]`, `default_features` →
   `default-features`, `crate_type` → `crate-type`, `proc_macro` → `proc-macro`.
-- `default-features = false` is rejected on an inherited workspace dependency
-  whose workspace entry has default features on.
+- Before Cargo 1.99, edition-2024 members reject `default-features = false` on an
+  inherited dependency whose workspace entry enables defaults. Cargo 1.99 adds
+  member overrides for edition 2024+; earlier editions still warn and ignore
+  that override. Depending on this behavior requires Cargo 1.99 on every
+  supported toolchain, including MSRV CI. Feature unification can still enable
+  defaults through another user of the dependency; inspect `cargo tree -e
+  features` for the real build.
 
 **Macros and syntax**
 - `gen` is reserved.
@@ -105,6 +116,39 @@ The Edition Guide covers 2018 and 2021 with the same shape (`rust-2018/`,
 macro consistency, and reserved prefixes are the usual 2021 items. Follow the
 same procedure; `cargo fix --edition` targets the next edition from the current
 one, so multi-step upgrades run once per edition.
+
+## Selected 1.99 changes (documentation review: 2026-11-05)
+
+These notes were checked against the official [1.99 release
+announcement](https://blog.rust-lang.org/2026/10/01/Rust-1.99.0/) and
+[release notes](https://doc.rust-lang.org/releases.html#version-1990-2026-10-01),
+not compiled locally; installed verification toolchains stop at 1.98. Do not
+raise a project's MSRV merely to adopt them.
+
+- Cargo adds a built-in `debug` profile. At 1.99 it has the same settings as
+  `dev`; its name alone is no performance improvement. Record the exact profile
+  used for debugging or measurement.
+- C-variadic **definitions** with `C`/`C-unwind` ABIs and `core::ffi::VaList`
+  become stable. Calling foreign variadic declarations was already supported.
+  Definitions have stricter ABI restrictions than declarations or naked
+  functions. Support also varies by target: some architectures remain unstable
+  or unsupported. Check the [Reference ABI and target
+  rules](https://doc.rust-lang.org/reference/items/functions.html#c-variadic-functions),
+  promoted argument types, and argument count; a C caller harness on each
+  supported ABI is the validation boundary.
+- The allow-by-default `raw_borrows_via_references` lint helps identify accidental
+  intermediate references. Prefer direct raw borrows when the reference's
+  validity/aliasing promises are inappropriate; see
+  [unsafe and FFI](rust-unsafe-ffi-performance.md).
+
+## Consuming Cargo artifacts
+
+Intermediate build layout is not an artifact-discovery API. For tools consuming
+build outputs, use `cargo build --message-format=json` compiler-artifact messages
+and their `executable`/`filenames` fields. Respect configured target/build
+directories and explicit targets/profiles; see the [Cargo build
+cache](https://doc.rust-lang.org/cargo/reference/build-cache.html). This guidance
+does not assert a particular layout change in Rust 1.99.
 
 ## Primary references
 

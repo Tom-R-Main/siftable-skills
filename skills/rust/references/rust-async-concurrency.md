@@ -30,8 +30,10 @@ explain most async bugs:
    requires `Pin`.
 4. **`.await` accepts any `IntoFuture`**, not only `Future`; builders can
    return an `IntoFuture` so `client.get(url).await` works.
-5. **A future that panicked cannot be resumed.** Polling it again panics
-   ("resumed after panicking"); catching the panic does not make it resumable.
+5. **Do not resume a compiler-generated async future after it panicked.** It
+   panics on resumption; catching the panic does not reset its state. For
+   hand-written futures, follow the implementation's contract rather than
+   assuming every `Future` has the same panic behavior.
 
 Choose async for many concurrent I/O-bound operations. Choose ordinary
 synchronous code for simple blocking programs and CPU-bound kernels unless the
@@ -74,6 +76,14 @@ Spawning requires owned data and often `Send + 'static`; that describes the
 task's mobility and lifetime, not necessarily the application's desired
 ownership. Borrowed concurrency within a scope (`join!`, `try_join!`, scoped
 APIs) may avoid cloning large state.
+
+Also check progress while futures are **kept alive but not polled**. If a
+`select!` branch borrows a pinned future and another branch wins, that future
+can retain a lock or permit while the winning handler awaits something that
+needs it. Cancellation safety alone does not prevent this deadlock. Name who
+keeps polling each in-progress operation; avoid handler dependencies on
+resources held by a suspended sibling, or give the operation a supervised task.
+Test this with explicit barriers and a bounded timeout, not scheduler luck.
 
 ## Backpressure and channel selection
 

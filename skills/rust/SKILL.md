@@ -13,8 +13,9 @@ a source of truth: when a claim matters, read the pinned crate source, the
 versioned std docs, or the Reference, and say what you found.
 
 Resolve `RUST_SKILL_DIR` to the absolute directory containing this loaded `SKILL.md`.
-Run its scripts from the target package or workspace root. Each reference names
-the toolchain and review date for version-gated claims; newer versions are unverified.
+Run its scripts from the target package or workspace root. References distinguish
+compiler-checked examples from documentation-reviewed, version-gated changes;
+neither establishes behavior on an untested target or toolchain.
 
 Not covered here: `no_std` and embedded targets, proc-macro authoring
 (`syn`/`quote`/`trybuild`), dependency auditing beyond honoring the
@@ -49,9 +50,11 @@ Read the results with these rules:
   contract for build, test, fmt, and lint. Raw Cargo may use the wrong
   toolchain, features, profile, or rustfmt config and produce confident wrong
   output.
-- **`edition = "2024"` implies `resolver = "3"`**, which makes `rust-version`
-  affect dependency selection. Virtual workspaces must set `resolver`
-  explicitly. See `references/rust-editions-migration.md`.
+- **Edition and resolver are separate choices.** An edition-2024 root package
+  defaults to resolver 3, but an explicit workspace resolver wins; virtual
+  workspaces cannot infer it from member editions. Resolver 3 makes
+  `rust-version` affect dependency selection. Inspect metadata and the manifest;
+  see `references/rust-editions-migration.md`.
 
 Then inspect the relevant `Cargo.toml`, `Cargo.lock` policy, `.cargo/config.toml`,
 CI, `rustfmt.toml`, `clippy.toml`, `deny.toml`, and the driver. Determine:
@@ -65,6 +68,14 @@ CI, `rustfmt.toml`, `clippy.toml`, `deny.toml`, and the driver. Determine:
 Match those choices unless the task explicitly changes them. Do not silently
 update dependencies, `Cargo.lock`, the edition, MSRV, `resolver`, feature
 defaults, or lint policy as a side effect.
+
+The declared MSRV limits APIs and syntax even when the active compiler is
+newer. Check std's `since` markers and crate feature/MSRV requirements; a pin
+below the declared MSRV is a contract mismatch to resolve, not permission to
+ignore the declaration. Clippy's `incompatible_msrv` helps but is incomplete.
+Run the repository's MSRV check with an already installed minimum toolchain
+when supported; report missing MSRV verification instead of installing it
+implicitly or treating a newer compiler's success as proof.
 
 For current language, standard-library, Cargo, or Clippy behavior, use the
 versioned official docs for the detected toolchain. For Tokio or another crate,
@@ -133,6 +144,10 @@ types and at call sites.
 - Keep `unsafe` blocks small and wrap them in safe abstractions whose invariants
   are documented and tested. Every unsafe operation needs a local proof; an
   `unsafe fn` contract does not replace it.
+- At FFI boundaries, check whether foreign calls, callbacks, or hardware can
+  mutate or relocate memory while a Rust reference is live. A cast to a raw
+  pointer does not undo the reference's promises; see
+  `references/rust-unsafe-ffi-performance.md`.
 - Prefer ordinary code over intricate lifetime parameters, macros, typestate, or
   interior mutability when a simpler ownership boundary expresses the same
   invariant. Use advanced patterns when they remove invalid states or essential
@@ -235,10 +250,16 @@ Do not stop at compilation when the task changes behavior:
 - `references/rust-testing.md` — regression-first fixes, unit/integration/doc
   tests, properties, fuzzing, snapshots, concurrency tests, and coverage.
 - `references/rust-unsafe-ffi-performance.md` — the UB list and validity
-  invariant, `static mut`, `unsafe extern` and FFI contracts,
-  Miri/sanitizers/Loom, profiling, and benchmark discipline.
+  invariant, `static mut`, `unsafe extern`, foreign mutation across live
+  references, release-only FFI triage, Miri/sanitizers/Loom, profiling, and
+  component-port measurements including conversion costs.
 - `references/rust-editions-migration.md` — toolchain/MSRV/resolver facts,
   the migration procedure, and the Rust 2024 change checklist.
+- `references/rust-places-projections.md` — field splitting through guards,
+  raw and pinned projection, and the boundary between stable Rust and the
+  experimental Beyond Refs handle design.
+- `references/source-review.md` — inspected source commits, transcript selection,
+  and the limits of the refresh's verification; open only for provenance.
 
 Treat these as decision guides, not laws. If the compiler, pinned crate source,
 nearby code, or project policy disagrees, follow the project and record why.
@@ -250,7 +271,11 @@ nearby code, or project policy disagrees, follow the project and record why.
   reason later.
 - **E0499/E0502, conflicting borrows:** borrows end at last use (NLL), so
   reorder or extract a value first. Shorten borrow scope, split fields or
-  collections, or use an entry API. `v.push(v.len())` compiles because implicit
+  collections, or use an entry API. Through a `MutexGuard`/`RefMut`, first
+  reborrow the pointee (`let state = &mut *guard;`) to expose disjoint fields;
+  keep the guard alive. Before edition 2021, destructure the fields before
+  capturing them in a closure. See `references/rust-places-projections.md`.
+  `v.push(v.len())` compiles because implicit
   `&mut self` autorefs are two-phase; an explicit `let r = &mut v;` is not.
   Interior mutability is a semantic choice, not a generic escape.
 - **E0507/E0508/E0509, cannot move out of a borrow / an array / a `Drop`

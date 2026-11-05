@@ -29,8 +29,10 @@ require restructuring production code (new seams, exposed internals, a new
 harness), stop and design that boundary deliberately — it is test-suite
 design, not a regression test.
 
-Model-written changes without tests are not done. Tests are the evidence the
-reviewer can run; the conversation is not.
+Behavior changes need executable evidence appropriate to their risk. For a
+documentation-only correction, compiling its examples or checking the cited
+contract can be sufficient; avoid tests that only match the new prose. The
+conversation is not a substitute for evidence the reviewer can inspect.
 
 ## Unit, integration, and doc tests
 
@@ -39,6 +41,10 @@ reviewer can run; the conversation is not.
   API and expose accidental visibility assumptions.
 - Use doc tests for short, stable public examples. Mark examples `no_run` only
   when execution genuinely requires unavailable resources.
+- For borrow-checker/API claims, pair a compiling example with a compile-fail
+  control when acceptance versus rejection is the behavior being taught. Check
+  the expected diagnostic category, not just a nonzero exit. Rustdoc is a
+  `cargo test` gate; `cargo build` alone does not run documentation tests.
 - Let test functions return `Result` when `?` improves failure context.
 - Name tests for scenario and outcome. Avoid a mandatory `test_` prefix when the
   surrounding project has a clearer convention.

@@ -53,6 +53,12 @@ When two operations conflict over a borrow, ask:
 6. Is shared mutation actually part of the domain? Only then consider
    `Cell`/`RefCell`, `Mutex`, `RwLock`, or atomics.
 
+When the conflict appears only after wrapping a struct in a guard, inspect the
+implicit `Deref`/`DerefMut` calls. Reborrow once to `&mut Struct`, then split its
+fields; adding `mut` to the guard alone does not expose disjoint fields.
+See [places and projections](rust-places-projections.md) for a runnable example
+and the limits for raw, foreign, and pinned pointers.
+
 Moving out of a place is refused when the place is behind `&`/`&mut` (E0507),
 is an index of an array or slice (E0508), or is a field of a type that
 implements `Drop` (E0509). Choose deliberately: `Option::take`, `mem::take`/
@@ -79,7 +85,10 @@ satisfies a stronger one also satisfies it:
 `move` controls *how* values are captured (by value), not which trait the
 closure implements; a `move` closure that only reads is still `Fn`. Closures
 capture disjoint fields (2021+), so `|| self.a.len()` does not borrow all of
-`self`. Spawn-style APIs need `Send + 'static`, hence `move` of owned data.
+`self` when those are ordinary struct fields; custom `Deref` can require capture
+of the enclosing pointer. Scoped spawning can borrow, and local tasks need not
+be `Send`; ordinary multi-threaded runtime spawning typically needs `Send +
+'static`, hence `move` of owned data.
 Return closures as `impl Fn(..) -> ..`; store heterogeneous ones as
 `Box<dyn Fn>`/`Box<dyn FnMut>`/`Box<dyn FnOnce>`.
 
